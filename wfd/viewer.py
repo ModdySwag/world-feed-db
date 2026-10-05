@@ -328,6 +328,17 @@ class ViewerHandler(SimpleHTTPRequestHandler):
 
     server_version = "wfd-viewer/0.2"
     protocol_version = "HTTP/1.1"
+    # Explicit map so .js/.mjs always serve as JS even when the Windows
+    # registry-backed mimetypes module guesses text/plain (breaks ES modules).
+    extensions_map = {
+        **SimpleHTTPRequestHandler.extensions_map,
+        ".js": "text/javascript",
+        ".mjs": "text/javascript",
+        ".css": "text/css",
+        ".json": "application/json",
+        ".svg": "image/svg+xml",
+        ".webmanifest": "application/manifest+json",
+    }
 
     # -- routing ------------------------------------------------------------
 
