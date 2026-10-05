@@ -11,6 +11,7 @@ Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see 
 - Decisions + waves log + open questions **Q2–Q11**: `PLAN.md` (living; earlier text never rewritten).
 - Next: owner decisions on Q2–Q11, then build-phase framing — first small artifacts are the dataset ingesters + provenance/redaction gate, and the enumerator set from the S1/S2 endpoint menus.
 - **2026-10-05 (late) — Build phase opened; sprint 1 delivered.** Core `wfd` package + credential layer + exposure ingesters (era chain 2019→2026, 20,881 rows) + L-E-S/gov enumerator scaffolds (10,187 rows). Contracts: `docs/ARCHITECTURE.md`; folds: PLAN A9–A10. Run: `py -3.11 -m wfd status`.
+- **2026-10-06 — Sprints 2–3 delivered; the showpiece viewer is live.** Registry DB + full health sweeps + self-heal (fail_count / quarantine) + viewer **v0.3** (`py -3.11 -m wfd viewer` → http://127.0.0.1:8773): top menu bar, 7 views (Overview / Map / Wall / Watch multi-watch / Search / Personal favourites / Help), multi-format players, command palette, sounds — spec in `docs/VIEWER-SPEC.md`. Twelve new-source ingesters (`py -3.11 -m wfd.ingest.newsrc list`). Folds: PLAN A11–A18.
 
 ## Map
 
@@ -27,6 +28,14 @@ Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see 
 | `profiles/clean/` + `profiles/<overlay>/` | profile system — keyless default + private overlay (gitignored) |
 | `tests/` | plain-python test runners (+ fixtures) |
 | `data/` | working DB + ingest outputs (gitignored — code travels, data stays) |
+
+## Run (2026-10-06)
+
+- **Viewer (showpiece):** `py -3.11 -m wfd viewer` → http://127.0.0.1:8773/ — favourites/settings persist server-side (`data/viewer-prefs.json`).
+- **Registry:** `py -3.11 -m wfd db load|stats|search`  ·  **Status/keys:** `py -3.11 -m wfd status|keys|creds`.
+- **Ingesters:** `py -3.11 -m wfd.ingest.exposure|les|gov <name>` · `py -3.11 -m wfd.ingest.newsrc <family|all|list>` → `data/ingest/*.jsonl` (gitignored; long fetches are cache-resumable).
+- **Health:** `py -3.11 -m wfd health probe <url>` · `py -3.11 -m wfd health run --family <fam> [--limit N]` (resumable; never probes exposure rows).
+- **Tests:** `py -3.11 tests/test_*.py` (plain runners — no pytest on this host).
 
 ## Related prior art (local)
 

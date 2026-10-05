@@ -159,3 +159,25 @@ Query example for L-E-S (from its README): usable = `status=="active" and url_ty
 - `cve.org` + `streamlabs.com` tabs: context-only; no project info extracted (deliberately skipped).
 - WV1 dead ends (do not retry): NASA TV akamaized HLS, Purdue MJPEG.
 - L-E-S `active_count:0` on `html_page` sources = "not probeable", not "dead" (see reading rules).
+
+
+---
+
+## New-source families — NS build unit (enumerated + folded 2026-10-06)
+
+Modules: `wfd/ingest/newsrc/<family>.py` · runner: `py -3.11 -m wfd.ingest.newsrc list|<family>|all` · outputs: `data/ingest/newsrc-<family>.jsonl`.
+
+| family | provenance | rows | endpoint / pattern | notes |
+|---|---|---|---|---|
+| explore-omega | public_by_design | 236 | `omega.explore.org/api/initial` + per-group pages | 101 camgroups / 239 feeds; YouTube lives |
+| openwebcamdb | aggregator_directory | 1,089 | sitemap → per-page JSON-LD | 1,882 pages; 793 no-feed skipped (non-YT embeds noted) |
+| jungfrau-roundshot | public_by_design | 10 | `jungfrau.ch/cp-api/webcams` + status batch | stable `backend.roundshot.com/cams/<id>/full` |
+| vailresorts-brownrice | public_by_design | 13 | `player.brownrice.com/snapshot/<station>` | 8 Whistler + 5 Vail; station map browser-harvested |
+| aus-airservices | public_by_design | 146 | admin-ajax `get_airports_list` + per-airport pages | 39 airports; angle JPEGs; dual filename schemes |
+| au-goldcoast-beach | public_by_design | 21 | `mobileapp.goldcoast.qld.gov.au/v2/discover` | 27 beach items; shared streams recorded in meta |
+| au-nsw-marine | public_by_design | 22 | nsw.gov.au hub → coastalcoms widgets → m3u8 | re-resolve per sweep (drift rule) |
+| streamdays | public_by_design | 7 | Edinburgh Zoo + Derby pages → `live.streamdays.com/<code>` | resolve-on-demand token chain; not swept yet |
+| camsecure-webcams | public_by_design | 30 | demo index → Referer'd wrappers → m3u8 | 28 HLS + 2 YouTube |
+| youtube-live-cams | public_by_design | 13 | Steamboat + South Padre channels | oembed verified; source-registry module |
+| skaping | public_by_design | 877 | `sitemap.players.xml` | player-page urls; timestamped captures in meta only |
+| webcamtaxi | aggregator_directory | (fetch in progress) | `webcamtaxi.com/en/webcams.html` all-cams list | ~2,230 pages; cache-resumable |
