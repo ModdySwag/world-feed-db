@@ -60,10 +60,14 @@ CREATE VIRTUAL TABLE IF NOT EXISTS cameras_fts USING fts5(
 """
 
 
-def connect(path: Optional[Union[pathlib.Path, str]] = None) -> sqlite3.Connection:
+def connect(path: Optional[Union[pathlib.Path, str]] = None,
+            check_same_thread: bool = False) -> sqlite3.Connection:
+    """Open the registry. Thread-usable by default (check_same_thread=False):
+    multi-threaded callers (e.g. health sweeps) MUST serialize their writes
+    with their own lock — as wfd.health does."""
     p = pathlib.Path(path) if path else DEFAULT_DB
     p.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(p))
+    conn = sqlite3.connect(str(p), check_same_thread=check_same_thread)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
     conn.execute("PRAGMA synchronous=NORMAL;")

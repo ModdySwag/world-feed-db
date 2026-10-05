@@ -220,3 +220,14 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - Queued cleanups: country normalization (LES carries ISO codes "IT"/"TH"; exposure datasets carry names "Italy"; "US" vs "United States") and cross-family feed consolidation (one row per physical feed, lineage preserved) — later phase.
 - Verification: registry 5/5 + core 6/6 re-run; independent raw-SQL recount (total / family / provenance) matches file-derived expectations exactly; FTS↔cameras rowid join 31,061/31,061; DB 28.2 MB.
 - Next moves: (b) first health-check pass on public rows · (c) viewer spike · (d) more enumerators · (e) discovery connector; plus the queued cleanups above.
+
+### A12 · Sprint 2 step 2 — first health-check pass (pilot) (folded 2026-10-05, late)
+
+> Trigger: owner "go" — the A1 liveness doctrine gets its first real-data sweep.
+
+- NEW `wfd/health.py` + `wfd health probe|run`: streams = structure → decode → freeze/black motion pass; stills = two-sample pHash (~20s gap); YouTube = yt-dlp live gate. Resumable sweeps; write-back (`status`, `last_verified`); evidence JSONL per run in `data/health/` (gitignored); public rows only (SQL-enforced); per-host gate (cap + spacing); all subprocesses windowless.
+- **Pilot results — 602 cams probed (NSW 241/241 JPEG · DelDOT 361/361 HLS):** NSW **131 live · 110 stale · 0 dead**; DelDOT **305 live · 41 stale · 15 dead** (combined 436 live / 151 stale / 15 dead). Exposure rows untouched (0 status/last_verified changes); db integrity ok.
+- Calibration (real data): NSW refresh is fast (sample cams move within 20s; hamming 6–24) — the 20s gap is a strict separator; the NSW stale-subset rechecked at 60s drifts hamming 2–8 (slow-refresh/static scenes, not placeholders — queue a longer-window refinement). DelDOT freeze pass clean (1/8 sample flagged; keep d=1.0). NSW's image host serves an HTML stub to non-browser UAs → probes now do a two-stage UA fallback (polite → browser), recorded in evidence. `last_verified` semantics: LES rows carry the corpus's own check date from ingest; our probes overwrite with probe time (informational, never a liveness claim by us).
+- Fixes en route: `db.connect(check_same_thread=False)` + sweep write-lock (threaded writes); sweeps chunk ≤ ~400s (tool cap) — resumability makes chunking free.
+- Verification: suites green (health 7/7 incl. synthetic pHash + image sniff; core 6/6; registry 5/5); evidence files 602/602 rows; final splits SQL-verified; `PRAGMA quick_check` ok.
+- Queued: Caltrans D12 (~419 mixed) · LES HLS + YouTube samples · full-family passes · then the schedule/self-heal layer (A1 state machine + rotation pools + re-discovery).
