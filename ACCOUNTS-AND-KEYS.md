@@ -17,7 +17,7 @@ How this works: as each build stage needs an account, it appears here with a sig
 
 | # | Service | Unlocks | Signup | Status |
 |---|---------|---------|--------|--------|
-| 5 | Shodan (free API plan) | candidate discovery (wrapped in provenance gate; never device-touch) | key at https://account.shodan.io (logged in) → drop into `profiles/moddy/.env` as `SHODAN_API_KEY`; verify: `GET https://api.shodan.io/api-info?key=...` or `py -3.11 profiles/moddy/check_keys.py` | 🔄 account active 2026-10-05 — key pending |
+| 5 | Shodan (free API plan) | candidate discovery (wrapped in provenance gate; never device-touch) | key at https://account.shodan.io (logged in) → drop into `profiles/moddy/.env` as `SHODAN_API_KEY`; verify: `GET https://api.shodan.io/api-info?key=...` or `py -3.11 profiles/moddy/check_keys.py` | ✅ **key in + VERIFIED 2026-10-05** — plan=`dev`, query_credits=100, scan_credits=100 (search-only use per policy) |
 | 6 | Censys Platform (Free) | secondary discovery | https://accounts.censys.io/register | ⬜ optional |
 
 ## Priority 3 — bulk/rate lanes (only if wanted)
