@@ -18,6 +18,7 @@ PLAN.md holds the program decisions; this file holds the engineering contracts.
 | `wfd/ingest/les.py` | Live-Environment-Streams ingester (task C) | committed |
 | `wfd/ingest/gov/` | government enumerator scaffold + exemplars (task C) | committed |
 | `wfd/cli.py` | `py -3.11 -m wfd <cmd>` entry point | committed |
+| `wfd/registry.py` | registry DB build + stats/search CLI (`wfd db ...`) | committed |
 | `docs/` | this file | committed |
 | `tests/` | plain-python test runners (+ fixtures) | committed |
 | `profiles/clean/` | keyless default profile | committed |
@@ -103,6 +104,13 @@ PLAN.md holds the program decisions; this file holds the engineering contracts.
 - `py -3.11 -m wfd status` — profile + key statuses + db summary.
 - Extension pattern: modules `wfd.creds`, `wfd.onboarding` — `cli_commands()` dict;
   funcs may declare `add_arguments(parser)`.
+
+### wfd.registry
+- `load_jsonl_file(conn, path)` / `load_dir(conn, dir)` — idempotent load of `data/ingest/*.jsonl`
+  (upsert by `camera_id`; tolerant of bad lines and unknown keys).
+- `stats(conn)` — totals + family split + top countries + cross-family URL overlaps.
+- `search(conn, q, limit)` — FTS hits enriched with provenance/status/protocol.
+- CLI: `wfd db load [--reset] | stats | search <q>`.
 
 ## Conventions
 

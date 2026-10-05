@@ -66,6 +66,7 @@ def connect(path: Optional[Union[pathlib.Path, str]] = None) -> sqlite3.Connecti
     conn = sqlite3.connect(str(p))
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL;")
+    conn.execute("PRAGMA synchronous=NORMAL;")
     return conn
 
 
@@ -87,7 +88,11 @@ def _row_values(row: CameraRow) -> tuple:
 
 
 def upsert(conn: sqlite3.Connection, row: CameraRow) -> None:
-    """Idempotent by camera_id (stable hash of source_family|url)."""
+    """Idempotent by camera_id (stable hash of source_family|url).
+
+    FTS maintenance is rowid-keyed: a ``WHERE camera_id`` delete on the FTS
+    table would scan it per row (O(n^2) on bulk loads).
+    """
     values = _row_values(row)
     placeholders = ", ".join("?" for _ in _COLUMNS)
     updates = ", ".join(f"{c}=excluded.{c}" for c in _COLUMNS if c != "camera_id")
@@ -96,11 +101,14 @@ def upsert(conn: sqlite3.Connection, row: CameraRow) -> None:
         f"ON CONFLICT(camera_id) DO UPDATE SET {updates}",
         values,
     )
-    conn.execute("DELETE FROM cameras_fts WHERE camera_id = ?", (row.camera_id,))
+    rid = conn.execute(
+        "SELECT rowid FROM cameras WHERE camera_id = ?", (row.camera_id,)
+    ).fetchone()[0]
+    conn.execute("DELETE FROM cameras_fts WHERE rowid = ?", (rid,))
     conn.execute(
-        "INSERT INTO cameras_fts (camera_id, name, city, country, source_family, tags) "
-        "VALUES (?, ?, ?, ?, ?, ?)",
-        (row.camera_id, row.name, row.city, row.country, row.source_family, " ".join(row.tags)),
+        "INSERT INTO cameras_fts (rowid, camera_id, name, city, country, source_family, tags) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (rid, row.camera_id, row.name, row.city, row.country, row.source_family, " ".join(row.tags)),
     )
 
 

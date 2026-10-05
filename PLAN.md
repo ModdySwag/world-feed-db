@@ -208,3 +208,15 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - **Small wins:** Road511 VERIFIED — `X-API-Key` header → HTTP 200 (2274fdc) · deno 2.9.7 installed (yt-dlp: `JS runtimes: deno-2.9.7`) · QLD email draft at `outreach/QLD-traffic-api-email-draft.md` (owner to fill + send) · Shodan key alive (free `/host/count` probes only).
 - **Parent verification on record:** all six suites re-run (6/6, 11/11, 7/7, 9/9, 9/9, 10/10); independent credential scan of 16 files = 0 violations; output sha256s match task reports; `profiles/moddy` untouched by tests.
 - Next moves: fill the registry DB (`wfd.db`) from ingest outputs · first health-check pass (A1 probe tiers) · viewer spike (shared backend + local web UI, Q4) · more enumerators from the S2 menu (TfL, DriveBC, OHGO, WSdot, Iowa, Ontario) · discovery connector (Shodan search-only, credit-budgeted).
+
+### A11 · Sprint 2 step 1 — registry database filled (folded 2026-10-05, late)
+
+> Trigger: owner "go with next logical step" — the registry DB every downstream piece (health checks, search, viewer) writes into.
+
+- NEW `wfd/registry.py` + `wfd db load|stats|search` CLI (registered via the wfd.cli extension pattern). Loads `data/ingest/*.jsonl` into `data/worldfeed.db`; idempotent by `camera_id`; tolerant of bad lines/unknown keys.
+- First full load: **31,061 rows** (31,068 read — 7 Caltrans shared-stream duplicate URLs collapse by design; same (family,url) ⇒ same row). Split: **20,881 `exposure_aggregator` + 10,180 `public_by_design`**; statuses `unverified`/`unknown` only. FTS5 search live.
+- Perf fix en route: FTS maintenance is now rowid-keyed (a `WHERE camera_id` delete on the FTS table was a per-row scan) — full 31k-row load: **1.4 s** (previously multi-minute).
+- Overlap map (same URL in >1 family — consolidation backlog + era-diff material): **1,806 URLs** — exposure era chain 1,514 (703 godeye↔rafasapiens · 407 triple-era jrw↔godeye↔rafasapiens · 225 jrw↔rafasapiens · 179 jrw↔godeye) + LES↔gov 292 (261 deldot · 31 caltrans).
+- Queued cleanups: country normalization (LES carries ISO codes "IT"/"TH"; exposure datasets carry names "Italy"; "US" vs "United States") and cross-family feed consolidation (one row per physical feed, lineage preserved) — later phase.
+- Verification: registry 5/5 + core 6/6 re-run; independent raw-SQL recount (total / family / provenance) matches file-derived expectations exactly; FTS↔cameras rowid join 31,061/31,061; DB 28.2 MB.
+- Next moves: (b) first health-check pass on public rows · (c) viewer spike · (d) more enumerators · (e) discovery connector; plus the queued cleanups above.
