@@ -1,0 +1,381 @@
+[
+  {
+    "id": "5642fd9c-9f9b-485b-bb09-c491a846874e",
+    "title": "Bilinga",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/bilinga",
+    "suburb": "Bilinga",
+    "coordinates": {
+      "lat": -28.1549744781334,
+      "lon": 153.506746195831
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/tuguncamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "b85673d0-ca8b-44b9-9427-188b71d19e72",
+    "title": "Broadbeach",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/broadbeach",
+    "suburb": "Broadbeach",
+    "coordinates": {
+      "lat": -28.0220120003581,
+      "lon": 153.43423299955
+    },
+    "cams": null
+  },
+  {
+    "id": "a913ff91-bff5-45ef-b7de-4bec092a8f10",
+    "title": "Burleigh Heads",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/burleigh-heads",
+    "suburb": "Burleigh Heads",
+    "coordinates": {
+      "lat": -28.0889403439626,
+      "lon": 153.453562007449
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/burleighhighcamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/burleighheadscamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "709559e2-aba0-47b1-8dec-d5ec32673687",
+    "title": "Burleigh North",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/burleigh-north",
+    "suburb": "Miami",
+    "coordinates": {
+      "lat": -28.0738032301125,
+      "lon": 153.446752552997
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/burleighhighcamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/burleighheadscamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "1df5281f-db54-40a8-88d6-fcf7a5ca1f38",
+    "title": "Coolangatta",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/coolangatta",
+    "suburb": "Coolangatta",
+    "coordinates": {
+      "lat": -28.1662469996015,
+      "lon": 153.537321000243
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/rainbowbaycamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "22751fbe-b6a3-48ed-bf99-4c720e9ac7d9",
+    "title": "Currumbin",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/currumbin",
+    "suburb": "Currumbin",
+    "coordinates": {
+      "lat": -28.1316999922578,
+      "lon": 153.488824477754
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/currumbincamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "2ad93fb9-3a6c-4397-b5a8-d07a86c2bef7",
+    "title": "Currumbin Alley",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/currumbin-alley",
+    "suburb": "Currumbin",
+    "coordinates": {
+      "lat": -28.1277300000912,
+      "lon": 153.485012999575
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/currumbincamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "394bc4be-8b03-45e8-bfc6-3734f669201b",
+    "title": "Froggies",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/froggies",
+    "suburb": "Coolangatta",
+    "coordinates": {
+      "lat": -28.1634069996347,
+      "lon": 153.549925999748
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/tweedriverstaticcamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/tweedriverbarcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "cd329baf-b206-47cc-923d-41eed7a59dd3",
+    "title": "Greenmount",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/greenmount",
+    "suburb": "Coolangatta",
+    "coordinates": {
+      "lat": -28.1664389997365,
+      "lon": 153.544022000084
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/rainbowbaycamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "8a0c583a-195e-448a-850f-438a010b4d34",
+    "title": "Kirra",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/kirra",
+    "suburb": "Coolangatta",
+    "coordinates": {
+      "lat": -28.1669460001673,
+      "lon": 153.531833000147
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/kirracamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "b9beef3a-4ae1-4fcb-9691-4f0c091c8049",
+    "title": "Kurrawa",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/kurrawa",
+    "suburb": "Broadbeach",
+    "coordinates": {
+      "lat": -28.0294250004235,
+      "lon": 153.435335000453
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/kurrawacamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "b92062df-8382-4377-b28f-54fd38c34abf",
+    "title": "Main Beach",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/main-beach",
+    "suburb": "Main Beach",
+    "coordinates": {
+      "lat": -27.9753460000153,
+      "lon": 153.42944100021
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/mainbeachcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "7102e509-d63a-45ca-bbbd-524d53184b7b",
+    "title": "Mermaid",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/mermaid",
+    "suburb": "Mermaid Beach",
+    "coordinates": {
+      "lat": -28.0412690001657,
+      "lon": 153.43818200033
+    },
+    "cams": null
+  },
+  {
+    "id": "8071dd71-a9d1-41ba-86fd-f36da8c8bfa9",
+    "title": "Miami",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/miami",
+    "suburb": "Miami",
+    "coordinates": {
+      "lat": -28.068981941039,
+      "lon": 153.444859099019
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/miamicamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "5bfaee15-a393-4dd9-ad24-3b00b7d67bf9",
+    "title": "Narrowneck",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/narrowneck",
+    "suburb": "Main Beach",
+    "coordinates": {
+      "lat": -27.9870730001597,
+      "lon": 153.430282999668
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/narrowneckhighcamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/artreefcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "714a8ec8-a2b5-43ff-aaa3-74042ea8e8b4",
+    "title": "Nobby Beach",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/nobby-beach",
+    "suburb": "Mermaid Beach",
+    "coordinates": {
+      "lat": -28.0587324314365,
+      "lon": 153.442037439368
+    },
+    "cams": null
+  },
+  {
+    "id": "946f6561-b852-4ab9-a5fd-14797688bc7e",
+    "title": "Northcliffe",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/northcliffe",
+    "suburb": "Surfers Paradise",
+    "coordinates": {
+      "lat": -28.010239999962,
+      "lon": 153.432457000081
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/surfersparadisehighcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "9a4ee6fb-83cd-49be-b630-6334608d767a",
+    "title": "North Kirra",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/north-kirra",
+    "suburb": "Bilinga",
+    "coordinates": {
+      "lat": -28.1646549996885,
+      "lon": 153.521465000214
+    },
+    "cams": null
+  },
+  {
+    "id": "c58164fa-a566-4ca1-aaa9-f2a5f2637828",
+    "title": "Palm Beach",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/palm-beach",
+    "suburb": "Palm Beach",
+    "coordinates": {
+      "lat": -28.1185460001881,
+      "lon": 153.472530000507
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/currumbincamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/palmbeachqldcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "9867635a-e917-4530-8cb9-a3403869ab13",
+    "title": "Palm Beach South",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/palm-beach-south",
+    "suburb": "Palm Beach",
+    "coordinates": {
+      "lat": -28.1253520705814,
+      "lon": 153.478362802961
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/currumbincamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/palmbeachqldcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "6a30bba0-4f74-4107-b166-a6bba1b991cc",
+    "title": "Rainbow Bay",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/rainbow-bay",
+    "suburb": "Coolangatta",
+    "coordinates": {
+      "lat": -28.1631779996072,
+      "lon": 153.548531000138
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/rainbowbaycamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "77680975-b119-42f0-8048-b54a24a3d915",
+    "title": "Spit North",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/spit-north",
+    "suburb": "Main Beach",
+    "coordinates": {
+      "lat": -27.9384690002697,
+      "lon": 153.428818000296
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/seawayspitcamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/seawaypolecamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/seawayjettycamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "28ac55ba-72a9-4be5-9253-03e898ca00a5",
+    "title": "Spit South",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/spit-south",
+    "suburb": "Main Beach",
+    "coordinates": {
+      "lat": -27.9674360298302,
+      "lon": 153.429303727217
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/seaworldcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "8f7f18ba-d174-4be5-9cfa-069b0aac385a",
+    "title": "Surfers Paradise",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/surfers-paradise",
+    "suburb": "Surfers Paradise",
+    "coordinates": {
+      "lat": -28.0022759996196,
+      "lon": 153.431444000109
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/surfersparadisehighcamera.stream/playlist.m3u8",
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/surfersparadisecamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "20d5f16d-b07a-4ff2-9c40-fb24fafef72a",
+    "title": "Surfers Paradise North",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/surfers-paradise-north",
+    "suburb": "Surfers Paradise",
+    "coordinates": {
+      "lat": -27.9916682044351,
+      "lon": 153.430477663699
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/narrowneckhighcamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "98af8283-3c24-4840-8f32-bf69af04a1de",
+    "title": "Tallebudgera",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/tallebudgera",
+    "suburb": "Palm Beach",
+    "coordinates": {
+      "lat": -28.0998887587574,
+      "lon": 153.462807298605
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/tallebudgeracamera.stream/playlist.m3u8"
+    ]
+  },
+  {
+    "id": "c7de50a2-77ac-40fd-812b-e5592fec22bc",
+    "title": "Tugun",
+    "category": "beaches",
+    "shareId": "/app/discover/beaches/tugun",
+    "suburb": "Tugun",
+    "coordinates": {
+      "lat": -28.1417030001362,
+      "lon": 153.49572899963
+    },
+    "cams": [
+      "https://d1nm4r8e5x1rwd.cloudfront.net/cw/tuguncamera.stream/playlist.m3u8"
+    ]
+  }
+]
