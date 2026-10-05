@@ -152,3 +152,36 @@ Status: read end-to-end; parent spot-checks OK — EarthCam `network_search` (Ca
 - Patterns: YouTube-embed prevalence → yt-dlp = highest-leverage shared component for this slice; token-gated players everywhere → resolve-on-demand adapters, never store tokenized URLs; ≈14,000 keyless records enumerated in this slice before dedupe.
 
 Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Windy free key (Q3); EarthCam / explore.org / Roundshot importers → discovery backlog.
+
+### A6 · Wave S6 — batch-2 aggregators & new directories (folded 2026-10-05)
+
+> Trigger: owner batch-2 sweep — "there are more sites to ingest in my brave browser might as well make it HUGE!"
+
+- **webcamera24.com**: 6,570 cams / 67 countries (sitemap 121,296 URLs → de-dup ×14 langs); inline RSC payload carries direct HLS `streamLink` + `youtubeCode`; per-cam `isWork` liveness. ADOPT (registry/discovery/viewer/liveness).
+- **openwebcamdb.com**: 1,881 cams, keyed API — **SKIP for ingest** (ToS explicitly bans competing directories/harvesting). Monitor only.
+- **worldcam.eu**: country dirs 25/page (DE 1,592 · UK 754 · FR 712 sampled; operator counter 32,330); date-stamped snapshot images keyless (staleness-detectable) + static/streaming badge. ADOPT (registry + image tier).
+- **earthlive24.com**: 414 cams (parent-verified: sitemap 1,134 URLs / 414 camera locs); SSR YouTube embeds; 2 ids live-proven. ADOPT.
+- **earthcamtv/EarthCam**: playlist 12 live; animal cams 13 (camshots keyless; HLS tokenized resolve-on-demand). ADOPT.
+- Skyline mosaic `EFum1rGUdkk`: live (385 viewers) — viewer-filler tier.
+- **ARGOS ATLAS**: keyless stats API (parent-verified: cams 220,449 / video 20,781) — benchmark; closest peer; data pro-gated, don't take.
+- **CruisingEarth ships**: 274 ship pages / 22 lines (sitemap) + **Panomax** provider (keyless image API; Last-Modified gate mandatory — one cam stale 7.5 months while another fresh). ADOPT-lite.
+- worldlive.app: SKIP (Wix + app-only). Wave total: ≈7,100+ new enumerable records before dedupe.
+
+### A7 · Wave S7 — institutional / nature / animal / ship layer (folded 2026-10-05)
+
+- **San Diego Zoo**: 13 cams → Camzone keyless HLS (`<channel>.hls.camzonecdn.com/CamzoneStreams/<channel>/Playlist.m3u8`; zssd-* channels; 4 decode-verified); Safari Park +8 channels (16 total); panda = email-gated (manual tier). ADOPT.
+- **Smithsonian NZP**: own Wowza HLS, keyless, failover pair (nzp-wowza01/02), 6 streams incl. panda ABR 1080p — 3 decode-verified. ADOPT flagship.
+- **Monterey Bay Aquarium**: 10 cams, all YouTube — full id table captured (otter/kelp/shark is_live-verified); site WAF-walled (don't scrape). ADOPT via YouTube adapter.
+- **Bondi SLSC**: 2 ipcamlive aliases → direct keyless HLS incl. HEVC 3200×1800 (parent re-checked: master.m3u8 200); snapshots keyless. ADOPT + ipcamlive resolver.
+- Cruise Earth mechanics: Panomax iframes / YouTube / proxied-JPG 30 s / decommissioned placeholders — honest-states required; Sky Princess 1920×1080 369 KB verified.
+- **Panomax** provider: keyless image API `panodata.panomax.com/cams/<id>/recent_reduced.jpg` + preview_og.jpg; freshness gate (Last-Modified).
+- **BAS Sir David Attenborough**: official `latest.jpg` verified fresh 1080p. ADOPT.
+- OSU fleet / OET Nautilus / Greenpeace = event-mode reference. EarthCam Animal: 13 curated + partner leads.
+- New resolvers to build: **Camzone · ipcamlive · Panomax · EarthCam-token · YouTube**.
+
+### A8 · Wave S8 — insecam direct recon + new datasets + community (folded 2026-10-05)
+
+- Direct access SOLVED for recon: `http://www.insecam.org` + browser UA (https cert = self-signed/expired; default UA → 403; **robots allows crawling at crawl-delay 0.1**; no ToS exists). Directory ≈ **2.2–2.3k cams now** (sitemap = 2,271 IDs; US ≈576; AQ/GL not covered). **Polite census FEASIBLE** — full current ID set = 1 sitemap request; listing-level ~1.5–2 h at 1 req/2 s; **gated on Q6**; rules: redact img src, never fetch device URLs or `/en/view/` pages, kill-switch.
+- New datasets beyond the 7: **GODEYE 1,775 (2026-05-27)** + **rafasapiens 2,100 (2026-10)** (parent re-counted GODEYE = 1,775 ✓) — plus reconeyes (OpenEyes-lineage, log) and EyeFinder 256 (77 insecam). **Era chain now 2019 → 2022 → 2026** — unique value = timeline diffs ("gone dark" views).
+- Community: **AAD Mawson (Antarctica) cam verified** — remote-stations class opened (naocam.com Greenland airports, overwatch.earth, DOT-mapper leads queued).
+- Housekeeping: children's stray scratch files were removed (commit 39610be); practice rule going forward: subagent waves do not run git commands — the parent commits.

@@ -59,6 +59,7 @@ Dead ends from that pass: NASA TV akamaized m3u8 (empty segments), Purdue MJPEG 
 - Intl: TfL 890 verified · Vegvesen `kamera.atlas.vegvesen.no/api/images/<id>` + DATEX (registered) · Autobahn.de API shape (re-test) · NSW/QLD need free keys · SG data.gov.sg 8 cams · NZ trafficnz 313 verified · TW geo-blocked from host · TH/KR/JP event/manual.
 - Institutional: USGS HVO/AVO/CVO/YVO/CalVO verified patterns (V1cam 200/56 KB) · NPS + Pixelcaster snapshot (200/20.9 KB), token-gated HLS · USAP XHR API (McMurdo/SouthPole/Palmer + weather) · ski: Jackson Hole JSON + direct JPGs, Ischgl; Roundshot/Panomax providers.
 - Keys needed (free): Windy, Road511, NSW, QLD, LTA DataMall alt.
+- Institutional/nature batch-2 (S7): SDZ / NZP / MBA / Bondi / BAS / Cruise-Panomax — full mechanics in `research/gov/S7-institutional-2.md`; resolvers listed in §2 batch-2 block.
 
 Key artifacts: `research/seed-tabs/github-topics/traffic-cameras--stars.json` (31 repos incl. per-city apps), `repos/AidanWelch__OpenTrafficCamMap.README.md`, `repos/GoSlowPoke168__Argus.README.md`.
 
@@ -88,6 +89,23 @@ Key artifacts: `research/seed-tabs/github-topics/traffic-cameras--stars.json` (3
 | **TrafficVision.Live** | **155,000+ claimed / 700+ sources / 130+ countries** | see §4 | closest peer system |
 
 **S1 patterns → build rules:** YouTube-embed prevalence → yt-dlp resolution subsystem = the highest-leverage shared component for this slice (matches WV1 M2). Token-gated players everywhere (Skyline JS, BalticLiveCam admin-ajax, EarthCam time-stamped tokens, earthTV playerToken, Windy 10-min image tokens) → **resolve-on-demand adapters; never store tokenized URLs as durable records**. ≈14,000 keyless records enumerated in this slice before dedupe. Rate tiers: EarthCam ≥1.5 s/call; Skyline tolerated ~6-way; BalticLiveCam keep gentlest (WP shared hosting).
+
+---
+
+### Batch-2 additions (S6, 2026-10-05)
+
+| Family | Scale | Access | Verdict |
+|---|---|---|---|
+| webcamera24.com | **6,570 cams / 67 countries** | sitemap → RSC payload (`streamLink` HLS / `youtubeCode`); `isWork` | **ADOPT** |
+| worldcam.eu | DE 1,592 · UK 754 · FR 712 (counter 32,330) | country `/p/N` 25/page; dated snapshot imgs | **ADOPT** |
+| earthlive24.com | **414 cams** | sitemap → SSR YouTube embeds | **ADOPT** |
+| earthcamtv + EarthCam animal | 12 live playlist / 13 animal cams | playlist.php; camshots keyless; HLS tokenized | ADOPT |
+| CruisingEarth ships | **274 pages / 22 lines** | sitemap; Panomax iframes / proxied JPG | ADOPT-lite |
+| ARGOS ATLAS | **220,449 cams / 20,781 video** (keyless stats) | benchmark; data pro-gated | REFERENCE |
+| openwebcamdb.com | 1,881 | keyed API — ToS bans competitors | **SKIP** |
+| worldlive.app | app-only (15k claim) | none | SKIP |
+
+**Institutional batch-2 (S7):** SDZ 13 cams (Camzone HLS) · NZP 6 streams (Wowza failover) · MBA 10 (YouTube ids) · Bondi 2 (ipcamlive HLS) · BAS 1 · Panomax image API — new resolvers: **Camzone / ipcamlive / Panomax / EarthCam-token / YouTube** (full mechanics: `research/gov/S7-institutional-2.md`).
 
 ---
 
@@ -131,6 +149,8 @@ Query example for L-E-S (from its README): usable = `status=="active" and url_ty
 - **insecam-derived corpora** — OWNER DECISION 10-05: **INCLUDED** (`provenance: exposed` + warning badge + separate filter). **Harvest set (S5 fold-in; all counts verified 2026-10-05):** ① jrw `totalynothackedijokeyounot` 17,398 rows (TSV, snapshot 2019-02-21; saved `research/exposed/`); ② OpenEyes `app/markers.json` 7,170 records (manufacturer+geo fields); ③ virtualpeephole `webcams_headers.csv` 2,805 cams; ④ rackcams 1,089; ⑤ giasuddin2548 210; ⑥ insecamRoulette 50; ⑦ feedtv 12. All **unlicensed → private-use/reference only**; credential-bearing URLs redacted at ingest; store flagged + snapshot-dated (`provenance_class=exposure_aggregator`), **no device contact ever**. Directory mechanics (`/en/bycountry/{CC}/`, `/en/bytype/{Type}/`, `?page=N`) = conditional route (polite rate + kill-switch); datasets preferred. Also: **opencctv.org** claims 160,703 streams / 169 countries — its .com domain is unreachable from this host; reconcile vs the L-E-S "opencctv 746" index before consuming. Refs: `research/osint/S5-osint-policy-mgmt.md` §A.19/A.20/B; `research/exposed/README.md`.
 - **Scanner / recon tools** (documented for awareness, not run): `JettChenT/scan-for-webcams` (shodan queries per camera type — webcamXP/MJPG/yawcam/hipcam/rtsp, with capture_url patterns; queries captured in `repos/scan-for-webcams.cams.json`), `spyboy-productions/CamXploit`, `Y0oshi/Project-Eyes-On`, `josh0xA/Pantheon` (IoT camera recon + viewer), `2l7b/public-camera-indexing-insights` (Google-dork corpus), Kamerka (woj-ciech). `K3ysTr0K3R/Webanator` — **gone** (404; account has no public repos, 2026-10-05).
 - Grey-edge mixes to treat carefully: `pbkompasz/webcams` (crawl approach, references insecam-adjacent practice), `baywolf88/seeallthethings` (SC set mixes DOT + insecam site-searches + tourism cams).
+
+**Batch-2 update (S8, 2026-10-05):** direct insecam access solved for recon (`http://` + browser UA; certificate expired; robots allows, crawl-delay 0.1; no ToS). Directory ≈2.2–2.3k now; polite census feasible (sitemap = 1 request) — **gated on Q6**. New era snapshots: GODEYE 1,775 (2026-05) + rafasapiens 2,100 (2026-10) → era chain 2019→2022→2026 with planned timeline diffs. Remote-stations class opened: AAD Mawson (Antarctica).
 
 ## 7 · Known gaps / dead ends
 
