@@ -30,7 +30,7 @@
 
 - **YouTube-live is the dominant feed type:** OpenWebcamDB + WebcamTaxi + Explore.org + Steamboat + SPI ≈ 4,300 of the enumerated feeds. ONE adapter (extract `video_id` → `oembed` for existence → `yt-dlp --simulate --break-match-filter is_live` for liveness) services them all.
 - **Vendor multipliers** (one adapter → many operators): Brownrice (all Vail Resorts properties), Skaping (877 player pages vendor-wide), Roundshot (CH/AT resort cams; `backend.roundshot.com/cams/<id>/<size>` generalizes), Streamdays (other zoos), CoastalComs (AU marine/beach platform).
-- **Provenance decision for the registry:** third-party directories (OpenWebcamDB, WebcamTaxi) are `aggregator`-class — underlying operators are public-by-design but the list is a third-party page. Suggest marking them with a distinct provenance value (e.g. `aggregator_directory`, operator URL preserved in `meta.source`) rather than `public_by_design`. Owner call.
+- **Provenance decision (OWNER CONFIRMED 2026-10-06):** third-party directories (OpenWebcamDB, WebcamTaxi) get provenance `aggregator_directory` — underlying operators are public-by-design but the list is a third-party page; operator URL preserved in `meta.source`. NOT `public_by_design`.
 - **Drift rule:** cloudfront/widget/token URLs (NSW, Gold Coast, Streamdays, Camsecure live-edge) rotate — ingesters must re-resolve from the stable list endpoint at every sweep; never hardcode resolved stream URLs.
 - **Rate-limit note:** wave ran during a heavy night; children leaned on the fallback chain (some calls on OpenRouter/free Nous). Two trailing-call 429s did not lose any work.
 
@@ -48,7 +48,7 @@
 
 ## Next moves
 
-1. **Owner picks build order** — suggested kickoff set: `explore-omega` → `openwebcamdb` → `jungfrau-roundshot` → `vailresorts-brownrice` (structured, verified-live, high multiplier value).
+1. **Build order CONFIRMED (owner, 2026-10-06):** `explore-omega` → `openwebcamdb` → `jungfrau-roundshot` → `vailresorts-brownrice` first; remaining ADD NOW families after.
 2. Build per-family ingesters under `wfd/ingest/` (program convention: children build to `docs/ARCHITECTURE.md`, parent verifies + commits; then per-family health sweeps via `wfd health run`).
 3. Re-check live counts at build time (streams drift; the dossiers carry exact commands to re-verify).
-4. Decision needed: directory provenance value + whether `vendor_demo` (Camsecure) warrants its own badge in the viewer.
+4. Decided: directories → `aggregator_directory` (owner, 2026-10-06). Open: `vendor_demo` (Camsecure) viewer badge — default to normal display until decided.
