@@ -49,6 +49,12 @@ Full table: `SOURCES-CATALOG.md`.
 | W4 | Verification / self-heal / scale | `research/ingest/S4-verification-selfheal.md` | done → folded (A1) |
 | W5 | OSINT / policy / management | `research/osint/S5-osint-policy-mgmt.md` | done → folded (A2) |
 
+### Batch 2 (owner: "there are more sites to ingest… make it HUGE", 2026-10-05 ~21:22–21:25)
+
+- 22-tab sweep captured → `research/seed-tabs-2/` (TABS-LIST-2.md + per-site HTML captures: cruisingearth, San Diego Zoo, Smithsonian Zoo, Monterey official, Bondi SLSC, EarthCam Animal/EarthCamTV, EarthLive24, WorldLive.app, ArgosAtlas blog, Webcamera24, OpenWebcamDB, WorldCam.eu).
+- Follow-up waves dispatched (same mechanics): **S6 aggregators-2** (`research/sources/S6-aggregators-2.md`), **S7 institutional-2** (`research/gov/S7-institutional-2.md`), **S8 insecam-direct + community** (`research/osint/S8-insecam-direct.md`).
+- Recon notes: insecam.org = TLS cert error in the automation browser / TCP fail in curl from this host (→S8 handles); Reddit: r/geography post text captured, r/Cyberpunk TrafficVision thread = login wall (→S8 tries Wayback).
+
 ## 6 · Open questions (owner decisions)
 
 - **Q1 (RESOLVED 10-05)** Scope of "the lot": insecam-class exposed-camera corpora **INCLUDED** as a flagged category — see D6. (Grey edge noted: keep provenance flags so any future public release can diverge.)
