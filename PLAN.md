@@ -56,7 +56,42 @@ Full table: `SOURCES-CATALOG.md`.
 - **Q3 Keys / quotas**: Windy Webcams API key? webcams.travel key? Nimble quota exhausted (402 "trial quota finished" during research — top up if future crawls want it). Hound MCP works as fallback.
 - **Q4 Viewer target**: desktop app (GEV-style)? web on moddys.net? zero-hud panel? all three (shared backend)?
 - **Q5 YouTube grey zone**: keep "personal/local, non-redistributed" stance per WV1, or adjust?
+- **Q6 Exposure ingest route**: datasets-only [recommended] vs also the live directory crawl (`/en/bycountry/{CC}`, `/en/bytype/{Type}`, polite rate + kill-switch); and which dataset first — OpenEyes (7,170, newer, has manufacturer) vs jrw (17.4K, 2019-stale). (see A2)
+- **Q7 No-probe rule for exposure entries**: [recommended: keep — status `unverified` + snapshot date shown; never contact listed devices]
+- **Q8 Exposure display**: metadata + click-through warning [recommended] vs blurred thumbnail vs inline preview.
+- **Q9 Distribution**: private build first [recommended — `PRIVATE_EXPOSURE_SURFACE` gate] vs plan a public exposure surface (then: noindex + warnings + takedown SLA + legal review).
+- **Q10 Takedown workflow**: public contact point, response SLA, hard-remove + tombstone; dataset refresh cadence (monthly?).
 
 ## 7 · Addenda (wave fold-ins)
 
-*(empty — A1… appended as waves deliver; each opens with trigger + labels recovered/verified/estimated; never rewrites earlier text)*
+### A1 · Wave S4 — verification / liveness / self-heal / scale tech (folded 2026-10-05)
+
+> Trigger: "design creative ways to determine and ultimately ingest as many 'WORKING' 'LIVE' feeds you can" (owner, 2026-10-05).
+
+Status: evidence file read end-to-end; load-bearing claims spot-checked by parent (8 repos/releases + local toolchain + livetrafficcam page — all OK; ffmpeg n9.0.1 & yt-dlp 2026.08.19 confirmed on this host). File: `research/ingest/S4-verification-selfheal.md` (18 entries). Labels: [V]=verified (tested locally or spot-checked), [C]=cited, [P]=proposed.
+
+- Liveness = two steps [V]: (1) structure probe — ffprobe must show a video track; (2) decode proof — `ffmpeg -t 1 -f null -` exit 0. 200-OK HTML fails; a still JPEG PASSES decode → camera tiers need step (3).
+- Step 3 — motion/freshness: `freezedetect`/`blackdetect` combined pass (~1 CPU-s per 20 s; synthetic + live tested [V]); image tier: two-sample pHash (live pair Hamming 22 vs identical 0 [V tooling]; protocol + thresholds [P] to calibrate).
+- HLS staleness [V]: poll playlist; `EXT-X-MEDIA-SEQUENCE` must advance (~2× target duration). Caltrans serves ETag/no Last-Modified → sequence tracking is the portable method.
+- YouTube [V]: `yt-dlp --simulate --break-match-filter "is_live"` → rc 0 = live, 101 = not. Needs a JS runtime installed (warning observed → install deno).
+- Engines [V]: go2rtc v1.9.14 = restream core; MediaMTX v1.21.1 = upgrade path (always-available + hooks). streamlink = wrong tool (RTSP wontfix [C]).
+- Catches: L-E-S CI is an HTTP-200 check only [V code read] — its "active" overstates; livetrafficcam is the real model — 21,580 tracked / 74.9% live / 2,412 stale / 3,012 dead [V page]; adopt its vocabulary (verified-live/stale/dead/unknown, never fake a quiet state). iptv-org CI does NOT liveness-test (separate script; copy timeout/concurrency/error taxonomy) [V].
+- Self-heal [C+V]: ZM zmwatch (heartbeat, startup grace, systemic-stall guard) + Frigate (restart budget 5/60 s, segment-derived stale thresholds, retry_interval) → state machine + rotation pools + re-discovery + mandatory serve-stale [P].
+- Storage [P]: SQLite + FTS5 + WAL primary; Datasette viewer; PostGIS/DuckDB = upgrade paths.
+- Open items: RTSP timeout flag on this build; pHash threshold calibration (needs real data); DuckDB RTREE status; livetrafficcam check cadence granularity.
+
+Next moves: install deno for yt-dlp (quick host task); fold §1–§5 checks into the `verify` module design when build starts; calibration harness post-first-ingest.
+
+### A2 · Wave S5 — OSINT / policy / management surface (folded 2026-10-05)
+
+> Trigger: "include insec-class exposed cams" (owner, 2026-10-05) — sent as a mid-flight steer; the wave was reframed from decide-whether → how-to-include-responsibly and landed that way.
+
+Status: evidence file read end-to-end; dataset counts parent-verified (jrw 17,398 rows; OpenEyes 7,170 records; virtualpeephole 2,806 rows / 2,805 cams — child count confirmed; a naive line count misled first, resolved via embedded-newline check). File: `research/osint/S5-osint-policy-mgmt.md` (20 entries + sections B/C).
+
+- The line that stays: dataset aggregation IN (static third-party snapshots; NO device contact; `status=unverified` + snapshot date); active scanning/probing/credential-testing OUT (documentation-only, no code adopted).
+- Exposure datasets (7): jrw 17,398 (2019-02-21); OpenEyes 7,170 (manufacturer+geo); virtualpeephole 2,805; rackcams 1,089; giasuddin 210; insecamRoulette 50; feedtv 12. All unlicensed → private-use/reference; credential-bearing URLs redacted at ingest; store flagged + versioned (new/removed diffs on refresh).
+- Directory route [conditional]: mechanics documented (`/en/bycountry/{CC}/`, `/en/bytype/{Type}/`, `?page=N`); polite-rate + kill-switch; datasets preferred.
+- Found: opencctv.org — claims 160,703 streams / 169 countries / 460+ registered sources, "deactivate not delete" lifecycle, camera-type taxonomy [V site up; counts are their moving claims]. opencctv.com unreachable from this host [V]. Reconcile vs the L-E-S index "opencctv 746" entry.
+- Management surface: 10 precedents → proposed: Add = URL/dataset → GATE (provenance classify + credential redact) → PROBE (public-by-design only) → STORE+HEALTH; Remove = soft-delete + auto-quarantine (N=10) + tombstone + takedown; Search = provenance/geo/protocol/status/tag/source + free text. Exposure display defaults [P]: click-through warning, no autoplay, noindex, private-build-first.
+
+Owner decisions open: Q6–Q10 (§6). Next moves: build the dataset ingesters (TSV/CSV/JSON/JSONL) + redaction linter + provenance gate as the first small build artifacts; Q6 gates ingest order.

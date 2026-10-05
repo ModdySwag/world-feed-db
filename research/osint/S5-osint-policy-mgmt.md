@@ -1,10 +1,12 @@
 # S5 — OSINT/scanner layer, legal/ethical boundary, management-surface precedents
 
 **Program:** worldwide, updateable, self-healing DB + viewer of PUBLIC live video feeds (owner: Moddy)
-**Scope of this wave:** OSINT/scanner projects, discovery-service options (Shodan/Censys/ZoomEye/FOFA), policy decision inputs, management-surface precedents.
-**Date:** 2026-10-05 (ACST). **Method:** repo files fetched via `gh` API (READMEs, source, trees, blob previews); docs extracted where reachable; no accounts created, no scans run, no devices probed. Numbers re-verified where possible (noted inline); anything not verified is marked `(verify)`.
-**Policy line carried in (hard):** legitimate, public-by-design sources only. Insecam-style "exposed private camera" aggregation is DOCUMENTED here as a category with mechanics/scale/risks — it is NOT scraped, NOT probed, NOT recommended.
-**Section A: 18 entries.** Section B: 6 policy decisions. Section C: 10 precedents + proposed mechanism.
+**Scope of this wave:** OSINT/scanner projects, discovery-service options (Shodan/Censys/ZoomEye/FOFA), policy-design inputs, management-surface precedents.
+**Date:** 2026-10-05 (ACST). **Method:** repo files fetched via `gh` API (READMEs, source, trees, blob downloads); docs extracted where reachable; dataset files downloaded and counted; no accounts created, no cameras probed, no scans run. Counts re-verified where possible and dated; anything unverified is marked `(verify)`.
+
+> **OWNER DECISION (2026-10-05, supersedes the earlier default-exclude line):** insecam-class exposed cameras are **INCLUDED** in scope as an **explicitly-flagged category**. Standing constraints unchanged: **scanner tools remain documentation-only — no live scanning/brute-forcing of third-party devices, no probing of devices.** Section B defines how to include the category responsibly.
+
+**Section A: 20 entries.** Section B: how to include responsibly (incl. the dataset-vs-scanner distinction). Section C: 10 precedents + proposed mechanism.
 
 ---
 
@@ -50,8 +52,8 @@
 **KEY FACTS:** active recon tool v2.0.2: scans common CCTV ports incl. alt ports (81-89, 1024-1030), RTSP detection on non-standard ports (443, 8000), service-name identification, login-page detection, brand detection (Hikvision/Dahua/Axis/Sony/Bosch/Samsung/Panasonic/Vivotek/CP Plus), **RTSP/HTTP credential testing with "100+ default credentials"**, ONVIF support, multipart-stream detection; ships a Colab notebook; supplies manual search links (Shodan/Censys/ZoomEye/dorks).
 **What data you'd get (for an authorized target):** open ports/services, candidate brand, whether default creds work — intrusion-adjacent output.
 **License/ToS:** AGPL-3.0. Tool's own terms: "strictly on systems you own or have explicit authorization to test."
-**Risk/legal:** credential testing against third-party devices is squarely unauthorized-access territory (CFAA / s 478.1 / Directive 2013/40 Art. 3), regardless of "non-intrusive" framing.
-**VERDICT: SKIP — excluded by the policy line; retained only as evidence of ecosystem mechanics.** Build component: **none** (use as a test case for the ingest gate: credential-bearing sources must be rejected).
+**Risk/legal:** credential testing against third-party devices is squarely unauthorized-access territory (CFAA / s 478.1 / Directive 2013/40 Art. 3), regardless of "non-intrusive" framing — unchanged by the INCLUDE decision (that covers dataset aggregation, not device contact).
+**VERDICT: SKIP (never run — credential testing stays excluded under the standing constraints); retained as ecosystem evidence.** Build component: **none** (test case for the ingest linter: credential-bearing URLs must be redacted/flagged).
 
 ### 5 · Project Eyes On (Y0oshi)
 - https://github.com/Y0oshi/Project-Eyes-On (244★, MIT, last push 2026-08-26)
@@ -59,8 +61,8 @@
 **KEY FACTS:** "unified intelligence tool for mass IP camera scanning" (v4): two engines — (1) **web dorking** across Yahoo/Bing/Mojeek/DuckDuckGo with per-engine pacing/cooldowns ("anti rate-limiting"), (2) **Insecam directory scraper** (country code + pages); plus path probing for JS-hidden streams, GeoIP (city/country), dedupe stripping cache-busters, live verification of stream type (MJPEG/JPEG/Video), JSON/CSV/HTML export, arrow-key TUI. Topics include `insecam`.
 **What data you'd get:** mass candidate lists with geo + stream-type verification.
 **License/ToS:** MIT (repo). Scraping Insecam/engines is ToS-hostile and the output is an exposed-camera list.
-**Risk/legal:** Insecam scraping + mass harvesting/verification = the excluded category; "educational/auditing" disclaimer does not change third-party effects.
-**VERDICT: SKIP for any pipeline. REFERENCE for two *concepts*: polite search-engine pacing, and stream-type verification.** Build component: **stream-type detection concept** (used only on sources that passed the publish-signal gate).
+**Risk/legal:** mass harvesting + live device verification = active scanning; the standing constraint keeps this documentation-only (the INCLUDE decision covers dataset aggregation, not device contact).
+**VERDICT: SKIP for any pipeline. REFERENCE for two *concepts*: polite search-engine pacing, and stream-type verification.** Build component: **stream-type detection concept** (applied only to public-by-design entries).
 
 ### 6 · Pantheon (josh0xA)
 - https://github.com/josh0xA/Pantheon (190★; README claims MIT, **no license file detected on GitHub — (verify)**; last push 2024-07-30)
@@ -95,17 +97,18 @@
 **KEY FACTS:** ~120-line script: fetches `http://www.insecam.org/en/bycountry/{CC}` across a hard-coded list of **140+ country codes**; pagination via regex `pagenavigator("?page=", N)`; extracts `div.thumbnail-item__preview` img `src` values → prints direct image URLs; self-updates from the upstream `EvilGeek/WebcamX` repo.
 **What data you'd get:** direct Insecam image links by country.
 **License/ToS:** GPL-3.0 (code); scraping Insecam has no sanctioned ToS basis.
-**Risk/legal:** insecam scraping + exposure aggregation = excluded category.
-**VERDICT: SKIP — retained as evidence of the category's mechanics (country pagination + thumbnail extraction) and of how trivially it's done (why the gate matters).** Build component: none.
+**Risk/legal:** live scraping = active scanning; documentation-only (the mechanics inform A.19; the scraper is not adopted).
+**VERDICT: SKIP as a tool (documentation-only) — mechanics extracted into A.19; the dataset route is preferred.** Build component: **URL/pagination mechanics reference only**.
 
 ### 10 · totalynothackedijokeyounot (justrandomwebcams) — 17K insecam-sourced dump
 - https://github.com/justrandomwebcams/totalynothackedijokeyounot (6★, **no license**, created/pushed 2019-03-01)
-- Verified by download: `190221dump_alphabetical.csv` = **17,399 rows (17,398 cameras + header)**; columns `ip:port`, `country`, `city`, `image feed link`; sample rows show MJPEG/cgi snapshot URLs, some with **credentials embedded** (`.../cgi-bin/snapshot.cgi?chn=0&u=admin&p=…`). README repeats Insecam's claim: "This site contains no hacked webcams, all of them just freely acceptable from all of the internet" (**claim unverified by us**).
+- Verified by download (2026-10-05): `190221dump_alphabetical.csv` = **17,399 rows (17,398 cameras + header)**, 1,724,567 bytes; **TSV** columns `ip:port`, `country`, `city`, `image feed link`; sample rows show MJPEG/cgi snapshot URLs, some with **credentials embedded** (`.../cgi-bin/snapshot.cgi?chn=0&u=admin&p=…`). README repeats Insecam's claim "This site contains no hacked webcams, all of them just freely acceptable from all of the internet" (**claim unverified by us**).
+- **Fetch command:** `curl -L https://raw.githubusercontent.com/justrandomwebcams/totalynothackedijokeyounot/HEAD/190221dump_alphabetical.csv`
 
-**What data you'd get:** a static ~17K target list with geo.
-**License/ToS:** none; no ToS to respect, but also **no permission and no license** → not redistributable.
-**Risk/legal:** canonical example of an "already-public list" that still fails a publish-signal gate; credential-bearing URLs make it actively harmful to republish; stale since 2019.
-**VERDICT: SKIP — default-exclude.** Build component: **test fixture for the ingest gate** (must reject URL-embedded credentials and aggregator provenance).
+**What data you'd get:** ~17.4K camera endpoints with country/city — the largest single ingest candidate (snapshot dated 2019-02-21, stale → liveness `unverified`).
+**License/ToS:** none — no permission; private-use/reference only; do not redistribute.
+**Risk/legal:** credential-bearing URLs must be **redacted before storage**; entries are exposure-category (flag per Section B); no device contact.
+**VERDICT: INCLUDE (flagged category, dataset route) — ingest with `provenance_class=exposure_aggregator`, snapshot date, credential redaction, warnings; never probe the listed devices.** Build component: **dataset ingester (TSV) + redaction linter + provenance flags** (fixture for the gate).
 
 ### 11 · ch-bas/cctv-camera-database — camera spec DB (reference)
 - https://github.com/ch-bas/cctv-camera-database (276★; repo license detected as NOASSERTION, **README asserts the dataset is CC0 "and always will be"**; last push 2026-10-01)
@@ -164,13 +167,14 @@
 **Risk/legal:** search-only use; quota constraints; free quota exact numbers **(verify)**.
 **VERDICT: REFERENCE — late-stage optional connector; not on the critical path (key-gated, quota-limited).** Build component: **optional connector (later)**.
 
-### 17 · Insecam — the excluded category (dossier only, NOT scraped, NOT probed)
-- Referenced via: webcamX (#9), Project Eyes On (#5), Pantheon (#6), seeallthethings (#2), jrw dump (#10). No direct access made.
+### 17 · Insecam — the flagged category (overview; mechanics in A.19, datasets in A.20)
+- Referenced via: webcamX (#9), Project Eyes On (#5), Pantheon (#6), seeallthethings (#2), jrw dump (#10), OpenEyes/others (A.20). No device contact made at any point.
 
-**KEY FACTS (documented from secondary sources only):** insecam.org is the best-known aggregator of openly reachable camera streams; dumps of it exist (jrw: **17,398 cams, dated 2019-02-21**, verified by us); tools scrape it by country with trivial pagination (webcamX: 140+ country codes); observed corpus properties: MJPEG/JPEG snapshot URLs, geo grouping by country/city, **some dumped URLs carry embedded credentials**. Related aggregator names seen in methodology files: `ip-24.net`, `opentopia.com`. Insecam's own claim "no hacked webcams… freely accessible" is repeated by third parties and **unverified by us**.
-**Scale:** tens of thousands of endpoints per dump (17K in 2019); multiple such sites form a whole category.
-**Risk/legal:** this is the boundary our policy line draws: reachable-without-credentials ≠ published-for-the-public; scraping/probing/re-publishing exposes third-party devices and some entries are credential-bearing.
-**VERDICT: DOCUMENT ONLY — default-exclude; zero build component.** Used in (B) as the excluded-category test case for the ingest gate.
+**KEY FACTS (sourced, with dates):** insecam.org is the best-known aggregator of openly reachable camera streams — Wikipedia: launched 2014 by an anonymous programmer, Russian-hosted, initially **~73,000 feeds across 152 countries**; categories by manufacturer, country, popularity, scenery; **as of 2025 "over 2,000 live feeds could still be accessed"** (per Wikipedia, citing Digital Camera World). Academic measurement (PAM 2018 study, Northwestern — paper PDF): in an 18-day window (2017-09-25→10-12) **28,386 unique active cameras** from **136 countries / 25 manufacturers**; **≥560,293 unique cameras ever listed** (metadata recovered for 290,344); estimate ~20,000–25,000 active, ~215 new/day; all feeds unauthenticated. Location precision: insecam itself warns locations are "very approximative… accuracy in hundreds of miles" (per Northeast Bylines). Dumps exist (e.g. #10: 17,398 rows, 2019).
+**Scale/risk summary:** tens of thousands of endpoints per era; some dumped URLs carry embedded credentials; site's own claim of "filtered"/"no hacked" cameras is **unverified by us**.
+**License/ToS:** none of our own to rely on; the site has no ToS we could verify — treat any interaction conservatively (Section B4).
+**Risk/legal (unchanged constraints):** no device access, no credential use, no probing anywhere in the pipeline. Data-protection exposure attaches to the imagery (GDPR/APPs), and insecam is a third-party Russian-hosted directory whose posture is not ours.
+**VERDICT: INCLUDE AS FLAGGED CATEGORY (owner decision 2026-10-05) — via dataset aggregation and/or documented directory mechanics (A.19/A.20), with provenance flags, credential redaction, display warnings, and the distribution caveats in Section B.** Build component: **exposure ingest pipeline (flagged partition) + warnings + lifecycle**.
 
 ### 18 · opencctv.org — public-by-design aggregator (positive precedent)
 - https://opencctv.org/ · https://opencctv.org/how-we-source · https://opencctv.org/about
@@ -181,33 +185,73 @@
 **Risk/legal:** low relative risk (operator-published feeds), subject to their terms and per-source attribution.
 **VERDICT: ADOPT as the reference model (and evaluate as a pilot discovery source, honoring their terms).** Build component: **source registry pattern, deactivate/restore lifecycle, attribution chain, camera-type taxonomy**.
 
+### 19 · insecam.org directory mechanics — discovery-pipeline option
+- Mechanics documented from tool sources (webcamX code #9, apockill `Websites.txt`, Eyes-On README #5) + published sources (Wikipedia; PAM 2018; Northeast Bylines). **Site itself not scraped by us.**
+
+**KEY FACTS:**
+- **URL structure:** country dimension `/en/bycountry/{CC}/` (140+ ISO-style codes per webcamX); **type/vendor dimension** `/en/bytype/{Type}/` — observed values include `Axis`, `Axis2`, `Foscam`, `Android-IPWebcam`, `Toshiba`, `Yawcam`, `WIFICam`, `WebcamXP`, `Vivotek`, `TPLink`, `Streamer`, `Sony`, `Sony-CS3`, `Panasonic`, `PanasonicHD`, `Mobotix`, `Megapixel`, `Linksys`, `Hi3516`, `Canon`, `D-Link`… (apockill `Websites.txt`, 906 B).
+- **Pagination:** `?page={N}` with the last-page number exposed in-page via a `pagenavigator("?page=", N)` JS hook (webcamX regex). Listing thumbnails marked up as `div.thumbnail-item__preview` with `<img src=…>` (webcamX extraction target). Categories also include manufacturer/popularity/scenery (Wikipedia).
+- **Scale claims (dated):** 2014: ~73,000 feeds / 152 countries (Wikipedia). 2017 (18-day study): 28,386 active / 136 countries / 25 manufacturers; ≥560,293 ever; ~20–25k active est.; ~215 new/day (PAM 2018). 2025: "over 2,000 live feeds" (Wikipedia). Dumps: 17,398 cams dated 2019-02-21 (#10).
+- **Discovery-pipeline options:** (A) **dataset route (recommended, A.20)** — copy published dumps; no live scraping of the directory at all; (B) **directory route (conditional)** — crawl `/en/bycountry/{CC}/` + `/en/bytype/{Type}/` listings with pagination, polite budget, metadata only; **never follow the outbound camera URLs**. Directory listings expose thumbnail URLs + geo; dumps additionally expose some credential-bearing URLs.
+- **Compliance notes:** ToS/robots for insecam unknown **(verify; default conservative)**; exposure entries must carry `provenance_class=exposure_aggregator`, snapshot/fetch dates, and Section B warnings; geo is approximate (site's own "hundreds of miles" caveat) — store `geo_confidence=low`.
+
+**VERDICT: REFERENCE + (conditional) EXECUTE as a documented pipeline option — prefer the dataset route; if the directory route is used, it runs at polite rates and never touches listed devices.** Build component: **directory-crawler spec (bycountry/bytype + pagination) marked `flag=exposure`, gated behind owner approval + kill-switch**.
+
+### 20 · insecam-derived datasets / repos — enumeration (verified 2026-10-05)
+All counts verified by download on 2026-10-05; fetch commands are raw-file URLs. **Dataset aggregation ≠ active scanning:** these are *static snapshots* someone else produced from an aggregator directory — ingesting them involves **no contact with any camera**; only the aggregator site was contacted by the dataset author, not by us. Active scanners (#4, #5, #9, A.1) *enumerate/verify/contact devices or scrape the directory live* — those remain documentation-only. Refresh for the dataset route = re-download the file (cheap, safe); refresh for the directory route = polite crawl (B4).
+
+**Datasets with committed data (path / format / count / size / fetch):**
+1. `justrandomwebcams/totalynothackedijokeyounot` — `190221dump_alphabetical.csv` — TSV, cols `ip:port, country, city, image feed link` — **17,399 rows (17,398 cams)**, 1,724,567 B — snapshot 2019-02-21 — `curl -L https://raw.githubusercontent.com/justrandomwebcams/totalynothackedijokeyounot/HEAD/190221dump_alphabetical.csv`
+2. `GeorgePatsias/OpenEyes` — `app/markers.json` — JSON array of dicts — **7,170 records**, 2,067,534 B — fields `id, country, country_code, region, city, zip, timezone, manufacturer, lat, lng, stream` — README: "Open IP Cameras, with default credentials – publicly accessible, scrapped from http://www.insecam.org/" — `curl -L https://raw.githubusercontent.com/GeorgePatsias/OpenEyes/HEAD/app/markers.json`
+3. `carolinebuttet/virtualpeephole` — `data/webcams_headers.csv` — CSV, header `Url,Country,Country Code,Region,City,Lat,Lng,ZIP Code` — **2,806 rows (2,805 cams)**, 435,819 B — `curl -L https://raw.githubusercontent.com/carolinebuttet/virtualpeephole/HEAD/data/webcams_headers.csv`
+4. `saulocatharino/rackcams` — `cameras.txt` — CSV `country,city,url` — **1,089 non-empty lines (1,088 cams)**, 92,440 B — samples include credential-bearing URLs (`u=admin&p=`) — `curl -L https://raw.githubusercontent.com/saulocatharino/rackcams/HEAD/cameras.txt`
+5. `giasuddin2548/Insecam-Scraper-Discord` — `db/list.json` — **JSONL, 210 records**, 133,607 B — fields `ip, port, geolocation{city, region, country, loc, org}` — `curl -L https://raw.githubusercontent.com/giasuddin2548/Insecam-Scraper-Discord/HEAD/db/list.json`
+6. `ratemypraxis/insecamRoulette` — `public/mjpegLinks.json` — dict, **50 entries** (`"State, US" → mjpeg URL`), 4,296 B — `curl -L https://raw.githubusercontent.com/ratemypraxis/insecamRoulette/HEAD/public/mjpegLinks.json`
+7. `vicalejuri/insecam-feedtv` — `app/assets/cameras.feed.json` — JSON array, **12 records** (`country, uri, city`), 1,295 B — `curl -L https://raw.githubusercontent.com/vicalejuri/insecam-feedtv/HEAD/app/assets/cameras.feed.json`
+
+**Tool/pipeline repos (no committed dataset; mechanics reference only):** `apockill/InsecamScraper` (scrapes insecam → ML person-detection → saves frames "to generate large datasets of 'in the wild' footage"; `Websites.txt` used for A.19), `matiasraisanen/insecrawl` (still-image downloader), `mvarhola/insecam-live`, `Hidden-Layer-Media/ghostcam-finder`, `public-collaboration-evercam/scrapper`, `wilian-hack/insecam`, `erfangolpour/EagleEye` (YOLO on insecam streams), plus scanner repos #5/#9.
+**Unavailable/dead:** `oz0977776/Insecam_ImageScrapper` — tree 404 on 2026-10-05 (repo gone/private; ~165 MB at search-index time — likely an image set; **(verify)** if it resurfaces).
+**Academic reference:** PAM 2018 measurement study of insecam (28,386 active / 136 countries / ≥560,293 ever; metadata for 290,344) — PDF at users.eecs.northwestern.edu/~hxb0652/HaitaoXu_files/PAM2018.pdf
+**Storage note for ingest:** record per dataset: source URL, commit/SHA if possible, download date, row count, format, license (all of the above are **unlicensed** → private-use/reference; do not redistribute), credential-URL redaction applied (yes/no).
+
+**VERDICT: ADOPT (dataset route) — the concrete ingest targets for the flagged category; store flagged, redacted, snapshot-dated; refresh by re-download.** Build component: **multi-format dataset ingesters (TSV/CSV/JSON/JSONL) + redaction + provenance + diff-on-refresh** (new/removed camera counting per dataset version).
+
 ---
 
-## (B) POLICY DECISION INPUTS
+## (B) HOW TO INCLUDE RESPONSIBLY — owner has decided INCLUDE
 
-**D1 — Exposed-camera corpora: include or exclude?**
-Options: (a) exclude entirely from the product (default); (b) include as a metadata-only "exposure registry" (no feeds, no probing); (c) include feeds. Evidence: dumps like jrw (#10) contain credential-bearing URLs; tools like CamXploit (#4)/Eyes-On (#5) show the ecosystem norm is credential testing + mass scraping; our hard policy line already draws the boundary at Insecam-style aggregation (#17).
-**Recommendation: (a) exclude by default** — keep them out of the catalogue schema entirely; owner may keep the dossier evidence. **Build impact:** ingest gate requires a `publish_signal` (operator page / source API / gov open-data / opt-in) recorded per camera; `provenance_class` enum (`public_by_design | exposure_aggregator | unknown`) — only `public_by_design` may be `active`; URL linter rejects credential-bearing URLs (`user:pass@`, `u=admin`, `password=` params).
+**B0 · Dataset aggregation vs. active scanning (the line that stays):**
+- **Dataset aggregation (IN):** copy static third-party snapshots (A.20) and/or crawl aggregator *directory* pages (A.19, conditional). No contact with any camera device; staleness is explicit; refresh = re-download/re-crawl. Legal exposure = handling/re-publishing someone else's aggregation (data-protection + reputational), manageable with flags/warnings/redaction/private scope.
+- **Active scanning (OUT, unchanged):** tool-driven device contact — path enumeration (sfw RTSP), credential testing (CamXploit), mass live verification (Eyes-On), live scraping (webcamX). Documentation-only; no code adopted from these paths; no probing of devices, ever.
+- **Design consequence:** liveness for exposure entries is **not verified by us** (status = `unverified`, with snapshot date). Public-by-design entries keep normal health checks (B4).
 
-**D2 — "Already-public lists" (e.g. the 17K insecam dump): do they count as public?**
-Options: (a) treat as excluded like any exposure corpus; (b) allow into a separate research-only store (never joined to the viewer, never probed); (c) allow into the product. Evidence: #10 — no license, no consent, stale since 2019, some URLs credential-bearing; "already published elsewhere" ≠ "published for the public".
-**Recommendation: (a)/(b) — never in the product DB; at most a physically separate `exposure_research` store used for awareness reporting, never probed, never shown with feed URLs.** **Build impact:** two-schema separation with hard isolation (no FK join path to the live catalogue); automated rejection stated in CI.
+**B1 · Provenance flagging (mandatory at ingest).**
+Fields: `provenance_class ∈ {public_by_design, exposure_aggregator, unknown}`; `provenance_source` (dataset name + URL + commit/SHA or directory URL pattern) and `snapshot_date`/`fetch_date`; `credential_present` (boolean; after redaction `was_redacted=true`); `liveness_verified=false` for exposure; `geo_confidence` (low for aggregator entries — the site's own locations are "hundreds of miles"-accurate); `exposure_reason` (e.g. `no_auth_claimed`, `default_credentials_likely`). **Recommendation: no entry may be `active` in the catalogue without a `provenance_class` + source record; the classifier runs before storage and the verdict is immutable (a new verdict = a new row).** Build change: provenance schema + classifier step + audit log.
 
-**D3 — Machine-behavior rules for the crawler (rate limits, robots.txt, ToS).**
-Proposed rules: one bounded request per candidate at add-time (no retries storm; exponential backoff on 429/5xx; honor `Retry-After`); per-host floor ≥60 s between stills; single stream connection at a time per camera, capped concurrency globally; cache + ETag; robots.txt honored for HTML directory/sitemap scraping (not meaningful for camera endpoints, so HTML-side rules govern discovery crawling); per-source ToS reviewed and snapshotted (`terms_snapshot`, reviewer, date) before enabling a connector; UA identifies the project with a contact URL; **structurally no code path that authenticates to a device, brute-forces, or port-scans** (CamForge's `policy.ts` precedent shows this can be enforced in code); never contact non-listed hosts.
-**Recommendation: adopt as a written Fetch Policy module + per-source budgets + audit log; it is cheaper to enforce in code than in prose.** **Build impact:** policy engine (budgets, backoff, robots cache), ToS registry per source, CI test that fails if probing/auth code paths appear.
+**B2 · Storage & tagging.**
+Store exposure entries in a distinct partition (`exposure_cameras`) or with an indexed `provenance_class` so the whole category can be filtered/exported/disabled in one move; tags: `exposed`, `unsecured_claim`, `default_credentials_likely`, `snapshot_<YYYYMMDD>`, `geo_approximate`; **never store credentials** — redact URL userinfo and `u=/p=/password=` style params to `<redacted>` at parse time and keep the redaction record; keep the raw dataset file + hash outside the DB for re-parse/diff; version rows on refresh and keep a removal diff (which cameras disappeared per dataset version). **Recommendation: redact-then-store, partition, version everything.** Build change: parser redaction + partition + dataset version table.
 
-**D4 — Attribution obligations.**
-**Recommendation: mandatory at ingest — every camera carries `attribution.text`, `attribution.url` (operator/official page), `source_id`, and `license/terms`; viewer and API must display them (`source_url` field for citation, following the LiveTrafficCam MCP precedent #C9); where a source allows linking but not embedding, fall back to link-out only (livetrafficcam-homeassistant precedent #C6).** **Build impact:** schema fields + API `source_url` + UI attribution line + a per-source `display_policy` (`embed | link_only | metadata_only`).
+**B3 · Display warnings (every exposure entry, everywhere it appears).**
+Per-camera warning strip: "**Unsecured camera listed by a public aggregator — may capture private scenes; location approximate; unverified.**" + source dataset name + snapshot date + "report/remove" link. Preview policy: **click-through warning before any live view; no autoplay; blurred thumbnail until click (optional); no search-engine indexing (`noindex`) on exposure pages; no exposure URLs in public sitemaps.** Recommendation: warnings + click-through + noindex + no autoplay; the viewer never auto-refreshes exposure feeds (avoid ongoing proxying of third-party streams by default). Build change: warning component + `display_policy` per provenance class + robots meta.
 
-**D5 — Jurisdiction notes (one line each; counsel review recommended before launch).**
-- **US (CFAA, 18 U.S.C. § 1030):** accessing a "protected computer" without authorization is an offence; DOJ charging policy (JM 9-48.000) says ToS violations alone don't create "exceeds authorized access" liability, but **circumventing a security measure to reach a camera does** — so the rule is: never bypass auth, never touch cams with a security measure. [justice.gov/jm/jm-9-48000-computer-fraud]
-- **Australia (Criminal Code Act 1995 (Cth) s 478.1):** unauthorised access to, or modification of, "restricted data" (data protected by an access-control system) — up to 2 years; applies to conduct in Australia. [legislation.gov.au; cdpp.gov.au/cybercrime]
-- **EU (Directive 2013/40/EU Art. 3):** criminalises intentional access "without right… where committed by infringing a security measure"; plus **GDPR** applies to personal data in frames (faces/plates) regardless of the feed being public. [eur-lex.europa.eu]
-**Recommendation: catalog only security-measure-free, operator-published feeds; adopt detection-not-recognition for any vision processing (no face recognition, no LPR, don't persist third-party imagery beyond ephemeral thumbnails — CamForge precedent).** **Build impact:** vision policy config + no-persistence defaults + audio strip.
+**B4 · Refresh & rate-limit rules.**
+- Exposure (dataset route): refresh = re-download on a schedule (suggest monthly; confirm with owner); **no device probing**; no auto-refresh of individual exposure feeds in the UI (at most click-through link / on-demand snapshot with a per-camera cooldown — `(verify)` with owner).
+- Exposure (directory route, if approved): ≤1 request / 2 s per host, single connection, honor 429/`Retry-After`, off-peak, cache; record robots/ToS status; abort on blocks; keep a **kill-switch** to disable the crawler and the whole exposure ingest.
+- Public-by-design: normal health checks — per-host ≥60 s between stills, exponential backoff on errors, global concurrency caps, UA with contact info.
+**Recommendation: two rate regimes (crawl-police for directories; health checks for public-by-design), one kill-switch.** Build change: fetch-policy module with per-source budgets + kill-switch flag.
 
-**D6 — Opt-out / takedown and auto-retire.**
-**Recommendation: implement a published removal contact + `takedown` workflow (permanent removal + tombstone so it can't be re-ingested; audit log), and auto-lifecycle: `quarantined` after N consecutive failed checks (suggest 10 over ~24h — tune with owner), `retired` after sustained death, restore-on-recovery (OpenCCTV's "deactivated, not deleted" model #18).** **Build impact:** lifecycle states (`active/quarantined/retired/removed`), health checker with consecutive-failure counter, tombstone table, public "remove this camera" endpoint.
+**B5 · Distribution caveats (private build vs any public release).**
+- **Private build / owner-only (recommended scope for the exposure category):** inclusion OK with B1–B4 safeguards. Rationale: reference/research use, no mass re-publication, removal requests handled directly.
+- **Any public release:** recommend the public surface **excludes live links/frames for exposure entries** (metadata-only, or excluded entirely): re-publication amplifies privacy harm and data-protection exposure (GDPR erasure/objection; AU APPs), and the datasets are **unlicensed** (jrw, OpenEyes, virtualpeephole, rackcams, giasuddin, roulette, feedtv all show no license) — redistributing their content publicly is legally murkier than private use. If the owner chooses public exposure entries anyway: noindex, warnings, takedown SLA, per-source consent review, legal sign-off.
+- **Attribution:** always cite dataset/source + snapshot date; never present exposure data as our own collection.
+**Recommendation: keep the exposed category in the private build first; decide public scope separately.** Build change: build-profile flag (`PRIVATE_EXPOSURE_SURFACE=on/off`) + export gates.
+
+**B6 · Jurisdictional one-liners (inclusion-oriented).**
+- **US (CFAA, 18 U.S.C. § 1030):** the offence is *access without authorization* to a protected computer; **listing metadata or displaying a link is not itself access**, but any server-side connection to a camera could be — so the pipeline never connects. DOJ charging policy (JM 9-48.000) focuses on security-measure circumvention, not mere reachability. [justice.gov/jm/jm-9-48000-computer-fraud]
+- **Australia (Criminal Code Act 1995 (Cth) s 478.1):** unauthorised access to, or modification of, *restricted data* (protected by an access-control system) — up to 2 years; the act of access is the offence, not possessing metadata. [legislation.gov.au; cdpp.gov.au/cybercrime]
+- **EU (Directive 2013/40/EU Art. 3):** criminalises intentional access "without right… where committed by infringing a security measure"; **GDPR applies to personal data in frames regardless of feed publicity** — erasure/objection rights support warnings + takedown + minimal display. [eur-lex.europa.eu]
+- **Cross-border note:** insecam is a Russian-hosted third party (Wikipedia); consuming its data shifts some risk to us via data-protection + reputational channels; mitigate by keeping exposure data private-build, flagged, redacted, and takedown-responsive.
+**Recommendation: private scope + no device access + warnings/takedown = defensible posture; get counsel review before any public exposure surface.** Build change: policy doc embedded as code comments + `legal_review_required` flag on public release.
 
 ---
 
@@ -235,18 +279,19 @@ Proposed rules: one bounded request per candidate at add-time (no retries storm;
 
 **C10 · OpenTrafficCamMap** (seed: AidanWelch/OpenTrafficCamMap README + tree; 61★ MIT) — US traffic-cam map with documented open API/data endpoints (seed-captured; see seed README for exact routes). *Lesson: geo-bbox query precedent; reuse endpoints pattern only per its license.*
 
-**Proposed mechanism sketch (PROPOSED — design input, not inherited from any single project):**
-- **Add** = `URL paste (or connector import) → GATE → PROBE → CLASSIFY → STORE+HEALTH`.
-  - GATE: source registry lookup (operator/agency/API/gov open-data/opt-in); reject credential-bearing URLs; reject `exposure_aggregator`/`unknown` provenance; record `policy_verdict` + reviewer in audit log.
-  - PROBE: **one** bounded request (timeout, UA, no auth): capture status/content-type/size/hash; detect protocol — MJPEG (multipart/x-mixed-replace), JPEG still, HLS (m3u8), YouTube/iframe embed, RTSP (**classify by vendor pattern only — never connect**); blank-frame check (sfw's extrema trick); scene classify (local Places365-class model → tags + indoor/outdoor); geo resolve (IP → coarse, manual override allowed; never claim exact location from IP).
-  - STORE: `cameras` + `sources` + `health` + `audit` rows; `status=active`; tags; `attribution` + `official_url` + `display_policy` required (D4); `added_by`.
-- **Remove** = soft-delete `retired` (+ reason, `removed_by`) → tombstone so re-ingest is blocked; **auto-quarantine after N consecutive fails** (default N=10, tune) → `retired` after sustained death → restore on recovery; takedown request = `removed` + publish contact page (D6).
-- **Search** = filter by **country / region / city / bbox-radius / protocol (mjpeg·jpeg·hls·iframe·rtsp) / status (live·stale·dead·quarantined·retired) / tag (scene·type) / source_id / free-text (name·operator)**; every result returns `status`, `last_checked`, `uptime_14d`, `attribution`, `source_url` (C8/C9 shape). Status model: live / stale / dead (C9) + quarantined / retired (lifecycle).
-- Roles (owner / curator / viewer) encoded even for a single user (`added_by`/`removed_by` fields), so the surface is ready for delegation.
+**Proposed mechanism sketch (PROPOSED — design input; updated for the INCLUDE decision):**
+- **Add** = `URL paste / dataset import / connector → GATE → (PROBE) → STORE + HEALTH`.
+  - GATE: provenance classifier — `public_by_design` (operator/agency/API/gov open-data/opt-in) vs `exposure_aggregator` (dataset/directory import, owner decision) vs `unknown`; **credential-bearing URLs are redacted + flagged (never stored raw)**; record `policy_verdict` + reviewer in audit log; assign `display_policy` (`embed | link_only | metadata_only`).
+  - PROBE: **public-by-design only** — one bounded request (timeout, UA, no auth): status/content-type/size/hash; protocol detect (MJPEG multipart, JPEG still, HLS m3u8, iframe embed, RTSP **by vendor pattern only — never connect**); blank-frame check (sfw's extrema trick); scene classify (Places365-style model → tags + indoor/outdoor); geo resolve (IP → coarse, manual override; never claim exact location from IP). **Exposure entries: no probe — store as imported, `status=unverified`, snapshot date shown (B0/B4).**
+  - STORE: `cameras` + `sources` + `health` + `audit` rows; `status=active` (public-by-design) or `unverified` (exposure); tags; required `attribution` + `official_url` (where known) + `provenance_class` + `snapshot_date`; `added_by`.
+- **Remove** = soft-delete `retired` (+ reason, `removed_by`, tombstone) → auto-quarantine after N consecutive fails (default N=10; applies to public-by-design health checks) → `retired` after sustained death → restore on recovery; takedown request = `removed` + tombstone + public contact page (B6); **exposure entries are also removable in bulk by dataset version**.
+- **Search** = filter by **provenance (public_by_design / exposure_aggregator)**, country / region / city / bbox, protocol (mjpeg·jpeg·hls·iframe·rtsp), status (live·stale·dead·quarantined·retired·unverified), tag (scene·type), source_id, free text (name·operator); every result returns `status`, `last_checked`, `uptime_14d`, `attribution`, `source_url`, `provenance_class` (C8/C9 shape). Status model: live / stale / dead (C9) + quarantined / retired / unverified (lifecycle).
+- Roles (owner / curator / viewer) encoded even for one user (`added_by`/`removed_by`).
 
 **Dead ends / limitations (as per rules):**
 - `K3ysTr0K3R/Webanator` — 404 at capture (from seed TABS-LIST); no evidence obtained.
 - `x64vbhv/webcamX` — no README (404 via API); analyzed `webcamX.py` directly instead.
+- `oz0977776/Insecam_ImageScrapper` — tree 404 on 2026-10-05 (gone/private); no data recoverable.
 - ZoomEye pricing/help pages — JS-rendered/blocked to extractor; **free-tier quota numbers unverified**.
 - FOFA `en.fofa.info/api` — JS placeholder only; syntax taken from the GoFOFA repo + VIP-page search snapshot (quota figures marked).
 - `docs.shinobi.video/monitors` — extractor failures (quota); Shinobi add/remove specifics partly **(verify)**.
@@ -254,11 +299,11 @@ Proposed rules: one bounded request per candidate at add-time (no retries storm;
 - `docs/userguide/console.rst` not found in ZoneMinder repo docs — used `definemonitor/*.rst` instead.
 - Web-search backend intermittently rate-limited (Exa/Nimble quotas); empty first returns were retried where load-bearing.
 
-**Number provenance:** jrw row count = verified by download (17,399 rows). Repo stars/licenses/push dates = GitHub API at capture time. Shodan pricing/credits, Censys 100 credits, FOFA plan figures = extracted/snapshot from vendor pages (FOFA/ZoomEye marked). OpenCCTV counts = the site's own claims (moving numbers).
+**Number provenance:** A.20 dataset counts = downloaded & counted 2026-10-05 (jrw 17,399 rows; OpenEyes 7,170; virtualpeephole 2,806; rackcams 1,089 lines; giasuddin 210 JSONL; roulette 50; feedtv 12). Insecam scale = Wikipedia + PAM 2018 (2017 window) + as-of-2025 figure from Wikipedia. Repo stars/licenses/push dates = GitHub API at capture time. Shodan/Censys/FOFA figures = vendor pages (extracted/snapshot; FOFA/ZoomEye marked). OpenCCTV counts = the site's own claims (moving numbers).
 
 **OPEN QUESTIONS FOR OWNER**
-- Does the viewer ever display frames from published-by-design cams that routinely show bystanders (GDPR/privacy posture)? Default proposed: display stills only, detection-not-recognition, no face/LPR, ephemeral thumbnails — or link-out-only for person-dense scenes?
-- What is the approval bar for automated ingest: gov/DOT/open-data allowlist only at first, with per-source manual review for commercial/tourism sources? Who signs off on ambiguous "publish signal" cases?
-- For exposure-aggregator material (incl. the 17K dump): permanent exclusion from the product DB, or a quarantined research store for awareness reporting (never probed, never joined)?
-- Discovery budget: free tiers only (Shodan Membership $49 one-time = 100 credits/mo; Censys Free 100 credits) vs. a paid API for scale — who owns the account and the monthly quota?
-- Auto-retire thresholds and takedown SLA: is "10 consecutive fails over ~24h → quarantine, restore on recovery" the right default, and what response window do we promise on removal requests?
+- Ingest route for the exposed category: datasets only (recommended; A.20) vs. also the live directory crawl (A.19 bycountry/bytype)? And which dataset first — jrw (17.4K, 2019-stale) or OpenEyes (7,170, newer, includes manufacturer field)?
+- Confirm the no-probe rule for exposure entries (status `unverified`, snapshot date shown) — or do you want a future opt-in liveness tier with separate risk review (default: off)?
+- Display treatment: metadata + click-through only (recommended), blurred thumbnail, or inline preview? And geo-mapped or aggregated-only?
+- Distribution: keep the exposed category to the private build (recommended) with the public surface exposing public-by-design only — or plan a public exposure surface (then: noindex + warnings + takedown SLA + legal review)?
+- Takedown workflow specifics: public contact point, response SLA, hard-remove + tombstone, credential-redaction rules, and dataset refresh cadence (monthly?).
