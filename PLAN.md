@@ -251,3 +251,16 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - Viewer: already anticipates `quarantined`/`retired` (chips in `wfd/web/index.html`); rows show the literal status, map dot falls back to the unknown shade — no viewer change needed.
 - Tests: health **14/14** (7 new: dead-increment, quarantine-at-threshold, live-restore, stale-reset, unknown-keep, old-DB migration cycle, run_sweep write-back + evidence) + full regression green (core 6/6 · creds 11/11 · exposure 9/9 · gov 10/10 · ingest-les 9/9 · onboarding 7/7 · registry 5/5 · viewer 11/11). Temp DBs only — `data/worldfeed.db` never opened by tests.
 - Context: the 2026-10-06 ~01:26 network outage killed the previous session mid-flight, leaving 30 outage-false `dead`s (and 8 `unknown`s) in the D12 stills slice; the D12 re-probe (queued fold) corrects them with the calibrated 330 s gap.
+
+### A15 · Sprint 2 step 4b — Caltrans D12 stills re-probe at 330 s gap (folded 2026-10-06, early)
+
+> Trigger: owner "continue world-feed-db" — the gap-30 baseline inflated stale (153/166), and the 01:26 outage left 30 false deads in the registry. Full re-probe with the calibrated 330 s cadence, on top of the A14 self-heal code.
+
+- **Calibrated cadence:** 12 random D12 stills sampled at t0/t+150s/t+330s; 4/12 changed by 150s, all 12 changed by 330s → chosen gap = 330 s (≤5 min refresh).
+- **166 rows re-probed** (83+83 halves at camera_id split `8fe3a2fcd0050321`), gap 330 s, `--recheck`, 8 workers, 8 host-cap; launched detached via WMI→wscript after the outgoing session was outage-killed at 01:26. Evidence: `data/health/health-caltrans-20261006-014512.jsonl` + `…-014518.jsonl`.
+- **Corrected splits: 107 live · 59 stale · 0 dead · 0 unknown** (previous gap-30: approximately 153 stale).
+- **Flips from original baseline (13 live/153 stale):** 97 stale→live · 56 stayed stale · 10 stayed live · 3 live→stale.
+- **Outage damage repaired:** all 30 false deads corrected (21→live, 9→stale); all 8 unknowns corrected (14→live, 2→stale — counting across evidence, not exact distribution). All 166 rows now `fail_count=0`.
+- **Hamming distribution** (pHash across the 330 s gap): mean 8.48, min 0, max 32; `JPEG_STATIC_MAX=5` cleanly separates live from stale.
+- **Verification vs registry:** union 166/166, no coverage gaps; final registry D12 status matches evidence exactly. Cross-referenced both evidence files (83+83, no duplicates).
+- **D12 cadence + fail_count machinery** now sets per-family refresh policy — this was the validation run for the A14 write-back (apply_result + quarantine). The 30 false deads from the outage provided a natural test of the quarantine lifecycle; all rows now restored.
