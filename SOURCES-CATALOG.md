@@ -180,4 +180,4 @@ Modules: `wfd/ingest/newsrc/<family>.py` · runner: `py -3.11 -m wfd.ingest.news
 | camsecure-webcams | public_by_design | 30 | demo index → Referer'd wrappers → m3u8 | 28 HLS + 2 YouTube |
 | youtube-live-cams | public_by_design | 13 | Steamboat + South Padre channels | oembed verified; source-registry module |
 | skaping | public_by_design | 877 | `sitemap.players.xml` | player-page urls; timestamped captures in meta only |
-| webcamtaxi | aggregator_directory | (fetch in progress) | `webcamtaxi.com/en/webcams.html` all-cams list | ~2,230 pages; cache-resumable |
+| webcamtaxi | aggregator_directory | 2,016 | `webcamtaxi.com/en/webcams.html` all-cams list | 2,219 pages; 195 no-embed skipped |
