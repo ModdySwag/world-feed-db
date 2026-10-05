@@ -1,0 +1,20 @@
+{
+ "fetched_at": "2026-10-05T22:xx ACST",
+ "source": "http://www.insecam.org/static/sitemap.xml",
+ "loc_count": 2271,
+ "id_min": 162,
+ "id_max": 1012788,
+ "lastmod_by_year": {
+  "2015": 157,
+  "2016": 133,
+  "2017": 118,
+  "2018": 168,
+  "2019": 102,
+  "2020": 73,
+  "2021": 408,
+  "2022": 271,
+  "2025": 31,
+  "2026": 810
+ },
+ "note": "baseline era snapshot; sitemap-only census (1 request); no device contact"
+}

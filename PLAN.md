@@ -65,7 +65,7 @@ Full table: `SOURCES-CATALOG.md`.
 - **Q3 Keys / quotas**: Windy Webcams API key? webcams.travel key? Nimble quota exhausted (402 "trial quota finished" during research — top up if future crawls want it). Hound MCP works as fallback.
 - **Q4 Viewer target**: desktop app (GEV-style)? web on moddys.net? zero-hud panel? all three (shared backend)?
 - **Q5 YouTube grey zone**: keep "personal/local, non-redistributed" stance per WV1, or adjust?
-- **Q6 Exposure ingest route**: datasets-only [recommended] vs also the live directory crawl (`/en/bycountry/{CC}`, `/en/bytype/{Type}`, polite rate + kill-switch); and which dataset first — OpenEyes (7,170, newer, has manufacturer) vs jrw (17.4K, 2019-stale). (see A2)
+- **Q6 Exposure ingest route**: datasets-only [recommended] vs also the live directory crawl (`/en/bycountry/{CC}`, `/en/bytype/{Type}`, polite rate + kill-switch); and which dataset first — OpenEyes (7,170, newer, has manufacturer) vs jrw (17.4K, 2019-stale). (see A2) **UPDATE 10-05 evening: owner "and 3 go" read as approval — baseline sitemap census captured (2,271 current IDs → `research/exposed/insecam-census-2026-10-05.json`; 1 request, robots-allowed, no device contact). Next: ingest GODEYE + rafasapiens era snapshots; listing-level crawl timing at build.**
 - **Q7 No-probe rule for exposure entries**: [recommended: keep — status `unverified` + snapshot date shown; never contact listed devices]
 - **Q8 Exposure display**: metadata + click-through warning [recommended] vs blurred thumbnail vs inline preview.
 - **Q9 Distribution**: private build first [recommended — `PRIVATE_EXPOSURE_SURFACE` gate] vs plan a public exposure surface (then: noindex + warnings + takedown SLA + legal review).

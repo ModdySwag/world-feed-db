@@ -8,10 +8,10 @@ How this works: as each build stage needs an account, it appears here with a sig
 
 | # | Service | Unlocks | Signup | Status |
 |---|---------|---------|--------|--------|
-| 1 | **Windy Webcams API** (free tier) | 70k+ webcam metadata / discovery layer (S1) | https://api.windy.com/webcams/ → "Get API key" | ⬜ to create |
-| 2 | **Road511 API** (free key) | 20-state US traffic-cam gateway (S2) | https://road511.com (API/developer signup) | ⬜ to create |
-| 3 | **Transport for NSW Open Data** (free key) | NSW live traffic cams, CC-BY (S2) | https://opendata.transport.nsw.gov.au | ⬜ to create |
-| 4 | **QLDTraffic API** (free registration) | Queensland webcams (S2) | https://api.qldtraffic.qld.gov.au | ⬜ to create |
+| 1 | **Windy Webcams API** (free tier) | 70k+ webcam metadata / discovery layer (S1) | https://api.windy.com/webcams/ → "Get API key" | ✅ **key in + VERIFIED 2026-10-05** (live sample query OK) |
+| 2 | **Road511 API** (free key) | 20-state US traffic-cam gateway (S2) | https://road511.com | 🔶 **key in file** — probe returned 403 on 3 auth styles (activation/param TBD at build; check signup email) |
+| 3 | **Transport for NSW Open Data** (free key) | NSW live traffic cams, CC-BY (S2) | Log in at opendata.transport.nsw.gov.au → **profile icon → "API Tokens" → name → CREATE API TOKEN** (shown once) → paste as `NSW_API_KEY`. Header usage: `apikey <token>`; product = Live Traffic Cameras (`api.transport.nsw.gov.au/v1/live/cameras`) | ⬜ steps published — key pending |
+| 4 | **QLDTraffic API** (free registration) | Queensland webcams (S2) | **No self-serve:** email `qldtraffic@tmr.qld.gov.au` with: Organisation name · Contact person · Email · Application name → admin issues the key (spec v1.10: key passed **in the URL**, not header) | ⬜ email to send |
 
 ## Priority 2 — optional discovery lanes (metered, policy-gated)
 
@@ -32,3 +32,5 @@ How this works: as each build stage needs an account, it appears here with a sig
 | 12 | TomTom API key | traffic layer (if integrated) | https://developer.tomtom.com | ⬜ optional |
 
 Separate (my tooling, not the app): Nimble top-up — see PLAN Q3.
+
+Note: working keys live in `profiles/moddy/.env` (created from `.env.example` 2026-10-05; values never printed/committed).
