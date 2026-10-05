@@ -1,0 +1,425 @@
+{
+ "status": "success",
+ "message": "Received feeds for camgroup.",
+ "count": 10,
+ "data": [
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1340620200,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/brown-bear-salmon-cam-brooks-falls_blurred.jpg?t=1730904927",
+   "id": 25,
+   "uuid": "9c2949cf-2d95-47fa-9a97-43646ef02142",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/Bear-Cam-Brooks-Falls-028538749.jpg",
+   "title": "Brooks Falls Brown Bears",
+   "thumbnail_large_url": "https://files.explore.org/files/Bear-Cam-Brooks-Falls-028538749.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Bear-Cam-Brooks-Falls-028538749__media_498x280.jpg"
+    }
+   },
+   "slug": "brown-bear-salmon-cam-brooks-falls",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Bear-Cam-Brooks-Falls-028538749.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-BrooksFalls-EDGE/EXP-BrooksFalls-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 1648,
+   "recordings_template": "EXP-BrooksFalls",
+   "stream_id": "174",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": true,
+   "order": 1
+  },
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1340620200,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/river-watch-brown-bear-salmon-cams_blurred.jpg?t=1730129628",
+   "id": 50,
+   "uuid": "5ffe1a89-798c-41e2-9b67-addeb76d9c91",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/Bear-Cam-River-Watch-027941429.jpg",
+   "title": "River Watch Bear Cam",
+   "thumbnail_large_url": "https://files.explore.org/files/Bear-Cam-River-Watch-027941429.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Bear-Cam-River-Watch-027941429__media_498x280.jpg"
+    }
+   },
+   "slug": "river-watch-brown-bear-salmon-cams",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Bear-Cam-River-Watch-027941429.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-RiverWatch-EDGE/EXP-RiverWatch-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 671,
+   "recordings_template": "EXP-RiverWatch",
+   "stream_id": "178",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": false,
+   "order": 2
+  },
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1338824340,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/brown-bear-salmon-cam-the-riffles_blurred.jpg?t=1730991943",
+   "id": 27,
+   "uuid": "6e9ee707-af3d-4992-9c26-fc89ec69670b",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/The-Riffles---Katmai-National-Park,-Alaska.jpg",
+   "title": "The Riffles Bear Cam",
+   "thumbnail_large_url": "https://files.explore.org/files/The-Riffles---Katmai-National-Park,-Alaska.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/The-Riffles---Katmai-National-Park,-Alaska__media_498x280.jpg"
+    }
+   },
+   "slug": "brown-bear-salmon-cam-the-riffles",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/The-Riffles---Katmai-National-Park,-Alaska.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-Riffles-EDGE/EXP-Riffles-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 356,
+   "recordings_template": "EXP-Riffles",
+   "stream_id": "179",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": false,
+   "order": 3
+  },
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1340620200,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/brown-bear-salmon-cam-lower-river_blurred.jpg?t=1731426273",
+   "id": 26,
+   "uuid": "29081454-7874-4952-bd50-6024735b9f31",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/Bear-Cam-Lower-River-027101009.jpg",
+   "title": "Kat's River View",
+   "thumbnail_large_url": "https://files.explore.org/files/Bear-Cam-Lower-River-027101009.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Bear-Cam-Lower-River-027101009__media_498x280.jpg"
+    }
+   },
+   "slug": "brown-bear-salmon-cam-lower-river",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Bear-Cam-Lower-River-027101009.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-LowerRiverWest-EDGE/EXP-LowerRiverWest-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 339,
+   "recordings_template": "EXP-LowerRiverWest",
+   "stream_id": "221",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": false,
+   "order": 4
+  },
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1530010020,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/brooks-falls-brown-bears-low_blurred.jpg?t=1730933291",
+   "id": 229,
+   "uuid": "1aadff1e-c60e-4459-aab4-05b005781fbe",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/LiveCams_Bears_Bison_BrooksFallsLow_Ll.jpg",
+   "title": "Brooks Falls Brown Bears Low",
+   "thumbnail_large_url": "https://files.explore.org/files/LiveCams_Bears_Bison_BrooksFallsLow_Ll.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/LiveCams_Bears_Bison_BrooksFallsLow_Ll__media_498x280.jpg"
+    }
+   },
+   "slug": "brooks-falls-brown-bears-low",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/LiveCams_Bears_Bison_BrooksFallsLow_Ll.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-FallsLow-EDGE/EXP-FallsLow-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 218,
+   "recordings_template": "EXP-FallsLow",
+   "stream_id": "176",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": false,
+   "order": 5
+  },
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1342698060,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/underwater-bear-cam-brown-bear-salmon-cams_blurred.jpg?t=1730129967",
+   "id": 122,
+   "uuid": "fd02a55a-8eba-4aff-9203-d295318f433b",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/Bear-Cam-underwater-029528481.jpg",
+   "title": "Underwater Salmon Cam",
+   "thumbnail_large_url": "https://files.explore.org/files/Bear-Cam-underwater-029528481.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Bear-Cam-underwater-029528481__media_498x280.jpg"
+    }
+   },
+   "slug": "underwater-bear-cam-brown-bear-salmon-cams",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Bear-Cam-underwater-029528481.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-UnderwaterBearCam-EDGE/EXP-UnderwaterBearCam-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 30,
+   "recordings_template": "EXP-UnderwaterBearCam",
+   "stream_id": "177",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": false,
+   "order": 6
+  },
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1338690060,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/dumpling-mountain-brown-bear-salmon-cams_blurred.jpg?t=1730129713",
+   "id": 51,
+   "uuid": "bc36e9ba-c819-4baa-bf87-e7b43999d9cd",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/Dumpling-Mountain-030722165.jpg",
+   "title": "Dumpling Mountain - Katmai National Park",
+   "thumbnail_large_url": "https://files.explore.org/files/Dumpling-Mountain-030722165.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Dumpling-Mountain-030722165__media_498x280.jpg"
+    }
+   },
+   "slug": "dumpling-mountain-brown-bear-salmon-cams",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Dumpling-Mountain-030722165.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-DumplingMountain-EDGE/EXP-DumplingMountain-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 13,
+   "recordings_template": "EXP-DumplingMountain",
+   "stream_id": "175",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": false,
+   "order": 7
+  },
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1392342900,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/alaska-naknek-river_blurred.jpg?t=1749427635",
+   "id": 56,
+   "uuid": "17bf69e9-1d4c-485c-bd9e-f3d543670b9b",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/Naknek-River-Cam-031393351.jpg",
+   "title": "Naknek River",
+   "thumbnail_large_url": "https://files.explore.org/files/Naknek-River-Cam-031393351.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Naknek-River-Cam-031393351__media_498x280.jpg"
+    }
+   },
+   "slug": "alaska-naknek-river",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Naknek-River-Cam-031393351.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-NaknekRiver-EDGE/EXP-NaknekRiver-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 6,
+   "recordings_template": "EXP-NaknekRiver",
+   "stream_id": "173",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "primary_feed": false,
+   "order": 8
+  },
+  {
+   "is_inactive": true,
+   "force_offline": false,
+   "timestamp": 1503056880,
+   "is_meditation": true,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/brown-bears-meditation_blurred.jpg?t=1588839287",
+   "id": 195,
+   "uuid": "9316d13b-aaa8-4198-9c29-4072c4742c0f",
+   "description": "",
+   "is_offline": true,
+   "thumb": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543.png",
+   "title": "Brown Bears of Katmai Alaska Meditation",
+   "thumbnail_large_url": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543.png",
+   "stillframe_imageset": {
+    "width": {
+     "1922": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_1922x1080.png",
+     "1281": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_1281x720.png",
+     "854": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_854x480.png",
+     "498": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_498x280.png"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_1922x1080.png",
+     "720": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_1281x720.png",
+     "480": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_854x480.png",
+     "280": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543__media_498x280.png"
+    }
+   },
+   "slug": "brown-bears-meditation",
+   "snapshot_enabled": true,
+   "thumb_large": "https://media.explore.org/stillframes/brown_bears_mediation_cam_thumbnail-1539390524543.png",
+   "snapshot": "https://snapshots.explore.org/EXP-BrownBearsMeditation-EDGE/EXP-BrownBearsMeditation-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 0,
+   "recordings_template": "EXP-BrownBearsMeditation",
+   "stream_id": "53",
+   "offline_label": "Meditation",
+   "cam_group": {
+    "id": 20
+   },
+   "order": 9
+  },
+  {
+   "is_inactive": true,
+   "force_offline": false,
+   "timestamp": 1527847680,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/brooks-live-chat_blurred.jpg?t=1728432258",
+   "id": 226,
+   "uuid": "ea5715a3-8814-46f9-9052-d04387d08cdc",
+   "description": "",
+   "is_offline": true,
+   "thumb": "https://files.explore.org/files/LiveCams_Brears_BrooksLiveChat_LL.jpg",
+   "title": "Brooks Live Chat",
+   "thumbnail_large_url": "https://files.explore.org/files/LiveCams_Brears_BrooksLiveChat_LL.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/LiveCams_Brears_BrooksLiveChat_LL__media_498x280.jpg"
+    }
+   },
+   "slug": "brooks-live-chat",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/LiveCams_Brears_BrooksLiveChat_LL.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-BrooksMobile-EDGE/EXP-BrooksMobile-EDGE-1791219719-scaled.jpg",
+   "current_viewers": 0,
+   "recordings_template": "EXP-BrooksMobile",
+   "stream_id": "198",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 20
+   },
+   "order": 10
+  }
+ ]
+}

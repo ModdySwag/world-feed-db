@@ -1,0 +1,130 @@
+{
+ "status": "success",
+ "message": "Retrieved initial state data.",
+ "data": {
+  "camgroups": [
+   {
+    "slug": "brown-bears",
+    "camgroup_slug": "brown-bears",
+    "title": "Brown Bears",
+    "id": 20,
+    "uuid": "25cbfd1c-c2f4-42cd-9473-4fc091b0485d",
+    "legacy_id": 41,
+    "poster_url": "https://files.explore.org/files/LiveCams_BrownBears_4_KG.jpg",
+    "active": true,
+    "feed_count": 10,
+    "feeds": [
+     {
+      "id": 25,
+      "title": "Brooks Falls Brown Bears",
+      "slug": "brown-bear-salmon-cam-brooks-falls",
+      "uuid": "9c2949cf-2d95-47fa-9a97-43646ef02142"
+     },
+     {
+      "id": 50,
+      "title": "River Watch Bear Cam",
+      "slug": "river-watch-brown-bear-salmon-cams",
+      "uuid": "5ffe1a89-798c-41e2-9b67-addeb76d9c91"
+     },
+     {
+      "id": 27,
+      "title": "The Riffles Bear Cam",
+      "slug": "brown-bear-salmon-cam-the-riffles",
+      "uuid": "6e9ee707-af3d-4992-9c26-fc89ec69670b"
+     },
+     {
+      "id": 26,
+      "title": "Kat's River View",
+      "slug": "brown-bear-salmon-cam-lower-river",
+      "uuid": "29081454-7874-4952-bd50-6024735b9f31"
+     },
+     {
+      "id": 229,
+      "title": "Brooks Falls Brown Bears Low",
+      "slug": "brooks-falls-brown-bears-low",
+      "uuid": "1aadff1e-c60e-4459-aab4-05b005781fbe"
+     },
+     {
+      "id": 122,
+      "title": "Underwater Salmon Cam",
+      "slug": "underwater-bear-cam-brown-bear-salmon-cams",
+      "uuid": "fd02a55a-8eba-4aff-9203-d295318f433b"
+     },
+     {
+      "id": 51,
+      "title": "Dumpling Mountain - Katmai National Park",
+      "slug": "dumpling-mountain-brown-bear-salmon-cams",
+      "uuid": "bc36e9ba-c819-4baa-bf87-e7b43999d9cd"
+     },
+     {
+      "id": 56,
+      "title": "Naknek River",
+      "slug": "alaska-naknek-river",
+      "uuid": "17bf69e9-1d4c-485c-bd9e-f3d543670b9b"
+     },
+     {
+      "id": 195,
+      "title": "Brown Bears of Katmai Alaska Meditation",
+      "slug": "brown-bears-meditation",
+      "uuid": "9316d13b-aaa8-4198-9c29-4072c4742c0f"
+     },
+     {
+      "id": 226,
+      "title": "Brooks Live Chat",
+      "slug": "brooks-live-chat",
+      "uuid": "ea5715a3-8814-46f9-9052-d04387d08cdc"
+     }
+    ],
+    "channel": {
+     "id": 5
+    },
+    "channel_ids": [
+     5,
+     16
+    ],
+    "description": "To gaze at Brooks Falls, Alaska in the summertime is to see nature working in perfect synchronicity.",
+    "continued_description": "Rivers, rapids and falls cascade down evergreen mountains as seagulls and eagles fly overhead. Sockeye salmon charge upstream to spawn eggs, and the majestic brown bears come out of hibernation each spring and make their way back to Katmai National Park, where they forage on salmon and store enough fat so they can return to their dens for winter hibernation. Moms with cubs, subadults learning how to fish, and alpha males all come together and live harmoniously at Brooks Falls for this brief period of time. Katmai is one of the few areas of the world where humans and wildlife peacefully coexist under the guidance of the Park Rangers. The Rangers are the true unsung, selfless heroes of these cams and we highly encourage you to participate in a live chat with them. Amazing sunsets, 24 hours of light, sunrises where fog covers the river banks, fall foliage unparalleled to anywhere and lastly the underwater bear and salmon cam where you can watch salmon work their way upstream and watch as an occasional bear swims past. We are humbled and grateful to the US National Parks that they have allowed explore.org the honor to be a steward, protector and educator of the world's most pristine natural cathedral.",
+    "multi_livecam": false,
+    "location_text": null,
+    "carousel_channel_id": 5
+   },
+   {
+    "slug": "honey-bees",
+    "camgroup_slug": "honey-bees",
+    "title": "Honey Bees",
+    "id": 4,
+    "uuid": "b4163f4b-83e7-4801-ba81-cd7efb7d7cfd",
+    "legacy_id": 7,
+    "poster_url": "https://files.explore.org/files/Poster_LivecamGroup_HoneyBees_300x450.jpg",
+    "active": true,
+    "feed_count": 2,
+    "feeds": [
+     {
+      "id": 55,
+      "title": "Honey Bee Hive",
+      "slug": "honey-bee-hive-cam",
+      "uuid": "71aae1df-ebeb-4a09-8ec8-62f568564736"
+     },
+     {
+      "id": 57,
+      "title": "Honey Bee Landing Zone",
+      "slug": "honey-bee-landing-zone-cam",
+      "uuid": "b3e58c86-f2f1-4f77-a59e-c05b83d16c64"
+     }
+    ],
+    "channel": {
+     "id": 3
+    },
+    "channel_ids": [
+     3,
+     13
+    ],
+    "description": "Safely explore the inside of a bee hive that was colonized inside a hollow log in Germany.",
+    "continued_description": "Our infrared camera slowly pans around the colony, showing hundreds of bees as they build combs, crawl around the hive, and produce honey. It also shows what life is like for the honeybee, an insect whose population is rapidly declining under the threat of Colony Collapse Disorder. A second camera is placed at the entrance of the hive to show the traffic of the hive as bees constantly take off, land and crawl inside.",
+    "multi_livecam": false,
+    "location_text": null,
+    "carousel_channel_id": 13
+   }
+  ]
+ }
+}

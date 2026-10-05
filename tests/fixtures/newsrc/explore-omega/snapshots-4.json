@@ -1,0 +1,90 @@
+{
+ "status": "success",
+ "message": "Received feeds for camgroup.",
+ "count": 2,
+ "data": [
+  {
+   "is_inactive": false,
+   "force_offline": false,
+   "timestamp": 1369301400,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/honey-bee-hive-cam_blurred.jpg?t=1749513968",
+   "id": 55,
+   "uuid": "71aae1df-ebeb-4a09-8ec8-62f568564736",
+   "description": "",
+   "is_offline": false,
+   "thumb": "https://files.explore.org/files/Honey-Bees-Hive-Camera-017485167.jpg",
+   "title": "Honey Bee Hive",
+   "thumbnail_large_url": "https://files.explore.org/files/Honey-Bees-Hive-Camera-017485167.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Honey-Bees-Hive-Camera-017485167__media_498x280.jpg"
+    }
+   },
+   "slug": "honey-bee-hive-cam",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Honey-Bees-Hive-Camera-017485167.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-HoneyBeeHive-EDGE/EXP-HoneyBeeHive-EDGE-1791219753-scaled.jpg",
+   "current_viewers": 0,
+   "recordings_template": "EXP-HoneyBeeHive",
+   "stream_id": "207",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 4
+   },
+   "primary_feed": true,
+   "order": 1
+  },
+  {
+   "is_inactive": true,
+   "force_offline": false,
+   "timestamp": 1470648600,
+   "is_meditation": false,
+   "is_film": false,
+   "blurred_snapshot_url": "https://media.explore.org/blurred-snapshots/honey-bee-landing-zone-cam_blurred.jpg?t=1749513970",
+   "id": 57,
+   "uuid": "b3e58c86-f2f1-4f77-a59e-c05b83d16c64",
+   "description": "",
+   "is_offline": true,
+   "thumb": "https://files.explore.org/files/Honey-Bees-Landing-Zone-005398183.jpg",
+   "title": "Honey Bee Landing Zone",
+   "thumbnail_large_url": "https://files.explore.org/files/Honey-Bees-Landing-Zone-005398183.jpg",
+   "stillframe_imageset": {
+    "width": {
+     "1920": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_1920x1080.jpg",
+     "1280": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_1280x720.jpg",
+     "853": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_853x480.jpg",
+     "498": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_498x280.jpg"
+    },
+    "height": {
+     "1080": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_1920x1080.jpg",
+     "720": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_1280x720.jpg",
+     "480": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_853x480.jpg",
+     "280": "https://media.explore.org/stillframes/Honey-Bees-Landing-Zone-005398183__media_498x280.jpg"
+    }
+   },
+   "slug": "honey-bee-landing-zone-cam",
+   "snapshot_enabled": true,
+   "thumb_large": "https://files.explore.org/files/Honey-Bees-Landing-Zone-005398183.jpg",
+   "snapshot": "https://snapshots.explore.org/EXP-HoneyBeeLanding-EDGE/EXP-HoneyBeeLanding-EDGE-1791219753-scaled.jpg",
+   "current_viewers": 0,
+   "recordings_template": "EXP-HoneyBeeLanding",
+   "stream_id": "208",
+   "offline_label": "Highlights",
+   "cam_group": {
+    "id": 4
+   },
+   "order": 2
+  }
+ ]
+}
