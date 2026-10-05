@@ -14,9 +14,11 @@ polite (global worker cap + per-host concurrency cap + start spacing), and is
 NEVER applied to exposure rows — selection is restricted to
 `provenance='public_by_design'` in the SQL itself.
 
-Every result writes back to the registry (`status`, `last_verified`) and to an
-evidence JSONL (`data/health/health-<slice>-<ts>.jsonl`). Sweeps are resumable:
-rows already checked today are skipped unless `--recheck`.
+Every result writes back to the registry (`status`, `last_verified`, and the
+consecutive-failure streak `fail_count` — auto-quarantine after QUARANTINE_N
+consecutive dead results, restore on a later live/stale; see `apply_result`)
+and to an evidence JSONL (`data/health/health-<slice>-<ts>.jsonl`). Sweeps are
+resumable: rows already checked today are skipped unless `--recheck`.
 
 CLI (registered via wfd.cli):
     py -3.11 -m wfd health probe <url> [--kind hls|jpeg|youtube]
@@ -32,6 +34,7 @@ import io
 import json
 import pathlib
 import shutil
+import sqlite3
 import subprocess
 import sys
 import threading
@@ -53,6 +56,10 @@ HEALTH_DIR = DATA_DIR / "health"
 # classification thresholds (calibrated on real data — see PLAN A12)
 JPEG_STATIC_MAX = 5        # hamming <= this => static-suspect (stale)
 FREEZE_D_FAIL_S = 1.0      # freezedetect: no-change duration to trigger
+
+# A1 self-heal (S5 §C / PLAN A1): consecutive dead results before a row is
+# auto-quarantined; a later live/stale result restores it (see apply_result).
+QUARANTINE_N = 10
 
 
 def _today() -> str:
@@ -355,6 +362,48 @@ def probe_row(url: str, protocol: str, *, gap_s: float = 30, freeze_s: float = 6
 # sweeps (resumable; write-back to registry + evidence JSONL)
 # ---------------------------------------------------------------------------
 
+def apply_result(conn: sqlite3.Connection, camera_id: str, state: str,
+                 checked_at: str) -> dict:
+    """Write one probe verdict back to the registry (the A1 self-heal core).
+
+    Consecutive-failure accounting, one UPDATE per verdict (atomic; callers
+    keep their own lock + commit):
+      live/stale -> status=state, fail_count=0 (restores a quarantined row)
+      dead       -> fail_count=fail_count+1; status='quarantined' once the
+                    streak reaches QUARANTINE_N (10), else 'dead'
+      anything else -> status='unknown', fail_count unchanged (no verdict)
+    Always stamps ``last_verified=checked_at`` so resumable sweeps skip the
+    row for the rest of the day. Returns ``{"camera_id", "status",
+    "fail_count"}`` (post-update values) for the evidence JSONL audit trail.
+    """
+    st = getattr(state, "value", state) or Health.UNKNOWN.value
+    if st in (Health.LIVE.value, Health.STALE.value):
+        conn.execute(
+            "UPDATE cameras SET status=?, fail_count=0, last_verified=? WHERE camera_id=?",
+            (st, checked_at, camera_id),
+        )
+    elif st == Health.DEAD.value:
+        # CASE reads the pre-update row (SQLite semantics), so fail_count+1 is
+        # the post-increment streak value tested against the threshold.
+        conn.execute(
+            "UPDATE cameras SET fail_count=fail_count+1, "
+            "status=CASE WHEN fail_count+1 >= ? THEN ? ELSE ? END, "
+            "last_verified=? WHERE camera_id=?",
+            (QUARANTINE_N, Health.QUARANTINED.value, Health.DEAD.value, checked_at, camera_id),
+        )
+    else:
+        conn.execute(
+            "UPDATE cameras SET status=?, last_verified=? WHERE camera_id=?",
+            (Health.UNKNOWN.value, checked_at, camera_id),
+        )
+    r = conn.execute(
+        "SELECT status, fail_count FROM cameras WHERE camera_id = ?", (camera_id,)
+    ).fetchone()
+    if r is None:                     # row deleted meanwhile — echo, nothing written
+        return {"camera_id": camera_id, "status": st, "fail_count": 0}
+    return {"camera_id": camera_id, "status": r["status"], "fail_count": r["fail_count"]}
+
+
 def run_sweep(*, family: Optional[str] = None, where: Optional[str] = None,
               limit: Optional[int] = None, protocol: Optional[str] = None,
               workers: int = 8, gap_s: float = 30, freeze_s: float = 6,
@@ -412,12 +461,12 @@ def run_sweep(*, family: Optional[str] = None, where: Optional[str] = None,
             gate.release(host)
         checked = _now_iso()
         with lock:
-            conn.execute("UPDATE cameras SET status=?, last_verified=? WHERE camera_id=?",
-                         (res.state, checked, cid))
+            applied = apply_result(conn, cid, res.state, checked)
             conn.commit()
             out_fh.write(json.dumps({
                 "camera_id": cid, "url": url, "family": fam, "protocol": proto,
                 "state": res.state, "checked_at": checked, "wall_ms": res.wall_ms,
+                "fail_count": applied["fail_count"],
                 "evidence": res.evidence,
             }, ensure_ascii=False) + "\n")
             out_fh.flush()

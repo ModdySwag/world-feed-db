@@ -26,6 +26,11 @@ _COLUMNS = [
     "geo_confidence", "was_redacted", "credential_present", "attribution", "official_url",
     "tags", "meta",
 ]
+# NOTE: ``fail_count`` (the health engine's consecutive-failure streak) is
+# deliberately NOT part of _COLUMNS: ingest upserts must never clobber the
+# streak, so a re-ingest leaves the column untouched and fresh inserts take
+# its column default (0). The health write-back (wfd.health.apply_result)
+# owns it; ensure_health_columns() migrates the column into older DBs.
 
 _DDL = """
 CREATE TABLE IF NOT EXISTS cameras (
@@ -76,7 +81,27 @@ def connect(path: Optional[Union[pathlib.Path, str]] = None,
 
 def init_db(conn: sqlite3.Connection) -> None:
     conn.executescript(_DDL)
+    ensure_health_columns(conn)
     conn.commit()
+
+
+def ensure_health_columns(conn: sqlite3.Connection) -> bool:
+    """Idempotent migration: add health write-back columns when missing.
+
+    ``cameras.fail_count`` (A1 self-heal: consecutive-failure streak) is owned
+    by the health engine, not by ingest, so it is added via this migration
+    rather than baked into ``_DDL``/``_COLUMNS`` (see the note at ``_COLUMNS``).
+    Covers both fresh tables (created by ``_DDL`` without the column) and
+    pre-existing databases.
+    Returns True when this call added the column.
+    """
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(cameras)")}
+    if "fail_count" in cols:
+        return False
+    conn.execute(
+        "ALTER TABLE cameras ADD COLUMN fail_count INTEGER NOT NULL DEFAULT 0"
+    )
+    return True
 
 
 def _row_values(row: CameraRow) -> tuple:
