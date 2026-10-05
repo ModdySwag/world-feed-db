@@ -1,0 +1,104 @@
+{
+  "data": [
+    {
+      "id": "en-webcam-bergstation-maennlichen",
+      "slug": "bergstation-maennlichen",
+      "title": "Männlichen",
+      "altitude_m": 2222,
+      "coordinates": "46.6093, 7.9389",
+      "roundshot_id": "877919abdb23eb59f63908ab8b300f1f",
+      "roundshot_url": "https://maennlichen.roundshot.com",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-webcam-eiger-express",
+      "slug": "eiger-express",
+      "title": "Eiger Express",
+      "altitude_m": null,
+      "coordinates": "46.5780, 7.9748",
+      "roundshot_id": "8ebf876ae226aa03b0c65b0985e6f60e",
+      "roundshot_url": "https://webcams.jungfrau.ch/top-of-europe-eiger-express/#/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-webcam-eigergletscher",
+      "slug": "eigergletscher",
+      "title": "Eigergletscher",
+      "altitude_m": 2320,
+      "coordinates": "46.5780, 7.9748",
+      "roundshot_id": "486d6b1c471c581a99233dc3e4cc3ab7",
+      "roundshot_url": "https://webcams.jungfrau.ch/eigergletscher/#/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-webcam-first-schreckfeld",
+      "slug": "first-schreckfeld",
+      "title": "Grindelwald-First (Schreckfeld)",
+      "altitude_m": 2166,
+      "coordinates": "46.6604, 8.0594",
+      "roundshot_id": "c7f0edeec13d52b6c3cf91485d982548",
+      "roundshot_url": "https://webcams.jungfrau.ch/first-schreckfeld/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-1fc74089-550f-4f63-8441-a4e6cf649a13",
+      "slug": "grindelwald-terminal",
+      "title": "Grindelwald Terminal",
+      "altitude_m": 937,
+      "coordinates": null,
+      "roundshot_id": "034de41e47b30dde0362b86b42d9fb61",
+      "roundshot_url": "https://webcams.jungfrau.ch/grindelwald-terminal/#/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-webcam-harder-kulm-interlaken",
+      "slug": "harder-kulm-interlaken",
+      "title": "Harder Kulm",
+      "altitude_m": 1322,
+      "coordinates": "46.6967, 7.8571",
+      "roundshot_id": "8acf8be16f88a36a1646ea3208f4fbea",
+      "roundshot_url": "https://webcams.jungfrau.ch/interlaken-harderkulm/#/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-webcam-jungfrau-ostgrat",
+      "slug": "jungfrau-ostgrat",
+      "title": "Jungfraujoch (Ostgrat)",
+      "altitude_m": 3454,
+      "coordinates": "46.5475, 7.9853",
+      "roundshot_id": "dbb5da2713c66505f2004b60c6c56609",
+      "roundshot_url": "https://webcams.jungfrau.ch/top-of-europe-jungfrau-ostgrat/#/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-webcam-jungfraujoch-top-of-europe",
+      "slug": "jungfraujoch-top-of-europe",
+      "title": "Jungfraujoch",
+      "altitude_m": 3571,
+      "coordinates": "46.5474, 7.9853",
+      "roundshot_id": "584c8f65bd7b360eed6ffd43226cca8a",
+      "roundshot_url": "https://webcams.jungfrau.ch/top-of-europe-jungfraujoch/#/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-b88ef8e8-0ec8-4438-814e-cdff72f3d985",
+      "slug": "lauberhorn-kleine-scheidegg",
+      "title": "Kleine Scheidegg",
+      "altitude_m": null,
+      "coordinates": null,
+      "roundshot_id": "527f953c3776c0552355d4a154c2b4e8",
+      "roundshot_url": "https://webcams.jungfrau.ch/lauberhorn/#/",
+      "status_override": "auto"
+    },
+    {
+      "id": "en-webcam-schynige-platte",
+      "slug": "schynige-platte",
+      "title": "Schynige Platte",
+      "altitude_m": 1967,
+      "coordinates": "46.6536, 7.9075",
+      "roundshot_id": "9e425745e5de8732e6417c934111cb09",
+      "roundshot_url": "https://webcams.jungfrau.ch/schynige-platte/#/",
+      "status_override": "auto"
+    }
+  ]
+}

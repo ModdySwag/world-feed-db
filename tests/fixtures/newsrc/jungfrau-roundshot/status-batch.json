@@ -1,0 +1,62 @@
+{
+  "877919abdb23eb59f63908ab8b300f1f": {
+    "online": true,
+    "lastImageAt": "2026-10-05T16:50:00.000Z",
+    "ageSeconds": 1155,
+    "reason": null
+  },
+  "8ebf876ae226aa03b0c65b0985e6f60e": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  },
+  "486d6b1c471c581a99233dc3e4cc3ab7": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  },
+  "c7f0edeec13d52b6c3cf91485d982548": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  },
+  "8acf8be16f88a36a1646ea3208f4fbea": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  },
+  "034de41e47b30dde0362b86b42d9fb61": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  },
+  "dbb5da2713c66505f2004b60c6c56609": {
+    "online": false,
+    "lastImageAt": "2026-10-02T13:50:00.000Z",
+    "ageSeconds": 271155,
+    "reason": "stale"
+  },
+  "584c8f65bd7b360eed6ffd43226cca8a": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  },
+  "9e425745e5de8732e6417c934111cb09": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  },
+  "527f953c3776c0552355d4a154c2b4e8": {
+    "online": true,
+    "lastImageAt": "2026-10-05T17:00:00.000Z",
+    "ageSeconds": 555,
+    "reason": null
+  }
+}
