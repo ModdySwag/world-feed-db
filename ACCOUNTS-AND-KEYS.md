@@ -2,7 +2,7 @@
 
 **Build principle (D7):** personal-first, open-source-ready. All credentials live OUTSIDE the repo in a per-user settings/credential layer (secure store + config file; never hardcoded). Every key-gated source shows an honest `UNAVAILABLE · KEY REQUIRED` state until its credential is supplied. When the app's settings surface exists, keys go straight into it (or a local `.env` it reads) — **never into chat, never into git**.
 
-How this works: as each build stage needs an account, it appears here with a signup link and a status box. Owner creates the account; the key lands in the app config.
+How this works: as each build stage needs an account, it appears here with a signup link and a status box. Owner creates the account; the key lands in the app config. These credentials all belong to the **`moddy` profile** (the ready-to-go build); the public **clean template** ships without them and runs degraded until a user supplies their own.
 
 ## Priority 1 — create when convenient (unlocks big ingest)
 
