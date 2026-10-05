@@ -1,0 +1,4 @@
+#EXTM3U
+#EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=918192,CODECS="avc1.640032",RESOLUTION=704x576
+https://n2.cdn.jetstre.am/session/FIXTURE-SESSION/sz/streamdays/wowza4/live/EdinburghZoo-Penguins-1378/chunklist.m3u8

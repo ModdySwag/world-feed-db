@@ -1,0 +1,216 @@
+<!-- REAL streamdays iframe HTML for penguin xb1u3eln (fetched 2026-10-06);
+     all token/authorization/key values replaced with FIXTURE-* placeholders -->
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Edinburgh Zoo - Penguins</title>
+    
+  <!-- NEW -->
+  <link rel="stylesheet" media="screen" href="/assets/flowplayerskin-FIXTURE-ASSET-HASH.css" />
+  <!--link rel="stylesheet" href="//releases.flowplayer.org/7.2.7/skin/skin.css"-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="/assets/flowplayer-FIXTURE-ASSET-HASH.js"></script>
+  <script>
+    // Disable Flowplayer's persistent localStorage probe and volume/mute storage.
+    // This must be set globally before any player instance is initialized.
+    flowplayer.set("storage", false);
+  </script>
+  <!--script src="//releases.flowplayer.org/7.2.7/commercial/flowplayer.min.js"></script-->
+  <script src="/javascripts/flowplayer.hlsjs.min.js?v=1.6.16"></script>
+  <!--script src="//releases.flowplayer.org/hlsjs/flowplayer.hlsjs.min.js"></script-->
+  <!-- ENDNEW -->
+  <!-- Privacy-friendly analytics by Plausible -->
+
+  <script type="text/javascript">
+
+  function start_html5_timeout(){
+      timeout = setTimeout("stop_playing_html5(timeout)", 1800000);
+  }
+
+  function stop_playing_html5(timeout){
+    clearTimeout(timeout);
+    flowplayer("#fp-hlsjs").unload();
+  }
+
+  var force_reload = true;
+
+  function set_player_background() {
+    $("#fp-hlsjs, #fp-hlsjs .fp-player, #fp-hlsjs video.fp-engine")
+      .css("background-color", "#000000");
+  }
+
+  function set_stream_starting(starting) {
+    $("#fp-hlsjs").toggleClass("stream-starting", starting);
+  }
+
+  $(document).ready(function() {
+
+    $("#preset_selector").change(function(){
+      position = $('#preset_selector option:selected').val();
+      if(position !== ''){
+        $("#preset_selector").prop('disabled', true);
+        var url = '/xb1u3eln/presets/' + position + '.json';
+        $.get(url, function(status) {
+          setTimeout(function(){
+            $("#preset_selector").prop('disabled', false);
+          }, 10000);
+        });
+      }
+    });
+
+    resize_player();
+
+    
+
+  });
+
+  $( window ).resize( function () {
+    resize_player();
+  });
+
+  function resize_player() {
+      var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],width=w.innerWidth||e.clientWidth||g.clientWidth,height=w.innerHeight||e.clientHeight||g.clientHeight;
+      $( '#streamdays_player' ).removeAttr( 'width')
+                          .removeAttr( 'height')
+                          .width( width )
+ //                         .css("max-width", "1060px" )
+                          .height( height )
+                          .css("margin-left", "auto")
+                          .css("margin-right", "auto")
+                          .css("background-color", "#FFFFFF");
+      $( '#fp-hlsjs' ).removeAttr( 'width')
+                          .removeAttr( 'height')
+                          .width( width )
+//                          .css("max-width", "1060px" )
+                          .height( height-20 )
+                          .css("margin-left", "auto")
+                          .css("margin-right", "auto")
+                          .css("background-color", "#000000");
+  }
+
+  function refresh_token() {
+    if (force_reload == false) {
+      force_reload = true;
+      return false;
+    }
+    // Keep the player black while the splash is removed and the refreshed
+    // stream is fetched. Flowplayer may create a new video element here.
+    set_stream_starting(true);
+    set_player_background();
+    var url = '/xb1u3eln/refresh_token.text';
+    var refreshAuthorization = "FIXTURE-TOKEN-PLACEHOLDER";
+    $.ajax({
+      type: "GET",
+      url: url,
+      headers: { "X-Stream-Refresh-Authorization": refreshAuthorization },
+      data: { get_param: 'value' },
+      success: function (data) {
+        if (typeof data !== "string" || data.trim() === "") {
+          console.error("Stream token refresh returned an empty response");
+          set_stream_starting(false);
+          return;
+        }
+
+        force_reload = false;
+        set_player_background();
+        flowplayer("#fp-hlsjs").load('https://takeoff.jetstre.am/?account=streamdays&type=live&service=wowza&protocol=https&token=' + data + '&output=playlist.m3u8&file=EdinburghZoo-Penguins-1378');
+      },
+      error: function () {
+        set_stream_starting(false);
+      }
+    });
+  }
+
+
+  function show_error(){
+    $("#fp-hlsjs").empty();
+$("#fp-hlsjs").html("<div style='width: 100%; height: 400px; background-color: #000000; background-repeat: no-repeat; background-size: contain;'><div style='display: inline-block; height: 100%; vertical-align: middle;'></div><img src='/assets/offline_images/camera_offline_responsive-FIXTURE-ASSET-HASH.jpg' style='center; display: inline-block; vertical-align: middle; max-width: 200px;'></div>");
+//    $("#fp-hlsjs").html("<img src='/assets/offline_images/camera_offline_responsive-FIXTURE-ASSET-HASH.jpg'>");
+  }
+
+  </script>
+
+
+  <style>
+    body {margin: 0; padding: 0; background-color: #FFFFFF; }
+    #player {display:block; width:1060px; height:600px; text-align: center;}
+    #fp-hlsjs {display:block; width:1060px; height:600px; text-align: center; background-color: #000000; }
+    #fp-hlsjs .fp-player,
+    #fp-hlsjs video.fp-engine { background-color: #000000 !important; }
+    #fp-hlsjs.stream-starting .fp-play,
+    #fp-hlsjs.stream-starting .fp-playbtn { display: none !important; }
+    #streamdays_player {background:#efefef; width:1060px; margin:0; padding:0; height:600px; }
+    .note {color: #999; font-size: 11px; font-family: Arial,Helvetica,sans-serif; text-align: right;}
+    .note a {font-size: 11px;}
+    .note a:link {color: #8E8787;}
+    .note a:visited {color: #8E8787;}
+    .note a:hover {color: #8E8787;}
+    .note a:active {color: #8E8787;}
+    .flowplayer .fp-speed { display: none; }
+    .flowplayer .fp-duration { display: none; }
+    .flowplayer .fp-remaining { display: none; }
+    .flowplayer .fp-elapsed { display: none; }
+    .flowplayer .fp-controls { justify-content: flex-start; }
+    .flowplayer .fp-logo {
+      display: block;
+      opacity: 1;
+      !important;
+    }
+      .flowplayer .fp-volume { display: none; }
+    #preset_selector {height: 18px; font-size: 10px; vertical-align: top; margin-top: 2px; }
+  </style>
+</head>
+<body style="font: 62.5%/1.3 Helvetica, Arial, sans-serif">
+  <div id="streamdays_player">
+    <div id="fp-hlsjs" class="functional fp-full fp-edgy fp-outlined no-time is-live is-splash" data-fullscreen="true" data-native_fullscreen="true" data-embed="false" ></div>
+    <script>
+      // install flowplayer into selected container
+      flowplayer('#fp-hlsjs', {
+        key: "FIXTURE-FLOWPLAYER-KEY",
+        embed: false,
+        fullscreen: true,
+        native_fullscreen: true,
+        share: false,
+        clip: {
+          sources: [
+            { type: "application/x-mpegurl",
+              src:  'https://takeoff.jetstre.am/?account=streamdays&type=live&service=wowza&protocol=https&token=FIXTURE-TOKEN-PLACEHOLDER&output=playlist.m3u8&file=EdinburghZoo-Penguins-1378' },
+            { type: "application/flash",
+              src:  '//takeoff.jetstre.am/?account=streamdays&ref=&type=live&service=wowza&protocol=rtmpe&token=FIXTURE-TOKEN-PLACEHOLDER&output=smil&file=EdinburghZoo-Penguins-1378' },
+          ]
+        }
+      }).on("ready", function (e, api, video) {
+        set_player_background();
+//      document.querySelector("#fp-hlsjs .fp-title").innerHTML = api.engine.engineName + " engine playing " + video.type;
+      }).on("load", function (e, api, video, engine) {
+        set_stream_starting(true);
+        set_player_background();
+        if (force_reload == true) {
+          if (engine && engine.engineName === "html5") {
+            // Safari/iOS uses native HLS. Allow playback to start inside the
+            // user's tap event; an AJAX-delayed load is blocked by iOS.
+            force_reload = false;
+          } else {
+            // Cancel the initial HLS.js load without destroying its engine.
+            // refresh_token() will start a new load with a fresh stream token.
+            e.preventDefault();
+            refresh_token();
+          }
+        }
+      }).on("pause", function (e, api) {
+        stop_playing_html5();
+      }).on("resume", function (e, api) {
+        set_stream_starting(false);
+        start_html5_timeout();
+      }).on("error", function (e, api) {
+        set_stream_starting(false);
+      });
+    </script>
+
+  </div>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45e50c25ac9ed7b',t:'MTc5MTIyMzExNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-FIXTURE-ASSET-HASH" data-cf-beacon='FIXTURE-CF-BEACON' crossorigin="anonymous"></script>
+</body>
+</html>
+
