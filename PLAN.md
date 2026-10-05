@@ -15,6 +15,7 @@ Non-goal (default): accessing private/exposed cameras.
 - **C3 Liveness & Self-Heal** — probe tiers (ffprobe frame-grab; HLS manifest freshness; two-sample pHash for frozen detection), health state machine, retry/backoff, rotation pools per logical channel, re-discovery when a stream dies.
 - **C4 Viewer** — map + wall UI; local restream engine (ffmpeg + go2rtc) for HLS/JPEG/YouTube; embed escape hatch; honest status badges (GEV vocabulary: `UNAVAILABLE · <source> · KEY REQUIRED` style).
 - **C5 Management surface** — search / add / remove / curate (CLI + web). Add = paste URL → probe → classify → store with health. Remove = soft-delete + auto-retire after N consecutive fails.
+- **C6 Config & Credential layer** (D7) — per-user settings + secure credential store (keyring/DPAPI; `.env` fallback), BYOK inputs for every key-gated source, `KEY REQUIRED` honest states, onboarding checklist from `ACCOUNTS-AND-KEYS.md`. Open-source-ready: zero secrets in the repo; a public user supplies their own keys.
 
 Reuse candidates: zero-hud `world_feed.py` channel/health patterns; GEV app schema + serve-stale; go2rtc as restream engine.
 
@@ -26,6 +27,7 @@ Reuse candidates: zero-hud `world_feed.py` channel/health patterns; GEV app sche
 - **D4** (10-05) Reference systems to study/borrow: trafficvision.live (155k+ claim; real-time stream testing; map + route UX), Argus (scrapers→SQLite→layered JSON), camforge (connectors + policy module + PostGIS), GEV app (schema, serve-stale), livetrafficcam.com (rolling verified-live checks).
 - **D5** (10-05) Default policy for the base layer: public-by-design only; insecam-class documented-not-scraped pending owner decision (S5 supplies inputs).
 - **D6** (10-05, OWNER DECISION — supersedes D5's default for this layer) **insecam-class exposed cameras are INCLUDED** as an explicitly-flagged category: registry rows carry `provenance: exposed` + warning badge + their own filter (visible by default in the owner's build). Handling: prefer consuming existing public insecam-derived datasets over re-scraping; rate-polite against hosters; distribution caveat tracked — keep the flag so any future public build can differ.
+- **D7** (10-05, OWNER) **Open-source-ready + credential layer.** Personal-first build, but designed so the repo can be published at any time: **no secrets in code or git**; all credentials via a per-user settings layer (secure store — OS keyring/DPAPI — with `.env` fallback); honest `UNAVAILABLE · KEY REQUIRED` states for every gated source; onboarding checklist driven by `ACCOUNTS-AND-KEYS.md`. Owner instruction: **prompt me along the way so I can create the needed accounts** — the checklist is the prompt surface.
 
 ## 4 · Seed corpus headline numbers (2026-10-05)
 

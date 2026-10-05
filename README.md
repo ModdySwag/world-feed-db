@@ -31,3 +31,8 @@ Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see 
 ## Policy line (default — owner decision pending, inputs in S5)
 
 Owner decision 2026-10-05: scope **includes insecam-class exposed cameras** as an explicitly-flagged category (`provenance: exposed` + warning badge + own filter). Everything else stays public-by-design. Handling rules for the flagged layer: consume existing public datasets where they exist instead of re-scraping; stay rate-polite against hosters; keep the provenance flag intact so any future public release can diverge.
+
+## Build principles (locked 2026-10-05)
+
+- **Personal-first, open-source-ready.** The initial build is for Moddy alone, but the repo must be publishable at any time: no secrets ever in code or git; everything config-driven; setup docs kept current.
+- **Credentials in, keys out.** The app ships a credential/settings layer (per-user secure store + config file) for website logins, API keys and tokens — every key-gated source shows an honest `KEY REQUIRED` state until its credential is supplied, and the app ships an onboarding checklist. The live list of accounts to create: `ACCOUNTS-AND-KEYS.md` (the owner is prompted as the build proceeds).
