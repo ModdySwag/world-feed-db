@@ -196,3 +196,15 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - Quiet defaults kept: **Q3** no Nimble top-up (Hound fallback) · **Q5** YouTube personal/local stance · **Q7** no-probe · **Q9** private-first gate · **Q10** takedown deferred.
 - Build phase opens — sprint 1: (a) credential/settings layer (profiles loader, keyring/DPAPI + `.env` fallback, honest `KEY REQUIRED` states); (b) exposure dataset ingesters (credential redaction + provenance flags per S5 §B); (c) L-E-S + government enumerator scaffolds per S2's "QUICK BUILD NOTES".
 - Small wins queued alongside: Road511 param discovery · QLD email draft (`qldtraffic@tmr.qld.gov.au`) · deno install for yt-dlp · Shodan camera-search dry run (search-only, credit-budgeted).
+
+### A10 · Build phase — sprint 1 delivered (folded 2026-10-05, late)
+
+> Trigger: owner "continue world-feed-db" → Q2–Q11 closed (A9) → build phase opened; 3 parallel build units dispatched, parent-verified, and committed.
+
+- **Core** (7f413c1): `wfd` package — `schema` (CameraRow + redaction), `profile` (clean template + private overlay; secret order store→.env→env; honest `KEY REQUIRED` states), `db` (SQLite+FTS5), `ingest.base` (IngestResult + polite HTTP), `cli` (`py -3.11 -m wfd status`), contracts `docs/ARCHITECTURE.md`, tests 6/6.
+- **Task A — credential/settings layer** (15e54cc): `wfd/creds.py` (keyring → DPAPI file → warned plaintext; values never printed; `wfd creds` CLI) + `wfd/onboarding.py` (`wfd keys` checklist from `ACCOUNTS-AND-KEYS.md`). Tests 11/11 + 7/7; active backend on this host = keyring (Windows Credential Locker).
+- **Task B — exposure ingesters** (8a0295f): era chain as static datasets only — **jrw-2019 17,034 rows** (3,836 redactions) · **GODEYE-2026-05 1,775** (38) · **rafasapiens-2026-10 2,072** (96) = **20,881 rows**; all `exposure_aggregator`/`unverified`/`geo_confidence=low`; parent-verified **0 credential values** in any output; manifest + sha256s at `data/ingest/manifest-exposure.json`; raw downloads gitignored (`research/exposed/raw/`). Tests 9/9.
+- **Task C — L-E-S + gov scaffold** (ac09a62): `les` 5,994 rows · `caltrans` 3,591 (12/12 districts; D03 recovered from its 500s) · `deldot` 361 · `nsw` 241 (key-gated, honest `KEY REQUIRED` when absent). Enumerated rows never claim liveness (status `unknown`). Tests 9/9 + 10/10.
+- **Small wins:** Road511 VERIFIED — `X-API-Key` header → HTTP 200 (2274fdc) · deno 2.9.7 installed (yt-dlp: `JS runtimes: deno-2.9.7`) · QLD email draft at `outreach/QLD-traffic-api-email-draft.md` (owner to fill + send) · Shodan key alive (free `/host/count` probes only).
+- **Parent verification on record:** all six suites re-run (6/6, 11/11, 7/7, 9/9, 9/9, 10/10); independent credential scan of 16 files = 0 violations; output sha256s match task reports; `profiles/moddy` untouched by tests.
+- Next moves: fill the registry DB (`wfd.db`) from ingest outputs · first health-check pass (A1 probe tiers) · viewer spike (shared backend + local web UI, Q4) · more enumerators from the S2 menu (TfL, DriveBC, OHGO, WSdot, Iowa, Ontario) · discovery connector (Shodan search-only, credit-budgeted).

@@ -10,6 +10,7 @@ Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see 
 - The collation of sources + endpoints: `SOURCES-CATALOG.md` — gov/institutional verified menu (§1), aggregator measurements (§2), platforms/fixtures (§3), reference systems (§4), ready-made corpora (§5), flagged exposure category (§6).
 - Decisions + waves log + open questions **Q2–Q11**: `PLAN.md` (living; earlier text never rewritten).
 - Next: owner decisions on Q2–Q11, then build-phase framing — first small artifacts are the dataset ingesters + provenance/redaction gate, and the enumerator set from the S1/S2 endpoint menus.
+- **2026-10-05 (late) — Build phase opened; sprint 1 delivered.** Core `wfd` package + credential layer + exposure ingesters (era chain 2019→2026, 20,881 rows) + L-E-S/gov enumerator scaffolds (10,187 rows). Contracts: `docs/ARCHITECTURE.md`; folds: PLAN A9–A10. Run: `py -3.11 -m wfd status`.
 
 ## Map
 
@@ -21,6 +22,11 @@ Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see 
 | `research/seed-tabs/data/LES-streams.geojson` | Live-Environment-Streams corpus (5,997 streams; 4,226 active) — best ready-made dataset found so far |
 | `research/seed-tabs/data/LES-sources.json` | L-E-S source-family index (67 families with counts) |
 | `research/sources/` · `research/gov/` · `research/platforms/` · `research/ingest/` · `research/osint/` | Wave evidence files (S1–S5) |
+| `wfd/` | the build package (clean template; `py -3.11 -m wfd status`) |
+| `docs/ARCHITECTURE.md` | build contracts (module APIs, laws, conventions) |
+| `profiles/clean/` + `profiles/<overlay>/` | profile system — keyless default + private overlay (gitignored) |
+| `tests/` | plain-python test runners (+ fixtures) |
+| `data/` | working DB + ingest outputs (gitignored — code travels, data stays) |
 
 ## Related prior art (local)
 
