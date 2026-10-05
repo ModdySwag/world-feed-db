@@ -61,6 +61,7 @@ Full table: `SOURCES-CATALOG.md`.
 - **Q8 Exposure display**: metadata + click-through warning [recommended] vs blurred thumbnail vs inline preview.
 - **Q9 Distribution**: private build first [recommended — `PRIVATE_EXPOSURE_SURFACE` gate] vs plan a public exposure surface (then: noindex + warnings + takedown SLA + legal review).
 - **Q10 Takedown workflow**: public contact point, response SLA, hard-remove + tombstone; dataset refresh cadence (monthly?).
+- **Q11 trafficvision.live data files**: robots.txt disallows `/camera-data/` + ToS bans automated access (the 853 `*-cameras.json` files are otherwise public/unauthenticated). Options: respect it and re-derive from the named original agencies [recommended] / contact them for permissioned API access / other owner call. (see A3)
 
 ## 7 · Addenda (wave fold-ins)
 
@@ -95,3 +96,33 @@ Status: evidence file read end-to-end; dataset counts parent-verified (jrw 17,39
 - Management surface: 10 precedents → proposed: Add = URL/dataset → GATE (provenance classify + credential redact) → PROBE (public-by-design only) → STORE+HEALTH; Remove = soft-delete + auto-quarantine (N=10) + tombstone + takedown; Search = provenance/geo/protocol/status/tag/source + free text. Exposure display defaults [P]: click-through warning, no autoplay, noindex, private-build-first.
 
 Owner decisions open: Q6–Q10 (§6). Next moves: build the dataset ingesters (TSV/CSV/JSON/JSONL) + redaction linter + provenance gate as the first small build artifacts; Q6 gates ingest order.
+
+### A3 · Wave S3 — platforms / datasets / test-fixtures (folded 2026-10-05)
+
+> Trigger: the original brief — "comprehensive… YouTube-live… the lot" — plus the mid-flight trafficvision.live steer.
+
+Status: read end-to-end; parent spot-checks all OK (robots.txt ✓ `Disallow: /camera-data/`; oktraffic HEAD → 200, 528,235 B, Last-Modified same-day ✓; yt-dlp live gate on @SanDiegoWebCam → `is_live=True` ✓). File: `research/platforms/S3-platforms-lists.md` (20 entries).
+
+- trafficvision.live reverse-mapped [V]: **853 per-source `*-cameras.json` files** behind `data.trafficvision.live/camera-data/` (sampled oktraffic: 683 cams; schema incl. `videoUrl` HLS + `imageUrl` + `feedType` + make/model); `changelog.json` public (199 entries, 315 KB); `/api/catalog/manifest` session-gated (401). BUT robots disallows `/camera-data/` + ToS bans automated access → REFERENCE + possible permission contact; the 853 file names are a source-name goldmine to re-derive from originals. → Q11.
+- YouTube: keyless discovery VERIFIED — `ytsearchN:"…"` + `--match-filter is_live` found 24 live cam channels in 3 sweeps (rail/airport/city/wildlife/surf); Data-API route documented (`search.list eventType=live` = 100-unit/day bucket); still needs deno JS-runtime for yt-dlp.
+- iptv-org: structural-only validation confirmed (no ffprobe anywhere in the org); reuse = `freearhey/iptv-checker` (ffprobe CLI, 625★); no public-cam entries inside its catalog.
+- Fixtures: public RTSP demo servers effectively extinct (rtsp.stream / viomic / wowza / Hessdalen all dead; port-quiz proves no local block) → self-host MediaMTX as the RTSP fixture; HLS fixtures verified (Apple bipbop, Mux x36xhzz + pts_shift).
+- Community: r/webcams = hardware sub (not feeds); no "awesome-webcams" list exists; no Wikipedia list → the curated-list niche is OPEN (positioning note for us).
+- CAM2 (Purdue): service dead (register 404; API hosts unreachable) — historical reference only.
+- Synthesis (entry 20): four liveness patterns to copy (pre-display gating / scheduled probing / human repair loop / data-shape discipline); the differentiation gap to own = a public global ffprobe sweep + auto-failover.
+
+Owner decision: Q11. Next moves: none build-blocking; feed the trafficvision source-name list into the discovery backlog.
+
+### A4 · Wave S2 — government / institutional sources worldwide (folded 2026-10-05)
+
+> Trigger: "comprehensive… all publicly available… worldwide" + the seed inventories (L-E-S / Argus / OpenTrafficCamMap).
+
+Status: read end-to-end; spot-checks OK. File: `research/gov/S2-gov-institutional.md` (19 family entries; ~60 polite live fetches by the child, all byte-counted and dated).
+
+- Flagship verified: Caltrans 12-district JSONs (D12 = 419 cams; D03 HTTP 500 — skip); VDOT 1,168 + MD SHA 404 + DelDOT JSON now 361 cams w/ direct HLS (all HLS verified HTTP 200); Ohio OHGO 1,161 cams + direct JPEGs; WSdot 1,706 features (latin-1 encoding!); Iowa ArcGIS count 1,260; DriveBC 1,066 (1,045 on); Ontario 511 = 925 cams (Iteris `List/GetData` pattern; GA/AB same family, 500s from host); TfL 890; NZ trafficnz 313; SG data.gov.sg (8 at check — partial).
+- Endpoint menu captured for ~30 more US systems (TX special: `GetCctvSnapshotByIcdId`; MO/NV/NM/UT/HI/OK/TN/KY/ND/SD/SC/IL/WV; FL/LA/AK/AZ/WI/MN/MS; KS/NE/CO/IN GraphQL-511 family) + Road511 multi-state (now key-gated; broken-host list: trafficwise.org, kdot-sfs, actis.idrivearkansas.com, api.trafficland.com).
+- International: Vegvesen new image API `kamera.atlas.vegvesen.no/api/images/<id>` + DATEX (registered) [V migration observed]; Autobahn.de API shape (empty at check — re-test w/ browser); NSW + QLD need free keys (both 401); TW geo-blocked from this host; TH/KR/JP = event/manual.
+- Institutional verified: USGS HVO V1cam 200/56 KB; AVO ashcam URL pattern; NPS + Pixelcaster (snapshot 200/20.9 KB; HLS token-gated); USAP XHR API (McMurdo / South Pole / Palmer + weather); ski — Jackson Hole JSON + direct JPG 200/269 KB, Ischgl 200/187 KB; Roundshot/Panomax = provider patterns.
+- Keys needed (free): Windy, Road511, NSW, QLD, LTA DataMall alt.
+
+Next moves: catalog §1 updated with the verified menu; at build start, code enumerators in S2's "QUICK BUILD NOTES" order (registry → liveness exemptions → viewer tiers).

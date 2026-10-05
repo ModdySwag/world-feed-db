@@ -53,6 +53,13 @@ Dead ends from that pass: NASA TV akamaized m3u8 (empty segments), Purdue MJPEG 
 | NOAA / USAP Antarctica | US | page-level | →W2 | JS/pannellum | Public |
 | NASA SDO / ISS | US | verified | sdo.gsfc.nasa.gov; YouTube | JPG refresh / yt | Public domain |
 
+**S2 fold-in (2026-10-05) — verified endpoint menu (full detail: `research/gov/S2-gov-institutional.md`):**
+- US: Caltrans 12-district JSONs (D12=419 cams verified; D03 500 → skip) · VDOT 1,168 (`media-sfs{2,6,8}.vdotcameras.com` HLS; old geojson stale) · MD SHA 404 · DelDOT JSON 361 cams + direct HLS (verified) · Iowa ArcGIS count 1,260 · OHGO Ohio 1,161 cams + direct JPEGs (verified) · WSdot 1,706 features (latin-1!) · Road511 20-state gateway (now key-gated) · OTC per-state menu: TX special (`GetCctvSnapshotByIcdId`), MO/NV/NM/UT/HI/OK/TN/KY/ND/SD/SC/IL/WV, FL/LA/GA/AK/AZ/WI/MN/MS (`List/GetData/Cameras` family), KS/NE/CO/IN/IA GraphQL-511 family · NYC TMC API (unreachable from this host — retry elsewhere).
+- Canada: DriveBC 1,066 (1,045 on) verified · Ontario 511 925 cams verified · Alberta re-test.
+- Intl: TfL 890 verified · Vegvesen `kamera.atlas.vegvesen.no/api/images/<id>` + DATEX (registered) · Autobahn.de API shape (re-test) · NSW/QLD need free keys · SG data.gov.sg 8 cams · NZ trafficnz 313 verified · TW geo-blocked from host · TH/KR/JP event/manual.
+- Institutional: USGS HVO/AVO/CVO/YVO/CalVO verified patterns (V1cam 200/56 KB) · NPS + Pixelcaster snapshot (200/20.9 KB), token-gated HLS · USAP XHR API (McMurdo/SouthPole/Palmer + weather) · ski: Jackson Hole JSON + direct JPGs, Ischgl; Roundshot/Panomax providers.
+- Keys needed (free): Windy, Road511, NSW, QLD, LTA DataMall alt.
+
 Key artifacts: `research/seed-tabs/github-topics/traffic-cameras--stars.json` (31 repos incl. per-city apps), `repos/AidanWelch__OpenTrafficCamMap.README.md`, `repos/GoSlowPoke168__Argus.README.md`.
 
 ---
@@ -81,16 +88,16 @@ Key artifacts: `research/seed-tabs/github-topics/traffic-cameras--stars.json` (3
 
 | Layer | Key facts |
 |---|---|
-| YouTube-live | yt-dlp resolve mechanics VERIFIED (WV1): `bv*[height<=720]+ba/b`; channel `/live` URLs work; some `watch?v=` bot-walled; `android_vr` fallback rescued one; byte-flow proof method. 475 YouTube entries inside L-E-S. Verify-live syntax →W3/W4. |
-| iptv-org | giant public IPTV catalog + stream-checking CI →W3 (its verification machinery is a reuse candidate) |
-| livetrafficcam.com | US traffic cam directory built on official state DOT feeds; "each camera checked on a rolling schedule with real HTTP requests — 'live' means a verified current image"; public JSON API wrapped by `bzsasson/livetrafficcam-mcp` + HA integration "verified-live signature" →W2/W4 |
-| Test fixtures (pipeline testing) | rtsp.stream / octostream / viomic samples listed in rtsp-camera-view#3 →W3 (verify which still work) |
+| YouTube-live | Resolve mechanics VERIFIED (WV1): `bv*[height<=720]+ba/b`; channel `/live` works; some `watch?v=` bot-walled; `android_vr` fallback. S3 fold-in: keyless DISCOVERY verified — `ytsearchN:"…" + --match-filter is_live` (24 live cam channels in 3 sweeps); liveness gate `--simulate --match-filter "is_live"` (rc 0/101); Data-API lane = `search.list eventType=live` (100-unit/day bucket); install deno JS-runtime for yt-dlp. 475 YouTube entries inside L-E-S. |
+| iptv-org | Structural validation ONLY — no ffprobe anywhere in the org (S3 [V]); reuse = `freearhey/iptv-checker` (ffprobe CLI, 625★); no public-cam entries in its catalog. |
+| livetrafficcam.com | US traffic cam directory built on official state DOT feeds; rolling HTTP checks — "live = verified current image"; status taxonomy live/stale/dead + 14-day uptime (21,580 tracked / 74.9% live verified 2026-10-05); public JSON API wrapped by `bzsasson/livetrafficcam-mcp` + HA "verified-live signature". |
+| Test fixtures (pipeline testing) | S3 [V]: public RTSP demo servers DEAD (rtsp.stream / viomic / wowza / Hessdalen; port-quiz proves no local port block) → **self-host MediaMTX** as RTSP fixture; HLS fixtures WORK: Apple bipbop (`devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8`), Mux `test-streams.mux.dev/x36xhzz/x36xhzz.m3u8` + `pts_shift`. |
 
 ---
 
 ## 4 · Reference systems (borrow design — not feed sources)
 
-- **trafficvision.live** — claims: 155k+ cams, 700+ official sources, 130+ countries; live video + refreshing images + YouTube on one map; route builder; AI overlays (vehicle boxes/counts); "each stream tested in real time before the round starts" (CamGuessr) = real-time liveness testing. API endpoints →W3. Capture: `seed-tabs/reddit/trafficvision-live-site.md`.
+- **trafficvision.live** — closest peer system (S3-dissected) [V]: 155k+ cams / 700+ official sources / 130+ countries claimed; live video + refreshing images + YouTube on one map; route builder; AI overlays; CamGuessr "stream-tested before each round". Data surface: **853 per-source `*-cameras.json`** at `data.trafficvision.live/camera-data/` (sampled oktraffic = 683 cams, HLS `videoUrl` + `imageUrl` + make/model per cam); `changelog.json` (199 entries); `/api/catalog/manifest` = session-gated (401). robots.txt `Disallow: /camera-data/` + ToS bans automated access → **reference/benchmark only; do not bulk-pull**; use the 853 source-names to re-derive from the original agencies; consider a permission contact (→Q11). Captures: `seed-tabs/reddit/trafficvision-live-site.md`, `research/platforms/S3-platforms-lists.md` entry 1.
 - **Argus** (GoSlowPoke168) — scrapers → SQLite → layered JSON exports (`cameras.core.json` / `.labels.json` / `.detail/`), MapLibre+Deck.GL, HLS w/ JPEG cache-bust fallback, CORS/ipcamlive local proxy. 229k+ claim; `public/cameras.geojson` = 100 MB.
 - **camforge** (SoCloseSociety) — self-hosted map+relay+local AI vision; connectors `caltrans.ts / five11.ts / vegvesen.ts / windy.ts / youtube.ts`; `lib/policy.ts` bright-line module; PostGIS; Next.js 15. MIT.
 - **God's Eye View** (local, C:\pinokio\api\gods-eye-view.git) — georeferenced CCTV schema; proxy+cache+serve-stale; attribution system; MIT code w/ per-source data licenses.
