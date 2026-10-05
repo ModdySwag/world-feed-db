@@ -29,4 +29,4 @@ Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see 
 
 ## Policy line (default — owner decision pending, inputs in S5)
 
-Public-by-design sources only: government agencies, operators streaming to be watched, tourism/amenity cams. Exposed-private-camera corpora (insecam-class) are documented for decision but **not** scraped or probed.
+Owner decision 2026-10-05: scope **includes insecam-class exposed cameras** as an explicitly-flagged category (`provenance: exposed` + warning badge + own filter). Everything else stays public-by-design. Handling rules for the flagged layer: consume existing public datasets where they exist instead of re-scraping; stay rate-polite against hosters; keep the provenance flag intact so any future public release can diverge.

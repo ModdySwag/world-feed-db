@@ -112,9 +112,9 @@ Key artifacts: `research/seed-tabs/github-topics/traffic-cameras--stars.json` (3
 
 Query example for L-E-S (from its README): usable = `status=="active" and url_type in ("hls","youtube") and source_url_requires is None` → ~2,929 streams.
 
-## 6 · Class F — Flagged / restricted (policy pending — Q1)
+## 6 · Class F — Flagged / restricted — **Q1 RESOLVED (2026-10-05): INCLUDE as flagged category**
 
-- **insecam-derived corpora** (e.g. `justrandomwebcams/totalynothackedijokeyounot` — "Over 17K webcams from insecam"): DO NOT ingest without owner decision. Insecam aggregates *unprotected private cameras* — excluded under the default policy line.
+- **insecam-derived corpora** — OWNER DECISION 10-05: **INCLUDED** (`provenance: exposed` + warning badge + separate filter). Harvest status: dataset IN HAND — `totalynothackedijokeyounot` (1.7 MB CSV, `ip:port / country / city / feed-url`, datestamp 2019-02-21 — historical, low liveness expected; saved under `research/exposed/` + README with stats). Repo inventory: 41 GitHub 'insecam' repos found (top: GeorgePatsias/OpenEyes, apockill/InsecamScraper, matiasraisanen/insecrawl, OEUG99/InsecamPy, L3-X/Insecam-IP-Scraper, 8133/camera-scraper, HadiAssadDiab/Insecam-Scraper, vicalejuri/insecam-feedtv; list in `research/exposed/README.md`). insecam.org direct probe 2026-10-05: HTTP 000 via curl (blocked/failed — browser lane likely needed; mechanics →W5). Handling: prefer these existing datasets over re-scraping; rate-polite; public-release caveat preserved via the flag.
 - **Scanner / recon tools** (documented for awareness, not run): `JettChenT/scan-for-webcams` (shodan queries per camera type — webcamXP/MJPG/yawcam/hipcam/rtsp, with capture_url patterns; queries captured in `repos/scan-for-webcams.cams.json`), `spyboy-productions/CamXploit`, `Y0oshi/Project-Eyes-On`, `josh0xA/Pantheon` (IoT camera recon + viewer), `2l7b/public-camera-indexing-insights` (Google-dork corpus), Kamerka (woj-ciech). `K3ysTr0K3R/Webanator` — **gone** (404; account has no public repos, 2026-10-05).
 - Grey-edge mixes to treat carefully: `pbkompasz/webcams` (crawl approach, references insecam-adjacent practice), `baywolf88/seeallthethings` (SC set mixes DOT + insecam site-searches + tourism cams).
 
