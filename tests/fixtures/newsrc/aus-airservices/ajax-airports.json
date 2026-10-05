@@ -1,0 +1,92 @@
+{
+ "debug": {
+  "page": null,
+  "post_per_page": null,
+  "filter": "",
+  "all": ""
+ },
+ "max_num_pages": 0,
+ "args": {
+  "post_type": "asa-airports",
+  "posts_per_page": -1,
+  "paged": 1,
+  "orderby": "title",
+  "order": "ASC",
+  "meta_key": "state",
+  "meta_value": ""
+ },
+ "airport_list": [
+  {
+   "id": 45,
+   "title": "Albany Airport",
+   "link": "https://weathercams.airservicesaustralia.com/asa-airports/albany-airport/",
+   "thumbnail": "https://weathercams.airservicesaustralia.com/wp-content/uploads/airports/009999/009999_045.jpg?v=1791222828",
+   "state": "WA",
+   "state_full": "Western Australia",
+   "lat": "-34.945143",
+   "long": "117.801381",
+   "img_camera": "https://weathercams.airservicesaustralia.com/wp-content/themes/asa/img/camera.png",
+   "name": "albany-airport"
+  },
+  {
+   "id": 714,
+   "title": "Broome Airport",
+   "link": "https://weathercams.airservicesaustralia.com/asa-airports/broome-airport/",
+   "thumbnail": "https://weathercams.airservicesaustralia.com/wp-content/uploads/airports/003003/003003_090.jpg?v=1791222828",
+   "state": "WA",
+   "state_full": "Western Australia",
+   "lat": "-17.95162395777278",
+   "long": "122.23371657338544",
+   "img_camera": "https://weathercams.airservicesaustralia.com/wp-content/themes/asa/img/camera.png",
+   "name": "broome-airport"
+  },
+  {
+   "id": 398,
+   "title": "Bunbury Airport",
+   "link": "https://weathercams.airservicesaustralia.com/asa-airports/bunbury-airport/",
+   "thumbnail": "https://weathercams.airservicesaustralia.com/wp-content/uploads/2018/02/Camera-Unavailable.png",
+   "state": "WA",
+   "state_full": "Western Australia",
+   "lat": "-33.3743906",
+   "long": "115.6833745",
+   "img_camera": "https://weathercams.airservicesaustralia.com/wp-content/themes/asa/img/camera.png",
+   "name": "bunbury-airport"
+  },
+  {
+   "id": 262,
+   "title": "Watts Bridge Memorial Airfield",
+   "link": "https://weathercams.airservicesaustralia.com/asa-airports/watts-bridge-memorial-airfield/",
+   "thumbnail": "https://weathercams.airservicesaustralia.com/wp-content/uploads/airports/wattsbridge/north.jpg?v=1791222828",
+   "state": "QLD",
+   "state_full": "Queensland",
+   "lat": "-27.0979637",
+   "long": "152.4551914",
+   "img_camera": "https://weathercams.airservicesaustralia.com/wp-content/themes/asa/img/camera.png",
+   "name": "watts-bridge-memorial-airfield"
+  },
+  {
+   "id": 654,
+   "title": "Yulara Airport",
+   "link": "https://weathercams.airservicesaustralia.com/?post_type=asa-airports&p=654",
+   "thumbnail": "https://weathercams.airservicesaustralia.com/wp-content/uploads/2018/02/Camera-Unavailable.png",
+   "state": "NT",
+   "state_full": "Northern Territory",
+   "lat": "",
+   "long": "",
+   "img_camera": "https://weathercams.airservicesaustralia.com/wp-content/themes/asa/img/camera.png",
+   "name": "yulara-airport"
+  },
+  {
+   "id": 999001,
+   "title": "Synthetic Fallback Aero",
+   "link": "https://weathercams.airservicesaustralia.com/asa-airports/synthetic-fallback-aero/",
+   "thumbnail": "https://weathercams.airservicesaustralia.com/wp-content/uploads/airports/123456/123456_315.jpg?v=1791222269",
+   "state": "VIC",
+   "state_full": "Victoria",
+   "lat": "-37.5",
+   "long": "144.9",
+   "img_camera": "https://weathercams.airservicesaustralia.com/wp-content/themes/asa/img/camera.png",
+   "name": "synthetic-fallback-aero"
+  }
+ ]
+}
