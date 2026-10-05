@@ -122,6 +122,33 @@ def test_duplicate_within_family_collapses():
         conn.close()
 
 
+
+
+def test_reingest_preserves_health_state():
+    """Re-loading a JSONL must NOT reset sweep verdicts (status/last_verified)."""
+    import pathlib as _p
+    import tempfile as _tf
+    from wfd import db as _db
+
+    with _tf.TemporaryDirectory() as td:
+        conn = _db.connect(_p.Path(td) / "t.db")
+        _db.init_db(conn)
+        from wfd.schema import CameraRow as _CR
+        row = _CR(url="https://example.com/a", source_family="t", name="one")
+        _db.upsert(conn, row)
+        conn.execute("UPDATE cameras SET status='live', "
+                     "last_verified='2026-10-06T01:02:03' WHERE camera_id=?",
+                     (row.camera_id,))
+        conn.commit()
+        _db.upsert(conn, _CR(url="https://example.com/a", source_family="t", name="two"))
+        got = conn.execute("SELECT status, last_verified, name FROM cameras "
+                           "WHERE camera_id=?", (row.camera_id,)).fetchone()
+        assert got[0] == "live", got[0]
+        assert got[1] == "2026-10-06T01:02:03", got[1]
+        assert got[2] == "two", got[2]           # ingest-owned columns still update
+        conn.close()
+
+
 def main() -> int:
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

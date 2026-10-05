@@ -124,7 +124,12 @@ def upsert(conn: sqlite3.Connection, row: CameraRow) -> None:
     """
     values = _row_values(row)
     placeholders = ", ".join("?" for _ in _COLUMNS)
-    updates = ", ".join(f"{c}=excluded.{c}" for c in _COLUMNS if c != "camera_id")
+    # Health-owned columns (status, last_verified) survive re-ingest: only a
+    # fresh INSERT takes the ingest values; live sweeps own them afterwards.
+    # A full rebuild is what `wfd db load --reset` is for.
+    updates = ", ".join(
+        f"{c}=excluded.{c}" for c in _COLUMNS
+        if c not in ("camera_id", "status", "last_verified"))
     conn.execute(
         f"INSERT INTO cameras ({', '.join(_COLUMNS)}) VALUES ({placeholders}) "
         f"ON CONFLICT(camera_id) DO UPDATE SET {updates}",
