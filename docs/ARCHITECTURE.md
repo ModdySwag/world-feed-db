@@ -104,7 +104,7 @@ PLAN.md holds the program decisions; this file holds the engineering contracts.
 ### wfd.ingest.newsrc (build unit NS — new-source families)
 - One module per family under `wfd/ingest/newsrc/`, each exposing a module-level
   `ENUMERATOR` and runnable directly: `py -3.11 -m wfd.ingest.newsrc.<family>`
-  (package runner `<family|all>` once registered in `__init__.py`).
+  (package runner `<family|all|list>` — modules auto-register on import).
 - Provenance by family: `explore-omega` / `jungfrau-roundshot` /
   `vailresorts-brownrice` = `public_by_design`; `openwebcamdb` (third-party
   directory) = `aggregator_directory` (operator/credit preserved in `meta`).
