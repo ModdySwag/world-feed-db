@@ -1,0 +1,147 @@
+{
+ "sha": "aecb92b7551b2225eb8284eb4bb8a508a9c808ff",
+ "url": "https://api.github.com/repos/cobanov/kamera/git/trees/aecb92b7551b2225eb8284eb4bb8a508a9c808ff",
+ "tree": [
+  {
+   "path": ".gitignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "15201acc113da01edf6fa2fb2708b2e9076b6bc5",
+   "size": 3415,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/15201acc113da01edf6fa2fb2708b2e9076b6bc5"
+  },
+  {
+   "path": "LICENSE",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "MANIFEST.in",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "34dccfc239d442e8a201f9e683b339dd01f661c6",
+   "size": 51,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/34dccfc239d442e8a201f9e683b339dd01f661c6"
+  },
+  {
+   "path": "README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "57cbf3adfcf56568547b5ead87ffcb1ece74e15c",
+   "size": 1453,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/57cbf3adfcf56568547b5ead87ffcb1ece74e15c"
+  },
+  {
+   "path": "assets",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "2cc5572ce570e7bcfe4e9c64f509391f9f4fe09f",
+   "url": "https://api.github.com/repos/cobanov/kamera/git/trees/2cc5572ce570e7bcfe4e9c64f509391f9f4fe09f"
+  },
+  {
+   "path": "assets/example.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "80bcabe8f08c9c246d0fcc5209e5d7e16b88a175",
+   "size": 635100,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/80bcabe8f08c9c246d0fcc5209e5d7e16b88a175"
+  },
+  {
+   "path": "kamera",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "fb7d14cfc859fd7ad12fe87701bce82b143c67b2",
+   "url": "https://api.github.com/repos/cobanov/kamera/git/trees/fb7d14cfc859fd7ad12fe87701bce82b143c67b2"
+  },
+  {
+   "path": "kamera/__init__.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "48ca036e173d4632d5bf2eb73e2dc513f6a22f35",
+   "size": 50,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/48ca036e173d4632d5bf2eb73e2dc513f6a22f35"
+  },
+  {
+   "path": "kamera/app.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2bbd81b2fdfb25a205bb1589bbcd1a9e0c81d3fa",
+   "size": 2035,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/2bbd81b2fdfb25a205bb1589bbcd1a9e0c81d3fa"
+  },
+  {
+   "path": "kamera/camera.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b70bbfe53c0ade9b8c346d53c65a0f222ff7dd19",
+   "size": 924,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/b70bbfe53c0ade9b8c346d53c65a0f222ff7dd19"
+  },
+  {
+   "path": "kamera/settings.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7bf5a9a4dc1414fcb1efa1745381e9fec8e5bfc1",
+   "size": 1643,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/7bf5a9a4dc1414fcb1efa1745381e9fec8e5bfc1"
+  },
+  {
+   "path": "kamera/static",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "eff898ef859dc68ddb2d2452a0cd6b7878e31992",
+   "url": "https://api.github.com/repos/cobanov/kamera/git/trees/eff898ef859dc68ddb2d2452a0cd6b7878e31992"
+  },
+  {
+   "path": "kamera/static/styles.css",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ff748c356a43ae3f45b9f11d73d3a052b4b7b9eb",
+   "size": 1735,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/ff748c356a43ae3f45b9f11d73d3a052b4b7b9eb"
+  },
+  {
+   "path": "kamera/templates",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "e3bb7a78d88261aa32fcd63e6087d99cce98c17b",
+   "url": "https://api.github.com/repos/cobanov/kamera/git/trees/e3bb7a78d88261aa32fcd63e6087d99cce98c17b"
+  },
+  {
+   "path": "kamera/templates/index.html",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7c5358d40df759cff69332e3f9591a77171fbc21",
+   "size": 2667,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/7c5358d40df759cff69332e3f9591a77171fbc21"
+  },
+  {
+   "path": "pyproject.toml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9787c3bdf008a57ae3cb2e27a8261eb3f134ff73",
+   "size": 90,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/9787c3bdf008a57ae3cb2e27a8261eb3f134ff73"
+  },
+  {
+   "path": "requirements.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8c220b4aae65420aa27e5cef626b178c9c3a2c0d",
+   "size": 53,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/8c220b4aae65420aa27e5cef626b178c9c3a2c0d"
+  },
+  {
+   "path": "setup.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e6164b06e8ca5ee1332ed2fce69405629c5c0f72",
+   "size": 903,
+   "url": "https://api.github.com/repos/cobanov/kamera/git/blobs/e6164b06e8ca5ee1332ed2fce69405629c5c0f72"
+  }
+ ],
+ "truncated": false
+}

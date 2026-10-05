@@ -1,0 +1,33 @@
+{
+    "default":{
+        "display_url_scheme":"[link=http://{ip}:{port}]http://[i][green]{ip}[/green]:[red]{port}[/red][/link]",
+        "query":"webcams"
+    },
+    "webcamXP":{
+        "display_url_scheme":"[def]",
+        "capture_url":"{url}/cam_1.jpg",
+        "query":"product:webcamXP",
+        "camera_type":"webcamXP"
+    },
+    "MJPG":{
+        "display_url_scheme":"[link=http://{ip}:{port}/?action=stream][i]http://[green]{ip}[/green]:[red]{port}[/red][blue]/?action=stream[/blue][/link]",
+        "capture_url":"{url}/?action=snapshot",
+        "query":"[def]",
+        "camera_type":"MJPG-streamer"   
+    },
+    "yawCam":{
+        "display_url_scheme":"[def]",
+        "capture_url":"{url}/out.jpg",
+        "query":"Server: yawcam Mime-Type: text/html",
+        "camera_type":"yawcam"
+    },
+    "rtsp": {
+        "query": "\"RTSP\" screenshot.label:webcam has_screenshot:1 -screenshot.label:blank",
+        "protocol":"rtsp"
+    },
+    "hipcam":{
+        "query": "hash:1842228279",
+        "stream_url_scheme":"{url}/11",
+        "protocol":"rtsp"
+    }
+}

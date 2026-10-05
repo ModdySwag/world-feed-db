@@ -1,0 +1,731 @@
+{
+ "sha": "3772218b0ad85221565fb37bf1b9314faa69c044",
+ "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/3772218b0ad85221565fb37bf1b9314faa69c044",
+ "tree": [
+  {
+   "path": ".env.example",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e423d64a93999ad5077a6ab0643bbd46fb87da57",
+   "size": 2664,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/e423d64a93999ad5077a6ab0643bbd46fb87da57"
+  },
+  {
+   "path": ".gitignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e8ac1f743696274992a7ffbc2ab49f688c2370d5",
+   "size": 171,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/e8ac1f743696274992a7ffbc2ab49f688c2370d5"
+  },
+  {
+   "path": "CLAUDE.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "61193cf013fb4f4b5d4371cd1aaf140a86862d1b",
+   "size": 9597,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/61193cf013fb4f4b5d4371cd1aaf140a86862d1b"
+  },
+  {
+   "path": "LICENSE",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "19c0ab53f169fa5518e46ddcc1567a6b32bcae08",
+   "size": 1434,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/19c0ab53f169fa5518e46ddcc1567a6b32bcae08"
+  },
+  {
+   "path": "README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e81a8d37ff8cdf328b099c792d277a4fd767d985",
+   "size": 11477,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/e81a8d37ff8cdf328b099c792d277a4fd767d985"
+  },
+  {
+   "path": "db",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "7a569ff22515ec1310a14116b786e5ce333e4c01",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/7a569ff22515ec1310a14116b786e5ce333e4c01"
+  },
+  {
+   "path": "db/migrations",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "a031e9e8cfc1596b729c2409a8337e880674a05a",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/a031e9e8cfc1596b729c2409a8337e880674a05a"
+  },
+  {
+   "path": "db/migrations/0001_init.sql",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "15950d605daf5a3e5f8d942fb9a4196556a6dca0",
+   "size": 7481,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/15950d605daf5a3e5f8d942fb9a4196556a6dca0"
+  },
+  {
+   "path": "db/migrations/0002_stream_url.sql",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a0afd121d2d77e5c24e3aa7154a72cb3beea04de",
+   "size": 307,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/a0afd121d2d77e5c24e3aa7154a72cb3beea04de"
+  },
+  {
+   "path": "db/migrations/0003_video_url.sql",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b57b6013ba0c4614d308f30fb879ec8c676c1fa7",
+   "size": 249,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/b57b6013ba0c4614d308f30fb879ec8c676c1fa7"
+  },
+  {
+   "path": "db/migrations/0004_status_samples.sql",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5fb09bfd6cb17dc7e6f71f2448c05d77064e2f85",
+   "size": 506,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/5fb09bfd6cb17dc7e6f71f2448c05d77064e2f85"
+  },
+  {
+   "path": "docker-compose.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0a0dd225e72b8fa213bd79fb5f4d70f614bea337",
+   "size": 1682,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/0a0dd225e72b8fa213bd79fb5f4d70f614bea337"
+  },
+  {
+   "path": "docs",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "1ad3d8be9784404cf084eb3fc09a127eb98927e0",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/1ad3d8be9784404cf084eb3fc09a127eb98927e0"
+  },
+  {
+   "path": "docs/screenshots",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "be191d2dc3ed9c0ebb36ad55adcfa5e1d91e945b",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/be191d2dc3ed9c0ebb36ad55adcfa5e1d91e945b"
+  },
+  {
+   "path": "docs/screenshots/guide.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "16866934f838f1164135f7bade0033af555446fc",
+   "size": 169701,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/16866934f838f1164135f7bade0033af555446fc"
+  },
+  {
+   "path": "docs/screenshots/map.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a452ee745010c84cfaa9516343d286ca1ba04fbe",
+   "size": 198895,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/a452ee745010c84cfaa9516343d286ca1ba04fbe"
+  },
+  {
+   "path": "docs/screenshots/multiview.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2683ca5bb4ab043b48c2bef9a824b384f7bfa064",
+   "size": 1621348,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/2683ca5bb4ab043b48c2bef9a824b384f7bfa064"
+  },
+  {
+   "path": "docs/screenshots/osint.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3f150a9956668f531d400fae54363473e95213d9",
+   "size": 53322,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/3f150a9956668f531d400fae54363473e95213d9"
+  },
+  {
+   "path": "mediamtx.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e2bdebb55af347b9b7a119b68c18199ac1c70e47",
+   "size": 875,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/e2bdebb55af347b9b7a119b68c18199ac1c70e47"
+  },
+  {
+   "path": "next.config.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "300ff2b6d22da871e05b14eb15eb8e1d18a4c2b4",
+   "size": 652,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/300ff2b6d22da871e05b14eb15eb8e1d18a4c2b4"
+  },
+  {
+   "path": "package-lock.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c319e3c6f1e11c00244cf667d8383057042cdd1c",
+   "size": 64525,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/c319e3c6f1e11c00244cf667d8383057042cdd1c"
+  },
+  {
+   "path": "package.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "945126ec0a02c6e45fa928612b176f868f394ed8",
+   "size": 1103,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/945126ec0a02c6e45fa928612b176f868f394ed8"
+  },
+  {
+   "path": "scripts",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "a97b53afb05d9ae688c98e154a4ab419b202754b",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/a97b53afb05d9ae688c98e154a4ab419b202754b"
+  },
+  {
+   "path": "scripts/ingest.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ea96a6292cf597ffa8e1b2f4370f6ad6416482cc",
+   "size": 6898,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/ea96a6292cf597ffa8e1b2f4370f6ad6416482cc"
+  },
+  {
+   "path": "scripts/migrate.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4f55eab94040ebf11d20ae0b56c042d78afa268e",
+   "size": 648,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/4f55eab94040ebf11d20ae0b56c042d78afa268e"
+  },
+  {
+   "path": "scripts/relay-sync.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5f07dd18a3978fd21911b21d838ab8e51194883b",
+   "size": 1644,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/5f07dd18a3978fd21911b21d838ab8e51194883b"
+  },
+  {
+   "path": "scripts/test-ollama-relay.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1efa2494e600e0b045a87e4a121d5f2d8a382bed",
+   "size": 1967,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/1efa2494e600e0b045a87e4a121d5f2d8a382bed"
+  },
+  {
+   "path": "scripts/verify-relay-hardening.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a9ae8d44b1734654596f482da0c9727448bafc78",
+   "size": 3825,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/a9ae8d44b1734654596f482da0c9727448bafc78"
+  },
+  {
+   "path": "src",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "294191c15803bad6ca9c8995049a857e65737652",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/294191c15803bad6ca9c8995049a857e65737652"
+  },
+  {
+   "path": "src/app",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "df47c3184089437909440f1e457c03018da4fb93",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/df47c3184089437909440f1e457c03018da4fb93"
+  },
+  {
+   "path": "src/app/CameraAnalyze.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6282279d3cf8b373abc4cafa8c5026e4e178f90e",
+   "size": 4490,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/6282279d3cf8b373abc4cafa8c5026e4e178f90e"
+  },
+  {
+   "path": "src/app/LiveVideo.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "469d46c99edf8ed4099101801745744d18ffaaac",
+   "size": 6993,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/469d46c99edf8ed4099101801745744d18ffaaac"
+  },
+  {
+   "path": "src/app/api",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "21611a190a79941eceb4efe89a309ca0b8a3a14a",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/21611a190a79941eceb4efe89a309ca0b8a3a14a"
+  },
+  {
+   "path": "src/app/api/cameras",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "a501b394fcf798240d320cbb7963478ddb4fb6cc",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/a501b394fcf798240d320cbb7963478ddb4fb6cc"
+  },
+  {
+   "path": "src/app/api/cameras/[id]",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "5339926b2839961d71f014bcfb3cfcf5613ba75b",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/5339926b2839961d71f014bcfb3cfcf5613ba75b"
+  },
+  {
+   "path": "src/app/api/cameras/[id]/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c86f626b6ece38b1f94c0a75e5a36229297f3fc1",
+   "size": 1412,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/c86f626b6ece38b1f94c0a75e5a36229297f3fc1"
+  },
+  {
+   "path": "src/app/api/cameras/search",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "1b63748b963b71c225494fdbed417b16d11028c6",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/1b63748b963b71c225494fdbed417b16d11028c6"
+  },
+  {
+   "path": "src/app/api/cameras/search/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c77f95ab4a85888fcb25e4d25106ab57fd4523bd",
+   "size": 4518,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/c77f95ab4a85888fcb25e4d25106ab57fd4523bd"
+  },
+  {
+   "path": "src/app/api/geocode",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "fde0819f0d178e60c6a61b8df03ecaad57acee0b",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/fde0819f0d178e60c6a61b8df03ecaad57acee0b"
+  },
+  {
+   "path": "src/app/api/geocode/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a202f51afc6ac6bddb549f56cc1ae6fc23c9f473",
+   "size": 631,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/a202f51afc6ac6bddb549f56cc1ae6fc23c9f473"
+  },
+  {
+   "path": "src/app/api/osint",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "67f8c0111beddf88e4339fdf31a7a1e49f8d69ca",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/67f8c0111beddf88e4339fdf31a7a1e49f8d69ca"
+  },
+  {
+   "path": "src/app/api/osint/findings",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "03003250cd6aa88d3e6d6e7d0f9fa3e4fff6f8f8",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/03003250cd6aa88d3e6d6e7d0f9fa3e4fff6f8f8"
+  },
+  {
+   "path": "src/app/api/osint/findings/[id]",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "11de59a751b1fc8364f3e8b74d9577000cea4550",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/11de59a751b1fc8364f3e8b74d9577000cea4550"
+  },
+  {
+   "path": "src/app/api/osint/findings/[id]/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0d26e55b8d7c1d0e4a38296f0a273a985619c30d",
+   "size": 1792,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/0d26e55b8d7c1d0e4a38296f0a273a985619c30d"
+  },
+  {
+   "path": "src/app/api/osint/findings/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4f6f2b0b2ee52b921e091ab124b5cc7709b85cd0",
+   "size": 1499,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/4f6f2b0b2ee52b921e091ab124b5cc7709b85cd0"
+  },
+  {
+   "path": "src/app/api/osint/scan",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "c8f8f7da2634c3d47981b5425040b156958258b5",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/c8f8f7da2634c3d47981b5425040b156958258b5"
+  },
+  {
+   "path": "src/app/api/osint/scan/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "001daad9afd05b4fc1dc335c6fb0444dba859a0d",
+   "size": 4478,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/001daad9afd05b4fc1dc335c6fb0444dba859a0d"
+  },
+  {
+   "path": "src/app/api/relay-stream",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "4e397f713380867a14fe174a0715044e635403bf",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/4e397f713380867a14fe174a0715044e635403bf"
+  },
+  {
+   "path": "src/app/api/relay-stream/[id]",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "6b3e5a1399c42dc195f189b975c2855e45730bbc",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/6b3e5a1399c42dc195f189b975c2855e45730bbc"
+  },
+  {
+   "path": "src/app/api/relay-stream/[id]/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "20e2e1d141233d755d01f39ba9cd65768014912f",
+   "size": 2577,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/20e2e1d141233d755d01f39ba9cd65768014912f"
+  },
+  {
+   "path": "src/app/api/relay",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "6cec47a8b7b78744e662ee5aec7ff05440acaa40",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/6cec47a8b7b78744e662ee5aec7ff05440acaa40"
+  },
+  {
+   "path": "src/app/api/relay/[id]",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "5d8e958a4d2a644637f9e917954e854d1ce60a95",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/5d8e958a4d2a644637f9e917954e854d1ce60a95"
+  },
+  {
+   "path": "src/app/api/relay/[id]/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "989f3ab71ac126da1984e653b303e804878f245e",
+   "size": 4526,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/989f3ab71ac126da1984e653b303e804878f245e"
+  },
+  {
+   "path": "src/app/api/stats",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "c7ddeda741b690dcf749f441edaf893d70d66a0b",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/c7ddeda741b690dcf749f441edaf893d70d66a0b"
+  },
+  {
+   "path": "src/app/api/stats/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8a3291905a0ac8adf264c8d5dcfb954e9491d226",
+   "size": 1183,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/8a3291905a0ac8adf264c8d5dcfb954e9491d226"
+  },
+  {
+   "path": "src/app/api/thumb",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "61ace2ca7b81115066060f24cff8deedbb3f9c02",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/61ace2ca7b81115066060f24cff8deedbb3f9c02"
+  },
+  {
+   "path": "src/app/api/thumb/[id]",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "b6015b2746dc13a231be1cd53020a7a7567bd1c9",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/b6015b2746dc13a231be1cd53020a7a7567bd1c9"
+  },
+  {
+   "path": "src/app/api/thumb/[id]/route.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "373a627e085d281aaa21906e8bf6b0a98e04e895",
+   "size": 3774,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/373a627e085d281aaa21906e8bf6b0a98e04e895"
+  },
+  {
+   "path": "src/app/globals.css",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "93825ba13b85dc4a8113966edda5ab2e95567966",
+   "size": 3299,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/93825ba13b85dc4a8113966edda5ab2e95567966"
+  },
+  {
+   "path": "src/app/guide",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "736ab31c393fc578757d50c9c44167b1105972db",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/736ab31c393fc578757d50c9c44167b1105972db"
+  },
+  {
+   "path": "src/app/guide/page.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a38268e1a8fdbf14e3fc71ffc0b50cbdea059577",
+   "size": 11419,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/a38268e1a8fdbf14e3fc71ffc0b50cbdea059577"
+  },
+  {
+   "path": "src/app/icon.svg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4e7c6c2f5dae3cac5489fcb5a217d17bd091fce9",
+   "size": 308,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/4e7c6c2f5dae3cac5489fcb5a217d17bd091fce9"
+  },
+  {
+   "path": "src/app/layout.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "81783338044d63ae77942c70b5e9a5b4665229e6",
+   "size": 463,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/81783338044d63ae77942c70b5e9a5b4665229e6"
+  },
+  {
+   "path": "src/app/multiview",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "4d3b670bc6756147319b2a407eeeb7ef23ac9dda",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/4d3b670bc6756147319b2a407eeeb7ef23ac9dda"
+  },
+  {
+   "path": "src/app/multiview/page.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "334c52b5e0e59787e4f0679c6fe2d938da751d39",
+   "size": 8986,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/334c52b5e0e59787e4f0679c6fe2d938da751d39"
+  },
+  {
+   "path": "src/app/osint",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "797c362c028dfd72990b3be66550b7380f237e40",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/797c362c028dfd72990b3be66550b7380f237e40"
+  },
+  {
+   "path": "src/app/osint/page.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a2f6d60ea4cb00eab328a4fa77ad9879eb463230",
+   "size": 10746,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/a2f6d60ea4cb00eab328a4fa77ad9879eb463230"
+  },
+  {
+   "path": "src/app/page.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "80fb9e532da2ff5c1be78830d8571f30baff588e",
+   "size": 16093,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/80fb9e532da2ff5c1be78830d8571f30baff588e"
+  },
+  {
+   "path": "src/connectors",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "088a4f4c7e0a6df27cf08cfc3f42eb328126f09d",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/088a4f4c7e0a6df27cf08cfc3f42eb328126f09d"
+  },
+  {
+   "path": "src/connectors/caltrans.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d9677d66af55ced361905de59ac8ce35bcc886bf",
+   "size": 4221,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/d9677d66af55ced361905de59ac8ce35bcc886bf"
+  },
+  {
+   "path": "src/connectors/five11.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ac583f6a8fc5343f413fd40bc6dd80b13b3b40ff",
+   "size": 4456,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/ac583f6a8fc5343f413fd40bc6dd80b13b3b40ff"
+  },
+  {
+   "path": "src/connectors/registry.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e8a775e502e6a0e60255e4a1b6232f7b7508849d",
+   "size": 1144,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/e8a775e502e6a0e60255e4a1b6232f7b7508849d"
+  },
+  {
+   "path": "src/connectors/tfl.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b1983fb96a12324e7b8513f2ad54f1d4cf7de6f3",
+   "size": 2640,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/b1983fb96a12324e7b8513f2ad54f1d4cf7de6f3"
+  },
+  {
+   "path": "src/connectors/types.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8b7eb95fbe8f90c8c0031406cb6701a8ffab96b2",
+   "size": 316,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/8b7eb95fbe8f90c8c0031406cb6701a8ffab96b2"
+  },
+  {
+   "path": "src/connectors/vegvesen.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "20f90462790caf4b19274de3af39131186e9a12f",
+   "size": 4984,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/20f90462790caf4b19274de3af39131186e9a12f"
+  },
+  {
+   "path": "src/connectors/windy.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "aa2a92d628a6de81586f2c14de2dd86547f44d0a",
+   "size": 4913,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/aa2a92d628a6de81586f2c14de2dd86547f44d0a"
+  },
+  {
+   "path": "src/connectors/wsdot.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6fe7872afe53a446c3b033e2c512a582c39b514b",
+   "size": 2617,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/6fe7872afe53a446c3b033e2c512a582c39b514b"
+  },
+  {
+   "path": "src/connectors/youtube.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "20f8e8cbf9eafb3d76b2e8f795479a9a73a83e74",
+   "size": 5660,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/20f8e8cbf9eafb3d76b2e8f795479a9a73a83e74"
+  },
+  {
+   "path": "src/lib",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "011bde141b10a1689049c84505227729130b68e9",
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/trees/011bde141b10a1689049c84505227729130b68e9"
+  },
+  {
+   "path": "src/lib/ai-relay.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "068bb6462769f8253081f2c474b1796c5726a222",
+   "size": 4298,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/068bb6462769f8253081f2c474b1796c5726a222"
+  },
+  {
+   "path": "src/lib/db.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c66743527f6a3436da66f114ea316c2d2cf347d9",
+   "size": 579,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/c66743527f6a3436da66f114ea316c2d2cf347d9"
+  },
+  {
+   "path": "src/lib/env.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a1af31a4af4b35a5a6656311cde1853905f57938",
+   "size": 1513,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/a1af31a4af4b35a5a6656311cde1853905f57938"
+  },
+  {
+   "path": "src/lib/exposure.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ffbaa7091f44d83eb1454c608fb878cf0a6a1bad",
+   "size": 1659,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/ffbaa7091f44d83eb1454c608fb878cf0a6a1bad"
+  },
+  {
+   "path": "src/lib/geo.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "191a3bafd1ed498493246a13d1358a7c28645b76",
+   "size": 2349,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/191a3bafd1ed498493246a13d1358a7c28645b76"
+  },
+  {
+   "path": "src/lib/media.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "08a4be80b684ca24a38560fdbe71e74e79bd900c",
+   "size": 2109,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/08a4be80b684ca24a38560fdbe71e74e79bd900c"
+  },
+  {
+   "path": "src/lib/ollama-relay.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3f8b1f32e1552e4f91ee817fc7403c00a2f49554",
+   "size": 5643,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/3f8b1f32e1552e4f91ee817fc7403c00a2f49554"
+  },
+  {
+   "path": "src/lib/policy.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "487e8e747398c0f96445e454af575e7c016f76bc",
+   "size": 3456,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/487e8e747398c0f96445e454af575e7c016f76bc"
+  },
+  {
+   "path": "src/lib/relay-ai.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b99f195cf75045eee735ee44b344d575fc0a4ea4",
+   "size": 2395,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/b99f195cf75045eee735ee44b344d575fc0a4ea4"
+  },
+  {
+   "path": "src/lib/relay.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "296490af45d3a324776a478e3b0196bf68b4f67b",
+   "size": 3632,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/296490af45d3a324776a478e3b0196bf68b4f67b"
+  },
+  {
+   "path": "src/lib/safe-fetch.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c8f36500155fb07f264ffe9523fd806f52d0d150",
+   "size": 3158,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/c8f36500155fb07f264ffe9523fd806f52d0d150"
+  },
+  {
+   "path": "src/lib/types.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e503702680380fcdaacf6f13924b93b35a314702",
+   "size": 2082,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/e503702680380fcdaacf6f13924b93b35a314702"
+  },
+  {
+   "path": "src/lib/validate.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ce716769ff650c63251fe9ed93c367bc23104146",
+   "size": 375,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/ce716769ff650c63251fe9ed93c367bc23104146"
+  },
+  {
+   "path": "src/lib/whep.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c9ac61cce1b71053dd04de199c9c732c4b4e35f8",
+   "size": 1952,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/c9ac61cce1b71053dd04de199c9c732c4b4e35f8"
+  },
+  {
+   "path": "tsconfig.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0b0dc581ec283efcaec51da3f568487f34d6746b",
+   "size": 611,
+   "url": "https://api.github.com/repos/SoCloseSociety/camforge/git/blobs/0b0dc581ec283efcaec51da3f568487f34d6746b"
+  }
+ ],
+ "truncated": false
+}

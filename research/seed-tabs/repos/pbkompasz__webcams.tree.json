@@ -1,0 +1,882 @@
+{
+ "sha": "21248d8bf3ee35eefa49163b8820a9005ac99cd9",
+ "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/21248d8bf3ee35eefa49163b8820a9005ac99cd9",
+ "tree": [
+  {
+   "path": ".env.example",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "96ee126d4f3576cc81f29bd01e161f39ff1e27b2",
+   "size": 47,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/96ee126d4f3576cc81f29bd01e161f39ff1e27b2"
+  },
+  {
+   "path": ".gitignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b90cf49df3558c5c86549ef0024c20730d189c35",
+   "size": 26,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/b90cf49df3558c5c86549ef0024c20730d189c35"
+  },
+  {
+   "path": "LICENSE",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e48b73e958a959992ed5e8d5408949ae99f7b8fe",
+   "size": 1066,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e48b73e958a959992ed5e8d5408949ae99f7b8fe"
+  },
+  {
+   "path": "Makefile",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8b27fdd67a92249538f75301e09a91e2333a3a80",
+   "size": 59,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/8b27fdd67a92249538f75301e09a91e2333a3a80"
+  },
+  {
+   "path": "README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "aff99dc90db80325f09d650caee5a1269ee4be85",
+   "size": 1982,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/aff99dc90db80325f09d650caee5a1269ee4be85"
+  },
+  {
+   "path": "backend",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "bf0481e7175cf8b2ee27cbd0e51035ad3a5376a1",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/bf0481e7175cf8b2ee27cbd0e51035ad3a5376a1"
+  },
+  {
+   "path": "backend/Dockerfile",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e851b3cb8192ac249b4697b8042ccf64c1b96eb0",
+   "size": 163,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e851b3cb8192ac249b4697b8042ccf64c1b96eb0"
+  },
+  {
+   "path": "backend/api",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "261b48c3c6939dd0e39af750e177e925b7253a9e",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/261b48c3c6939dd0e39af750e177e925b7253a9e"
+  },
+  {
+   "path": "backend/api/__init__.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "backend/api/admin.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8c38f3f3dad51e4585f3984282c2a4bec5349c1e",
+   "size": 63,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/8c38f3f3dad51e4585f3984282c2a4bec5349c1e"
+  },
+  {
+   "path": "backend/api/apps.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "66656fd29b2cc651c92dc03b2eaf6ef9a4397df0",
+   "size": 138,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/66656fd29b2cc651c92dc03b2eaf6ef9a4397df0"
+  },
+  {
+   "path": "backend/api/migrations",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "485a29fa7dc590fdbc21c81609d6aa0356be8b06",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/485a29fa7dc590fdbc21c81609d6aa0356be8b06"
+  },
+  {
+   "path": "backend/api/migrations/0001_initial.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d3a7522cd9530f8004b8627ff89c4cbaa7fa30e5",
+   "size": 2076,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/d3a7522cd9530f8004b8627ff89c4cbaa7fa30e5"
+  },
+  {
+   "path": "backend/api/migrations/0002_rename_webcam_webcam1.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e4e8f825c8162a4951011d8563fa003cb51902f3",
+   "size": 317,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e4e8f825c8162a4951011d8563fa003cb51902f3"
+  },
+  {
+   "path": "backend/api/migrations/0003_auto_20230423_1536.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ea5db3e394fe3e8eae9f2ad9688b08bda206d4c7",
+   "size": 1047,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/ea5db3e394fe3e8eae9f2ad9688b08bda206d4c7"
+  },
+  {
+   "path": "backend/api/migrations/0004_alter_webcam_name.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "791668b7e311c938dab8755041fa4c37bf2b28d6",
+   "size": 382,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/791668b7e311c938dab8755041fa4c37bf2b28d6"
+  },
+  {
+   "path": "backend/api/migrations/__init__.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "backend/api/models.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "06ff6a16a1394d475e5d2dd5cceac8913f00e2e1",
+   "size": 2038,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/06ff6a16a1394d475e5d2dd5cceac8913f00e2e1"
+  },
+  {
+   "path": "backend/api/serializers.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fba5a82d44c5afa9ea43c371ac1904a56d6e8c25",
+   "size": 267,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/fba5a82d44c5afa9ea43c371ac1904a56d6e8c25"
+  },
+  {
+   "path": "backend/api/tests.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7ce503c2dd97ba78597f6ff6e4393132753573f6",
+   "size": 60,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/7ce503c2dd97ba78597f6ff6e4393132753573f6"
+  },
+  {
+   "path": "backend/api/urls.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4ed8825a0fcb881532113bea056b73ef76e190ae",
+   "size": 250,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/4ed8825a0fcb881532113bea056b73ef76e190ae"
+  },
+  {
+   "path": "backend/api/views.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7de05f4adcd51558ba00607f97b56b2b85f6b79c",
+   "size": 1078,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/7de05f4adcd51558ba00607f97b56b2b85f6b79c"
+  },
+  {
+   "path": "backend/backend",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "a4584a7a37563a9f1c6051d4242dd14e36032afe",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/a4584a7a37563a9f1c6051d4242dd14e36032afe"
+  },
+  {
+   "path": "backend/backend/__init__.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "backend/backend/__pycache__",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "85b4dcb935d29cbb9a7cc0760a20e0a13b7ed6ae",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/85b4dcb935d29cbb9a7cc0760a20e0a13b7ed6ae"
+  },
+  {
+   "path": "backend/backend/__pycache__/__init__.cpython-310.pyc",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c50fc7a302489367799df178f6477a327c47878b",
+   "size": 142,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/c50fc7a302489367799df178f6477a327c47878b"
+  },
+  {
+   "path": "backend/backend/__pycache__/settings.cpython-310.pyc",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "04434cab2f4c9237b0cc16c69e3fbd4028431e16",
+   "size": 2221,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/04434cab2f4c9237b0cc16c69e3fbd4028431e16"
+  },
+  {
+   "path": "backend/backend/__pycache__/urls.cpython-310.pyc",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d63fcee0286f766cb48763eb62e70467364a6967",
+   "size": 919,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/d63fcee0286f766cb48763eb62e70467364a6967"
+  },
+  {
+   "path": "backend/backend/__pycache__/wsgi.cpython-310.pyc",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d6fa58d843fc5d4363cd99b8b1b83d3340198ebf",
+   "size": 545,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/d6fa58d843fc5d4363cd99b8b1b83d3340198ebf"
+  },
+  {
+   "path": "backend/backend/settings.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8263a8bce3d073f9b0364fcba6235a2c6c186b1f",
+   "size": 3353,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/8263a8bce3d073f9b0364fcba6235a2c6c186b1f"
+  },
+  {
+   "path": "backend/backend/urls.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "03c1b65ccf67998560003c1c7bead4ae5111f433",
+   "size": 883,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/03c1b65ccf67998560003c1c7bead4ae5111f433"
+  },
+  {
+   "path": "backend/backend/wsgi.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7116e40500408ca056ebb6c3389deb824106baad",
+   "size": 391,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/7116e40500408ca056ebb6c3389deb824106baad"
+  },
+  {
+   "path": "backend/db.sqlite3",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "74b0f3e27fc251b1a73f02418914eea362213ac2",
+   "size": 131072,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/74b0f3e27fc251b1a73f02418914eea362213ac2"
+  },
+  {
+   "path": "backend/manage.py",
+   "mode": "100755",
+   "type": "blob",
+   "sha": "bb00dc6c6d6a7f53b9ad45b33cbd095c819d9807",
+   "size": 627,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/bb00dc6c6d6a7f53b9ad45b33cbd095c819d9807"
+  },
+  {
+   "path": "backend/requirements.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e7f928bcfa10e93f18eee0da6e35086d36c59318",
+   "size": 78,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e7f928bcfa10e93f18eee0da6e35086d36c59318"
+  },
+  {
+   "path": "crawl",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "32d268f53c58f430a49e99345a5f4ab6b77970d0",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/32d268f53c58f430a49e99345a5f4ab6b77970d0"
+  },
+  {
+   "path": "crawl/.dockerignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "93f13619916123cf5434dab2ffcc8263c7420af1",
+   "size": 27,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/93f13619916123cf5434dab2ffcc8263c7420af1"
+  },
+  {
+   "path": "crawl/.gitkeep",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "crawl/Dockerfile",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e4897014038c0d063acdfc8b5de290c27e935dd6",
+   "size": 618,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e4897014038c0d063acdfc8b5de290c27e935dd6"
+  },
+  {
+   "path": "crawl/crawl.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d9d64f1a452d7db1da9e932e863a4792750d7f2c",
+   "size": 1948,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/d9d64f1a452d7db1da9e932e863a4792750d7f2c"
+  },
+  {
+   "path": "crawl/package-lock.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "35daea2e3b2a08fd5a9087051930f2f436ddfd25",
+   "size": 48323,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/35daea2e3b2a08fd5a9087051930f2f436ddfd25"
+  },
+  {
+   "path": "crawl/package.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5c1b843d8a4701bbd2e2dce2211ce46a064c4993",
+   "size": 410,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/5c1b843d8a4701bbd2e2dce2211ce46a064c4993"
+  },
+  {
+   "path": "crawl/server.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1d1251b7348dece7d8916fde557f275efa35d825",
+   "size": 644,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/1d1251b7348dece7d8916fde557f275efa35d825"
+  },
+  {
+   "path": "docker-compose.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "54cb4d860eaf4b361cfc280016a422660e7f7328",
+   "size": 1933,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/54cb4d860eaf4b361cfc280016a422660e7f7328"
+  },
+  {
+   "path": "frontend",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "4dc26f384ade22b825b738c66b30592e0c084c15",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/4dc26f384ade22b825b738c66b30592e0c084c15"
+  },
+  {
+   "path": "frontend/.editorconfig",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9d08a1a828a3bd2d60de3952744df29f9add27fa",
+   "size": 147,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/9d08a1a828a3bd2d60de3952744df29f9add27fa"
+  },
+  {
+   "path": "frontend/.eslintignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7b59e09d273a61fd08a361cfee8685120e0ed837",
+   "size": 79,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/7b59e09d273a61fd08a361cfee8685120e0ed837"
+  },
+  {
+   "path": "frontend/.eslintrc.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "05e18c118e5212bbcbd8637b153b9ed3a415f95c",
+   "size": 3423,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/05e18c118e5212bbcbd8637b153b9ed3a415f95c"
+  },
+  {
+   "path": "frontend/.gitignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "553e1345ce91d411d26adba3745ca2d6611f81ee",
+   "size": 496,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/553e1345ce91d411d26adba3745ca2d6611f81ee"
+  },
+  {
+   "path": "frontend/.npmrc",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "32bd84d2a277205b7f8873b2c854aa9a927ef75e",
+   "size": 76,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/32bd84d2a277205b7f8873b2c854aa9a927ef75e"
+  },
+  {
+   "path": "frontend/.vscode",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "b716c21460c09635a70f994daa8028609831efb1",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/b716c21460c09635a70f994daa8028609831efb1"
+  },
+  {
+   "path": "frontend/.vscode/extensions.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "518f8c8c6069b861d44745f264b9de1eac875354",
+   "size": 295,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/518f8c8c6069b861d44745f264b9de1eac875354"
+  },
+  {
+   "path": "frontend/.vscode/settings.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f1256f9c65d5dd49674f16c810af3eeff6b60973",
+   "size": 389,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/f1256f9c65d5dd49674f16c810af3eeff6b60973"
+  },
+  {
+   "path": "frontend/Dockerfile",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "35f64210901c21815cfeb22acf90dfb4ef219572",
+   "size": 230,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/35f64210901c21815cfeb22acf90dfb4ef219572"
+  },
+  {
+   "path": "frontend/README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "12ecc0f94ab5e343833b380feb0c91a01792b911",
+   "size": 458,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/12ecc0f94ab5e343833b380feb0c91a01792b911"
+  },
+  {
+   "path": "frontend/index.html",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3c8c78f0007c9ddc965fa544055a40df548083f3",
+   "size": 952,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/3c8c78f0007c9ddc965fa544055a40df548083f3"
+  },
+  {
+   "path": "frontend/package-lock.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "59c943203c1553ec69eca09e8f4ddea5005c18d5",
+   "size": 398409,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/59c943203c1553ec69eca09e8f4ddea5005c18d5"
+  },
+  {
+   "path": "frontend/package.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2223bded58e2336c88eb91afb912b46156c9d879",
+   "size": 1142,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/2223bded58e2336c88eb91afb912b46156c9d879"
+  },
+  {
+   "path": "frontend/postcss.config.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "94b7b1c85f134ea33484673950d2476ce166a574",
+   "size": 817,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/94b7b1c85f134ea33484673950d2476ce166a574"
+  },
+  {
+   "path": "frontend/public",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "310c45f43fae30d53974499bb11daadd2438be91",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/310c45f43fae30d53974499bb11daadd2438be91"
+  },
+  {
+   "path": "frontend/public/bd_1.jpg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e8410d3ed6e8e2b42bd006002d52a21309006485",
+   "size": 8054,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e8410d3ed6e8e2b42bd006002d52a21309006485"
+  },
+  {
+   "path": "frontend/public/bd_2.jpg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "44d66ac726a5ddb70198dcd490a578844f8b3a07",
+   "size": 253357,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/44d66ac726a5ddb70198dcd490a578844f8b3a07"
+  },
+  {
+   "path": "frontend/public/favicon.ico",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ee05c294abb23fd7726e9f7896864528de8e0ed8",
+   "size": 114010,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/ee05c294abb23fd7726e9f7896864528de8e0ed8"
+  },
+  {
+   "path": "frontend/public/icons",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "ec18d147e61c30a40c7b3429d243e7c8eb8ae883",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/ec18d147e61c30a40c7b3429d243e7c8eb8ae883"
+  },
+  {
+   "path": "frontend/public/icons/favicon-128x128.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "14011761929f4ffbef81be318a347c0032eb6f42",
+   "size": 12324,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/14011761929f4ffbef81be318a347c0032eb6f42"
+  },
+  {
+   "path": "frontend/public/icons/favicon-16x16.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "679063a314fd3c64d24ce2d10fa28996381e65ef",
+   "size": 859,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/679063a314fd3c64d24ce2d10fa28996381e65ef"
+  },
+  {
+   "path": "frontend/public/icons/favicon-32x32.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fd1fbc6f1b21f4513d47cc7e2e40699fb731b15f",
+   "size": 2039,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/fd1fbc6f1b21f4513d47cc7e2e40699fb731b15f"
+  },
+  {
+   "path": "frontend/public/icons/favicon-96x96.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e93b80a09c82e1c1a0be4dfd7fdd032e76f77096",
+   "size": 9643,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e93b80a09c82e1c1a0be4dfd7fdd032e76f77096"
+  },
+  {
+   "path": "frontend/public/webcam_pointer.jpg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "65840fb99ed855cc0ffc3c106be7c4c4a6744a5a",
+   "size": 113596,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/65840fb99ed855cc0ffc3c106be7c4c4a6744a5a"
+  },
+  {
+   "path": "frontend/public/webcam_pointer2.jpg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "086f885b7108c7904e3d198e3b6e7947e137ff42",
+   "size": 25034,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/086f885b7108c7904e3d198e3b6e7947e137ff42"
+  },
+  {
+   "path": "frontend/quasar.config.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "961217cdbd7927428cf8f46a64156bcd837ac0ec",
+   "size": 5861,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/961217cdbd7927428cf8f46a64156bcd837ac0ec"
+  },
+  {
+   "path": "frontend/src",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "ab98dae54619242d4c1cb5d88ef2d0f0d48bb8ac",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/ab98dae54619242d4c1cb5d88ef2d0f0d48bb8ac"
+  },
+  {
+   "path": "frontend/src/App.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fe0a24699c92f3fa4f990bcb659df06b3a04ee41",
+   "size": 78,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/fe0a24699c92f3fa4f990bcb659df06b3a04ee41"
+  },
+  {
+   "path": "frontend/src/assets",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "2829a49116f57231b03468dc02bc6531e1450400",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/2829a49116f57231b03468dc02bc6531e1450400"
+  },
+  {
+   "path": "frontend/src/assets/quasar-logo-vertical.svg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "821083104a8da969f6ebe021813312e24fe820ca",
+   "size": 4456,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/821083104a8da969f6ebe021813312e24fe820ca"
+  },
+  {
+   "path": "frontend/src/boot",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "352e9dce2250421f29f443c3e20bc4c0e8ada7b4",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/352e9dce2250421f29f443c3e20bc4c0e8ada7b4"
+  },
+  {
+   "path": "frontend/src/boot/.gitkeep",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "frontend/src/boot/axios.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7b4f69dfa0332cdb5c5bb9ff1d3a5d2a59f0f9a2",
+   "size": 985,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/7b4f69dfa0332cdb5c5bb9ff1d3a5d2a59f0f9a2"
+  },
+  {
+   "path": "frontend/src/components",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "55bd961891e1905ed94e2ae3b97cea7712036cd7",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/55bd961891e1905ed94e2ae3b97cea7712036cd7"
+  },
+  {
+   "path": "frontend/src/components/EssentialLink.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "84fa280f428d0c7b6533d1ebc7679d0b6c3ef14f",
+   "size": 576,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/84fa280f428d0c7b6533d1ebc7679d0b6c3ef14f"
+  },
+  {
+   "path": "frontend/src/components/ExampleComponent.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "bc03c3d5b5afde35763426bf9f4b6be18ff89492",
+   "size": 790,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/bc03c3d5b5afde35763426bf9f4b6be18ff89492"
+  },
+  {
+   "path": "frontend/src/components/WebcamMap.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b28139bc745457a25d3ea596f02c31971d0d6ba6",
+   "size": 1285,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/b28139bc745457a25d3ea596f02c31971d0d6ba6"
+  },
+  {
+   "path": "frontend/src/components/WebcamsList.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "37190890f764c751360e5b3e40332aeccda41aa7",
+   "size": 608,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/37190890f764c751360e5b3e40332aeccda41aa7"
+  },
+  {
+   "path": "frontend/src/components/WebcamsPanes.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "37190890f764c751360e5b3e40332aeccda41aa7",
+   "size": 608,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/37190890f764c751360e5b3e40332aeccda41aa7"
+  },
+  {
+   "path": "frontend/src/components/models.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "69459204b1f570769a13be76e3e7562d6f0917b5",
+   "size": 108,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/69459204b1f570769a13be76e3e7562d6f0917b5"
+  },
+  {
+   "path": "frontend/src/css",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "8e9d0d001ce3eb7cfb37ceec442e2d44a8941ab2",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/8e9d0d001ce3eb7cfb37ceec442e2d44a8941ab2"
+  },
+  {
+   "path": "frontend/src/css/app.scss",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ecac98f346a997239ea8d62f6d9404c4a0389444",
+   "size": 31,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/ecac98f346a997239ea8d62f6d9404c4a0389444"
+  },
+  {
+   "path": "frontend/src/css/quasar.variables.scss",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3996ce1b2c6c0dcb2dcd575b973b4fc3084c6402",
+   "size": 774,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/3996ce1b2c6c0dcb2dcd575b973b4fc3084c6402"
+  },
+  {
+   "path": "frontend/src/env.d.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "dd757b1c0ebdfc40fba72b317b5e93cf95845c15",
+   "size": 209,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/dd757b1c0ebdfc40fba72b317b5e93cf95845c15"
+  },
+  {
+   "path": "frontend/src/layouts",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "6f38fa7523b6c290e591fe23eee040d10dc57e00",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/6f38fa7523b6c290e591fe23eee040d10dc57e00"
+  },
+  {
+   "path": "frontend/src/layouts/MainLayout.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3fd593096dff78b29da399cfc615087be40915e2",
+   "size": 1263,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/3fd593096dff78b29da399cfc615087be40915e2"
+  },
+  {
+   "path": "frontend/src/pages",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "ad7f81e41f8bab953873c20c1498f9d23d8f7a1d",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/ad7f81e41f8bab953873c20c1498f9d23d8f7a1d"
+  },
+  {
+   "path": "frontend/src/pages/AnalysisPage.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7d249ee40dba7ecde9e438c9c8b31031eaf36a4a",
+   "size": 280,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/7d249ee40dba7ecde9e438c9c8b31031eaf36a4a"
+  },
+  {
+   "path": "frontend/src/pages/ErrorNotFound.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f4e0bb84c353581dcc31a4ba17bc28f6c5d3145e",
+   "size": 494,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/f4e0bb84c353581dcc31a4ba17bc28f6c5d3145e"
+  },
+  {
+   "path": "frontend/src/pages/IndexPage.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "69256e931779aaa1b5f008bcba2b1dd0a5ed542d",
+   "size": 122,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/69256e931779aaa1b5f008bcba2b1dd0a5ed542d"
+  },
+  {
+   "path": "frontend/src/pages/SettingsPage.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e6b36984a398ecc14db1b5fcd2556fa8d43a7bcf",
+   "size": 278,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e6b36984a398ecc14db1b5fcd2556fa8d43a7bcf"
+  },
+  {
+   "path": "frontend/src/pages/WebcamsPage.vue",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e6a1cf6c12b93c58e05aaab00ad1054089b51b06",
+   "size": 10858,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/e6a1cf6c12b93c58e05aaab00ad1054089b51b06"
+  },
+  {
+   "path": "frontend/src/quasar.d.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5937f7a5dec9b617088f5dfa2b3a1861c07e5177",
+   "size": 439,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/5937f7a5dec9b617088f5dfa2b3a1861c07e5177"
+  },
+  {
+   "path": "frontend/src/router",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "9216681a2626b3e768760f97e28cd2855f14bbc4",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/9216681a2626b3e768760f97e28cd2855f14bbc4"
+  },
+  {
+   "path": "frontend/src/router/index.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a0ec1ed0aa48769588ad8ee7a0cd9442181cd869",
+   "size": 974,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/a0ec1ed0aa48769588ad8ee7a0cd9442181cd869"
+  },
+  {
+   "path": "frontend/src/router/routes.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1e8d2e556c9f35a43ee5910cf1ed568d3d5dc75a",
+   "size": 933,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/1e8d2e556c9f35a43ee5910cf1ed568d3d5dc75a"
+  },
+  {
+   "path": "frontend/src/shims-vue.d.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4e6894b2c58c139aad832bf5714e28399e0801b7",
+   "size": 283,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/4e6894b2c58c139aad832bf5714e28399e0801b7"
+  },
+  {
+   "path": "frontend/src/stores",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "87545915fcecb056199a016f7a596977a8182812",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/87545915fcecb056199a016f7a596977a8182812"
+  },
+  {
+   "path": "frontend/src/stores/index.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d7b189d3cd17d4b9d2a450cae72178574ae44f58",
+   "size": 816,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/d7b189d3cd17d4b9d2a450cae72178574ae44f58"
+  },
+  {
+   "path": "frontend/src/stores/store-flag.d.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7677175b003245a3d07a7608d33d8e501042d52d",
+   "size": 277,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/7677175b003245a3d07a7608d33d8e501042d52d"
+  },
+  {
+   "path": "frontend/src/stores/webcam.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "18925ee21ea9ec4a31b8c348fca3aa9068b2e6ec",
+   "size": 2699,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/18925ee21ea9ec4a31b8c348fca3aa9068b2e6ec"
+  },
+  {
+   "path": "frontend/tsconfig.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ee0d9cf974e55a7cdc4c4da841dc8dd07688a251",
+   "size": 98,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/ee0d9cf974e55a7cdc4c4da841dc8dd07688a251"
+  },
+  {
+   "path": "frontend/yarn.lock",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cbee86bf1f3d33f26a876c6e841abbcb1684e1a0",
+   "size": 139036,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/cbee86bf1f3d33f26a876c6e841abbcb1684e1a0"
+  },
+  {
+   "path": "images",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "fee203eb545fdcb2d9ad9e64749a3f8b95a66590",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/fee203eb545fdcb2d9ad9e64749a3f8b95a66590"
+  },
+  {
+   "path": "images/webcam.jpg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "12214011af9948050b91c582bfc432d62b665b64",
+   "size": 288194,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/12214011af9948050b91c582bfc432d62b665b64"
+  },
+  {
+   "path": "reverse_proxy",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "458e071d54d4944a49b35645567f6ad4c1a86f17",
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/trees/458e071d54d4944a49b35645567f6ad4c1a86f17"
+  },
+  {
+   "path": "reverse_proxy/nginx.conf",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1fb9cc9e5874feedf553e5a6550319a7757fd07c",
+   "size": 491,
+   "url": "https://api.github.com/repos/pbkompasz/webcams/git/blobs/1fb9cc9e5874feedf553e5a6550319a7757fd07c"
+  }
+ ],
+ "truncated": false
+}

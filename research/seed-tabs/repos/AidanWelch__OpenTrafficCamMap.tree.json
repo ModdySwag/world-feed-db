@@ -1,0 +1,645 @@
+{
+ "sha": "362223187b5b00b87d78cb8a321e25dbb89aae32",
+ "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/362223187b5b00b87d78cb8a321e25dbb89aae32",
+ "tree": [
+  {
+   "path": ".eslintrc.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f1d551a5d1b640fdd971b4d0261c96184407746c",
+   "size": 2764,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/f1d551a5d1b640fdd971b4d0261c96184407746c"
+  },
+  {
+   "path": ".gitattributes",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "94f480de94e1d767531580401cbf13844868e82b",
+   "size": 18,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/94f480de94e1d767531580401cbf13844868e82b"
+  },
+  {
+   "path": ".github",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "85f19452d582bf1e16130385d505517c10cb5556",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/85f19452d582bf1e16130385d505517c10cb5556"
+  },
+  {
+   "path": ".github/FUNDING.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "018e3f46569592ba15d80304bffd642b7de08d63",
+   "size": 738,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/018e3f46569592ba15d80304bffd642b7de08d63"
+  },
+  {
+   "path": ".github/workflows",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "0243e8d5cd4112d85da428bb53aca2270e6e1f2c",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/0243e8d5cd4112d85da428bb53aca2270e6e1f2c"
+  },
+  {
+   "path": ".github/workflows/autotest.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e8efcba6f006382f66c84c427bf336883f25830d",
+   "size": 265,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/e8efcba6f006382f66c84c427bf336883f25830d"
+  },
+  {
+   "path": ".github/workflows/collate.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "734c31b2c50eb1a61fa1b2c4914f662f0f590dc3",
+   "size": 958,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/734c31b2c50eb1a61fa1b2c4914f662f0f590dc3"
+  },
+  {
+   "path": ".github/workflows/us_east.ovpn",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cdc2c4d6d1558a640d0d1af57e606f0c70dfbafc",
+   "size": 3171,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/cdc2c4d6d1558a640d0d1af57e606f0c70dfbafc"
+  },
+  {
+   "path": ".gitignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2d8cffbf2ea188c9509151595f42e1f147c2174c",
+   "size": 59,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/2d8cffbf2ea188c9509151595f42e1f147c2174c"
+  },
+  {
+   "path": "CNAME",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "aa7c2265c42c8985071533def4a2faf1b6428c33",
+   "size": 24,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/aa7c2265c42c8985071533def4a2faf1b6428c33"
+  },
+  {
+   "path": "LICENSE",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f4a224f50bad1acba740da227db31c693c42cb18",
+   "size": 1067,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/f4a224f50bad1acba740da227db31c693c42cb18"
+  },
+  {
+   "path": "README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a1e4cc6fe9e7357593bbf2cee3499d22bf61cffd",
+   "size": 5720,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/a1e4cc6fe9e7357593bbf2cee3499d22bf61cffd"
+  },
+  {
+   "path": "_config.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2f7efbeab578c8042531ea7908ee8ffd7589fe46",
+   "size": 27,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/2f7efbeab578c8042531ea7908ee8ffd7589fe46"
+  },
+  {
+   "path": "cameras",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "cceac88535762b6c37d543d5ce9201f5408826ff",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/cceac88535762b6c37d543d5ce9201f5408826ff"
+  },
+  {
+   "path": "cameras/USA.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "91c226a16e596fa2afb01131314f4056a3404cdc",
+   "size": 1591599,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/91c226a16e596fa2afb01131314f4056a3404cdc"
+  },
+  {
+   "path": "compilation",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "ef13737baa52ec8ac122f25eb7ad76f97dbf796c",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/ef13737baa52ec8ac122f25eb7ad76f97dbf796c"
+  },
+  {
+   "path": "compilation/Florida511.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9367f4f36a54994d5803401abda862937dbdd9cc",
+   "size": 2484,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/9367f4f36a54994d5803401abda862937dbdd9cc"
+  },
+  {
+   "path": "compilation/HawaiiTC.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "aaf29c476d2dd8635911b5a67f78251cfef358c0",
+   "size": 1080,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/aaf29c476d2dd8635911b5a67f78251cfef358c0"
+  },
+  {
+   "path": "compilation/IdahoTD.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "88f80ca46720c3c7222c6c682f310b7ba5e383c9",
+   "size": 2944,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/88f80ca46720c3c7222c6c682f310b7ba5e383c9"
+  },
+  {
+   "path": "compilation/IllinoisGTC.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fc7d8ae6cf9c13d10251df2101f6a1bcf38efac4",
+   "size": 1134,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/fc7d8ae6cf9c13d10251df2101f6a1bcf38efac4"
+  },
+  {
+   "path": "compilation/Iowa511.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0bc66ce7e293a95647d0554297ed5da82540cca3",
+   "size": 2508,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/0bc66ce7e293a95647d0554297ed5da82540cca3"
+  },
+  {
+   "path": "compilation/KansasKanDrive.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b9d3e807e631438e684763e02970d8c8900303e6",
+   "size": 2110,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/b9d3e807e631438e684763e02970d8c8900303e6"
+  },
+  {
+   "path": "compilation/Louisiana511.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6ecd78f00fec8f719cd2abfbbec994e2224c5f05",
+   "size": 2520,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/6ecd78f00fec8f719cd2abfbbec994e2224c5f05"
+  },
+  {
+   "path": "compilation/MarylandTC.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e9eb8e86cfa933f5ee57ae1baa0214c7023b10c7",
+   "size": 2311,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/e9eb8e86cfa933f5ee57ae1baa0214c7023b10c7"
+  },
+  {
+   "path": "compilation/MichiganDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d92620d4880a67b90297e46a156b59d4d52ab555",
+   "size": 1430,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/d92620d4880a67b90297e46a156b59d4d52ab555"
+  },
+  {
+   "path": "compilation/MinnesotaDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "44c8a49b10abb97d3c948f25d0c6504657f5d8f6",
+   "size": 2498,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/44c8a49b10abb97d3c948f25d0c6504657f5d8f6"
+  },
+  {
+   "path": "compilation/MississippiDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "26f4d3df11395401b3b79afa8e72b30b018d962c",
+   "size": 2304,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/26f4d3df11395401b3b79afa8e72b30b018d962c"
+  },
+  {
+   "path": "compilation/MissouriDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a3ee9e50060bfacf4bdded91311519c5e024a557",
+   "size": 962,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/a3ee9e50060bfacf4bdded91311519c5e024a557"
+  },
+  {
+   "path": "compilation/Nebraska511.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2e9624ca30a4c02b06f851ca3847e04a7ca18e86",
+   "size": 3335,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/2e9624ca30a4c02b06f851ca3847e04a7ca18e86"
+  },
+  {
+   "path": "compilation/NevadaDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a2c3821bffe2ab65bb63fa1721e0075b6a572f80",
+   "size": 1186,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/a2c3821bffe2ab65bb63fa1721e0075b6a572f80"
+  },
+  {
+   "path": "compilation/NewEngland511.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1c619b3d73747b318984e62b70e4edbd2ddf702f",
+   "size": 3640,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/1c619b3d73747b318984e62b70e4edbd2ddf702f"
+  },
+  {
+   "path": "compilation/NewJerseyDot.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "09933f4efd54b92d1a84f718e71580853c46394f",
+   "size": 2047,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/09933f4efd54b92d1a84f718e71580853c46394f"
+  },
+  {
+   "path": "compilation/NewMexicoRoads.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fd06cf95a632553e15d7008b8c9f1293ae4dab70",
+   "size": 1355,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/fd06cf95a632553e15d7008b8c9f1293ae4dab70"
+  },
+  {
+   "path": "compilation/NorthDakotaDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "66381e985d09856774deab266bca7333acfaa1b1",
+   "size": 1449,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/66381e985d09856774deab266bca7333acfaa1b1"
+  },
+  {
+   "path": "compilation/OhioGo.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a0eeb185da6e55159ff23b35a9022a7d9ff6dac0",
+   "size": 1307,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/a0eeb185da6e55159ff23b35a9022a7d9ff6dac0"
+  },
+  {
+   "path": "compilation/OklahomaOKTraffic.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8060cbca936e5631b919c459446525f20ecfbf43",
+   "size": 2544,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/8060cbca936e5631b919c459446525f20ecfbf43"
+  },
+  {
+   "path": "compilation/OregonTC.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "87373ceadab2825557785ea1dff2b9e647f8d9d1",
+   "size": 1293,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/87373ceadab2825557785ea1dff2b9e647f8d9d1"
+  },
+  {
+   "path": "compilation/PennsylvaniaDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d4c33c3e5e57283a76e01e06a9c7e6d7122fd1a8",
+   "size": 3327,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/d4c33c3e5e57283a76e01e06a9c7e6d7122fd1a8"
+  },
+  {
+   "path": "compilation/SouthCarolinaDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3c41dc5f2cd9744ba5d66b5a15a083116ff89a63",
+   "size": 1810,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/3c41dc5f2cd9744ba5d66b5a15a083116ff89a63"
+  },
+  {
+   "path": "compilation/SouthDakota511.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4b6426f3ea7ec7ae5149ebe1ad5c50eea56acd33",
+   "size": 2154,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/4b6426f3ea7ec7ae5149ebe1ad5c50eea56acd33"
+  },
+  {
+   "path": "compilation/TennesseeSW.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6d240a473fe310380eee0fef7458b476854aa783",
+   "size": 1283,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/6d240a473fe310380eee0fef7458b476854aa783"
+  },
+  {
+   "path": "compilation/TexasDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3217da983db81f68182053b8e0d44b384d6d8328",
+   "size": 2530,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/3217da983db81f68182053b8e0d44b384d6d8328"
+  },
+  {
+   "path": "compilation/USA",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "51e9568461e0d978d856bd4891b4d39632e0b4d9",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/51e9568461e0d978d856bd4891b4d39632e0b4d9"
+  },
+  {
+   "path": "compilation/USA/alabamaDOT.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "302da5cda9cd7fcfd7d6fdb9251854c46d18608d",
+   "size": 1203,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/302da5cda9cd7fcfd7d6fdb9251854c46d18608d"
+  },
+  {
+   "path": "compilation/USA/alaskaDOT.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "59075e33046bb5e503f7883236d5af0dfadd71c7",
+   "size": 2311,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/59075e33046bb5e503f7883236d5af0dfadd71c7"
+  },
+  {
+   "path": "compilation/USA/arizonaDOT.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4685f16231ddfdf16cc62849f7682bfb0b0429f2",
+   "size": 2609,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/4685f16231ddfdf16cc62849f7682bfb0b0429f2"
+  },
+  {
+   "path": "compilation/USA/californiaTransit.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "101df70d9c9176be791e7358ee99ff5f070aa797",
+   "size": 1469,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/101df70d9c9176be791e7358ee99ff5f070aa797"
+  },
+  {
+   "path": "compilation/USA/coloradoDOT.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "03013f931614b19c41b8f6db6fe49f0aaa98f2d8",
+   "size": 2538,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/03013f931614b19c41b8f6db6fe49f0aaa98f2d8"
+  },
+  {
+   "path": "compilation/USA/delawareDOT.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6deefd6bfc2dafcd84f66fd62b4dce1256071723",
+   "size": 679,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/6deefd6bfc2dafcd84f66fd62b4dce1256071723"
+  },
+  {
+   "path": "compilation/USA/georgia511.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "04b3a0f426045920c97051123c2eb4a4fac0842e",
+   "size": 1536,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/04b3a0f426045920c97051123c2eb4a4fac0842e"
+  },
+  {
+   "path": "compilation/USA/index.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "576804987df72f26e03eac77f0953887f5723c66",
+   "size": 681,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/576804987df72f26e03eac77f0953887f5723c66"
+  },
+  {
+   "path": "compilation/USA/indiana511.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "45f4e5cb29fcbb94cb7ac1403709381b17263812",
+   "size": 2704,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/45f4e5cb29fcbb94cb7ac1403709381b17263812"
+  },
+  {
+   "path": "compilation/USA/kentuckyTC.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ad59df9bd4e8f741ad9de8c3c7f92ffeeb868bce",
+   "size": 1827,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/ad59df9bd4e8f741ad9de8c3c7f92ffeeb868bce"
+  },
+  {
+   "path": "compilation/USA/ohioGo.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cab3003708812e7e3a8e91bac0b086a4e4d849bd",
+   "size": 1040,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/cab3003708812e7e3a8e91bac0b086a4e4d849bd"
+  },
+  {
+   "path": "compilation/UtahDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c2a594e3ba419406c887e895b72de531067d677a",
+   "size": 1495,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/c2a594e3ba419406c887e895b72de531067d677a"
+  },
+  {
+   "path": "compilation/VirginiaDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5e56b970c488fb50d93a1b65350e440cb65c5431",
+   "size": 1585,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/5e56b970c488fb50d93a1b65350e440cb65c5431"
+  },
+  {
+   "path": "compilation/WashingtonDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "33f2e06d4004cf729d7487daea0c0e90b76c6396",
+   "size": 1995,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/33f2e06d4004cf729d7487daea0c0e90b76c6396"
+  },
+  {
+   "path": "compilation/WestVirginiaDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "68f74e063ef5aee9c7a1a7e5eaccb63a8b55e308",
+   "size": 2195,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/68f74e063ef5aee9c7a1a7e5eaccb63a8b55e308"
+  },
+  {
+   "path": "compilation/Wisconsin511.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c2b6071016fb10d79fd1fc379c273dc2b87d74c7",
+   "size": 1609,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/c2b6071016fb10d79fd1fc379c273dc2b87d74c7"
+  },
+  {
+   "path": "compilation/WyomingTravelInfo.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4c69892106ee2b68e833b097ed4fb94b43f5a235",
+   "size": 2439,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/4c69892106ee2b68e833b097ed4fb94b43f5a235"
+  },
+  {
+   "path": "compilation/package-lock.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ed2d947b88e4b65e1629754fde8973b3f98ad7d2",
+   "size": 15787,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/ed2d947b88e4b65e1629754fde8973b3f98ad7d2"
+  },
+  {
+   "path": "compilation/package.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "892ab27b7c1e09cff1b85d2a8d3a324e35436d4c",
+   "size": 615,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/892ab27b7c1e09cff1b85d2a8d3a324e35436d4c"
+  },
+  {
+   "path": "compilation/utils",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "04043d12dc68e190ec6de79bd9bd5b3a0a6a46d8",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/04043d12dc68e190ec6de79bd9bd5b3a0a6a46d8"
+  },
+  {
+   "path": "compilation/utils/standardizeDirection.cjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9231de7f742dddd11820266d200b7b4340d242d9",
+   "size": 734,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/9231de7f742dddd11820266d200b7b4340d242d9"
+  },
+  {
+   "path": "examples",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "5af518f3271834a911b6256e61602d3fbb481c2c",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/5af518f3271834a911b6256e61602d3fbb481c2c"
+  },
+  {
+   "path": "examples/other",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "c9a2482883cd85a2d7ece92bb69de82d4fc8cd79",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/c9a2482883cd85a2d7ece92bb69de82d4fc8cd79"
+  },
+  {
+   "path": "examples/other/CameraCount.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9f61cb3286b18eb6ac258d413cdcbd399594da44",
+   "size": 540,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/9f61cb3286b18eb6ac258d413cdcbd399594da44"
+  },
+  {
+   "path": "examples/other/MassStream.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2cf76881d3945bb526761223f7c9b819f0950c37",
+   "size": 1013,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/2cf76881d3945bb526761223f7c9b819f0950c37"
+  },
+  {
+   "path": "examples/streaming",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "05b7d84c3d308cab1377e1d4ae9c0fe5d47464fb",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/05b7d84c3d308cab1377e1d4ae9c0fe5d47464fb"
+  },
+  {
+   "path": "examples/streaming/IMAGE_STREAM.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7abbffa8b3d21d9f17b435deff341d24ab305877",
+   "size": 701,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/7abbffa8b3d21d9f17b435deff341d24ab305877"
+  },
+  {
+   "path": "examples/streaming/M3U8.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f0f008619e23e3e2975aab2a37d8428fa576ae92",
+   "size": 2091,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/f0f008619e23e3e2975aab2a37d8428fa576ae92"
+  },
+  {
+   "path": "examples/streaming/UNIQUE_COLORADODOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9220d9b3b7e7ac02fa1c2cbc0ab66770d556e04f",
+   "size": 401,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/9220d9b3b7e7ac02fa1c2cbc0ab66770d556e04f"
+  },
+  {
+   "path": "examples/streaming/UNIQUE_TEXASDOT.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0c74d32135f7dbf05784359fd6a00f04184625cc",
+   "size": 997,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/0c74d32135f7dbf05784359fd6a00f04184625cc"
+  },
+  {
+   "path": "examples/streaming/package-lock.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a335b282bbc64ccd3f6ad923e17327edf18e6851",
+   "size": 17748,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/a335b282bbc64ccd3f6ad923e17327edf18e6851"
+  },
+  {
+   "path": "examples/streaming/package.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7dad8a9aefab25e06c15338f890c67f4b4688f08",
+   "size": 438,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/7dad8a9aefab25e06c15338f890c67f4b4688f08"
+  },
+  {
+   "path": "index.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c61920d2ca305a67bc3fa78013e05bb0ca18d23b",
+   "size": 1218,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/c61920d2ca305a67bc3fa78013e05bb0ca18d23b"
+  },
+  {
+   "path": "map.html",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e92b0c8db38896cd462a6edd5862cf9c5c62c811",
+   "size": 12167,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/e92b0c8db38896cd462a6edd5862cf9c5c62c811"
+  },
+  {
+   "path": "package-lock.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cc6ce949c0cb41560edba883ca5fb2312b649228",
+   "size": 63226,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/cc6ce949c0cb41560edba883ca5fb2312b649228"
+  },
+  {
+   "path": "package.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "eacaba044ce78194f27e185518594028c2b7833a",
+   "size": 816,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/eacaba044ce78194f27e185518594028c2b7833a"
+  },
+  {
+   "path": "test",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "afa5edc53a029bcbab73b805d0bf145fc5493345",
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/trees/afa5edc53a029bcbab73b805d0bf145fc5493345"
+  },
+  {
+   "path": "test/standardizeDirection.test.mjs",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b11a1ef22069b3a00c702ee04e744463d648a51b",
+   "size": 1976,
+   "url": "https://api.github.com/repos/AidanWelch/OpenTrafficCamMap/git/blobs/b11a1ef22069b3a00c702ee04e744463d648a51b"
+  }
+ ],
+ "truncated": false
+}

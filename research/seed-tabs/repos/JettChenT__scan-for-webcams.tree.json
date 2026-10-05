@@ -1,0 +1,352 @@
+{
+ "sha": "e3656cf31203224d5b669a3039a9e41bef468a6a",
+ "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/e3656cf31203224d5b669a3039a9e41bef468a6a",
+ "tree": [
+  {
+   "path": ".github",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "af1d3b7b22454a3f2bc31b144cc7001bf5e379eb",
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/af1d3b7b22454a3f2bc31b144cc7001bf5e379eb"
+  },
+  {
+   "path": ".github/dependabot.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e1688a7c7da32430456d107f36bb805d02424107",
+   "size": 106,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/e1688a7c7da32430456d107f36bb805d02424107"
+  },
+  {
+   "path": ".github/scan-for-webcamBanner.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "66078f4f7173fc6ca251c90b50a8ba8370b48556",
+   "size": 189794,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/66078f4f7173fc6ca251c90b50a8ba8370b48556"
+  },
+  {
+   "path": ".github/workflows",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "e33caa7998c2f87f9df4bb7b3dffddfabea37146",
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/e33caa7998c2f87f9df4bb7b3dffddfabea37146"
+  },
+  {
+   "path": ".github/workflows/codeql.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "99ee1a2b5a3f2b3d8c2b3f4383a35cb0a29047d9",
+   "size": 837,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/99ee1a2b5a3f2b3d8c2b3f4383a35cb0a29047d9"
+  },
+  {
+   "path": ".github/workflows/python-app.yml",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "81550de10f440cd311a2c98027774dc6bdd405f9",
+   "size": 1098,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/81550de10f440cd311a2c98027774dc6bdd405f9"
+  },
+  {
+   "path": ".gitignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "35c59ee9f284dfae146d84d2cd6dd7d53680a114",
+   "size": 1896,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/35c59ee9f284dfae146d84d2cd6dd7d53680a114"
+  },
+  {
+   "path": ".vscode",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "87f85bb6afc1dcf081bbce8fea5ca0e8cdb9a4f8",
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/87f85bb6afc1dcf081bbce8fea5ca0e8cdb9a4f8"
+  },
+  {
+   "path": ".vscode/launch.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "306f58eb37e8f9ce600a78f311665fb4d079a8c3",
+   "size": 495,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/306f58eb37e8f9ce600a78f311665fb4d079a8c3"
+  },
+  {
+   "path": "CODE_OF_CONDUCT.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9b5a415bddb375f7f5c4a5a33d7b99b3bad7b090",
+   "size": 3355,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/9b5a415bddb375f7f5c4a5a33d7b99b3bad7b090"
+  },
+  {
+   "path": "LICENSE",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "09d2fdffc9bb0c659896cdd6208ae6525a233dac",
+   "size": 1066,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/09d2fdffc9bb0c659896cdd6208ae6525a233dac"
+  },
+  {
+   "path": "README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a630862d7bf4da24015c04034c9d52b58746e24c",
+   "size": 4423,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/a630862d7bf4da24015c04034c9d52b58746e24c"
+  },
+  {
+   "path": "requirements-places.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6d4cb9671c2539ae827884769151d96b47c1351e",
+   "size": 32,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/6d4cb9671c2539ae827884769151d96b47c1351e"
+  },
+  {
+   "path": "requirements.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7a8af0f02b5d90180e699b4b868b9a718e667e1a",
+   "size": 191,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/7a8af0f02b5d90180e699b4b868b9a718e667e1a"
+  },
+  {
+   "path": "sfw",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "53a8a1d3de47ab1b0418aa8c322b2fc5800637fb",
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/53a8a1d3de47ab1b0418aa8c322b2fc5800637fb"
+  },
+  {
+   "path": "sfw/__init__.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "sfw/__main__.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1388420abaa9bb78c300a73bbf7b216aa1ed362e",
+   "size": 273,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/1388420abaa9bb78c300a73bbf7b216aa1ed362e"
+  },
+  {
+   "path": "sfw/cam.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ada4726fc9c90bfe68117db9f18104d42185d43a",
+   "size": 3867,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/ada4726fc9c90bfe68117db9f18104d42185d43a"
+  },
+  {
+   "path": "sfw/cams.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2b9e6eaa1b0649fc4749a10946128e22fff3b0f0",
+   "size": 1074,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/2b9e6eaa1b0649fc4749a10946128e22fff3b0f0"
+  },
+  {
+   "path": "sfw/cli.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2a3f724fef7806e56155bd7d28b3828f81cf1f87",
+   "size": 5361,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/2a3f724fef7806e56155bd7d28b3828f81cf1f87"
+  },
+  {
+   "path": "sfw/crfi.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2d6e62b5f8a80984449fdd2245443d1d3cc7eb4d",
+   "size": 1095,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/2d6e62b5f8a80984449fdd2245443d1d3cc7eb4d"
+  },
+  {
+   "path": "sfw/geoip.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "78a50936f326e0eea172026216b31d13fdb544af",
+   "size": 2270,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/78a50936f326e0eea172026216b31d13fdb544af"
+  },
+  {
+   "path": "sfw/gui.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6faa7b1b997a2458d4d300fb0b5c1e35f914517a",
+   "size": 2188,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/6faa7b1b997a2458d4d300fb0b5c1e35f914517a"
+  },
+  {
+   "path": "sfw/places",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "7ea5a0ae63f21b3138a4238cb60dd67922233d04",
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/7ea5a0ae63f21b3138a4238cb60dd67922233d04"
+  },
+  {
+   "path": "sfw/places/IO_places365.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "56047f7252b3ed9bf4582435d923ad4d6bacf1e9",
+   "size": 6214,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/56047f7252b3ed9bf4582435d923ad4d6bacf1e9"
+  },
+  {
+   "path": "sfw/places/W_sceneattribute_wideresnet18.npy",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f9a10dd9ed4aa11b4fb301b76da8b094da08db71",
+   "size": 417872,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/f9a10dd9ed4aa11b4fb301b76da8b094da08db71"
+  },
+  {
+   "path": "sfw/places/__init__.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "sfw/places/categories_places365.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1f2dfbcec26e43a81cde57ed9236b13a6c7ffea2",
+   "size": 6833,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/1f2dfbcec26e43a81cde57ed9236b13a6c7ffea2"
+  },
+  {
+   "path": "sfw/places/labels_sunattribute.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c2e84610fd5259b95603653f1b28f2a04148cf15",
+   "size": 909,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/c2e84610fd5259b95603653f1b28f2a04148cf15"
+  },
+  {
+   "path": "sfw/places/wideresnet.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e80520b78a253e02d1485c3df45f492d9fa2e688",
+   "size": 6730,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/e80520b78a253e02d1485c3df45f492d9fa2e688"
+  },
+  {
+   "path": "sfw/places/wideresnet18_places365.pth.tar",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d42fc451f23eb456b04e5ff99f95a25f5e163f9f",
+   "size": 45506141,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/d42fc451f23eb456b04e5ff99f95a25f5e163f9f"
+  },
+  {
+   "path": "sfw/places_mod.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b0d60f40faa545b1a8c1a9d5789263abd847cbd1",
+   "size": 7467,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/b0d60f40faa545b1a8c1a9d5789263abd847cbd1"
+  },
+  {
+   "path": "sfw/rtsp.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ffe302d33b68b30a36accfd40aebe76ede065ba3",
+   "size": 2365,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/ffe302d33b68b30a36accfd40aebe76ede065ba3"
+  },
+  {
+   "path": "sfw/rtsp_dict",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "ce50eb8958c3db0dd00d20662b2b9cb5d8a5d1e4",
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/ce50eb8958c3db0dd00d20662b2b9cb5d8a5d1e4"
+  },
+  {
+   "path": "sfw/rtsp_dict/tries.txt",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e463326e101a038861d4f6b61e5ad3e0c512b871",
+   "size": 2789,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/e463326e101a038861d4f6b61e5ad3e0c512b871"
+  },
+  {
+   "path": "sfw/search.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f266f57c0194bb3d656387356c24f6cf58c9606d",
+   "size": 8873,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/f266f57c0194bb3d656387356c24f6cf58c9606d"
+  },
+  {
+   "path": "sfw/streaming.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5094b73b1a101e2e5908ad8e7f9f9a12f518069c",
+   "size": 1877,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/5094b73b1a101e2e5908ad8e7f9f9a12f518069c"
+  },
+  {
+   "path": "sfw/tmp.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cd334fc5150518263a7e2b47f35d3e585c1ff6d4",
+   "size": 1183,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/cd334fc5150518263a7e2b47f35d3e585c1ff6d4"
+  },
+  {
+   "path": "sfw/universal.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cab001b7df753656c65d998239374038bbf01ad6",
+   "size": 65,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/cab001b7df753656c65d998239374038bbf01ad6"
+  },
+  {
+   "path": "sfw/utils.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2c754ff85821634a7551b33f979e350e0d21d6fb",
+   "size": 188,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/2c754ff85821634a7551b33f979e350e0d21d6fb"
+  },
+  {
+   "path": "sfw/vllm.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "169d6ae09c74c6dee602acc540b497ebeb1ab5a6",
+   "size": 5849,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/169d6ae09c74c6dee602acc540b497ebeb1ab5a6"
+  },
+  {
+   "path": "sfw/windy.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+   "size": 0,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  {
+   "path": "zh",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "628075ee4d92707a6bbdaca1962c19b51680a4af",
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/trees/628075ee4d92707a6bbdaca1962c19b51680a4af"
+  },
+  {
+   "path": "zh/README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e3e7cbe22d31ad81e7ef07726d4c51a22480769d",
+   "size": 1186,
+   "url": "https://api.github.com/repos/JettChenT/scan-for-webcams/git/blobs/e3e7cbe22d31ad81e7ef07726d4c51a22480769d"
+  }
+ ],
+ "truncated": false
+}

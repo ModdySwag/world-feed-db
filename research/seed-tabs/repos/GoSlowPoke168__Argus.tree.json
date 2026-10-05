@@ -1,0 +1,2402 @@
+{
+ "sha": "7a56f8d9676240c9c6c28bc2e278df88ea803914",
+ "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/7a56f8d9676240c9c6c28bc2e278df88ea803914",
+ "tree": [
+  {
+   "path": ".gitignore",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b7a8a2d53f4248e5c12c7fc9ef6c5d242528cf4c",
+   "size": 420,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b7a8a2d53f4248e5c12c7fc9ef6c5d242528cf4c"
+  },
+  {
+   "path": "LICENSE",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1b6313cc6f75832ee4955a2a8d9c581930524bf5",
+   "size": 1067,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1b6313cc6f75832ee4955a2a8d9c581930524bf5"
+  },
+  {
+   "path": "README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1d02f206a023192c1b85647c503092564928adcc",
+   "size": 10088,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1d02f206a023192c1b85647c503092564928adcc"
+  },
+  {
+   "path": "archive",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "4ffe681b53c56b67a67be97eccc82558e3575854",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/4ffe681b53c56b67a67be97eccc82558e3575854"
+  },
+  {
+   "path": "archive/README.md",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "32fafb573401f5d346799af38a5b85134611ee72",
+   "size": 346,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/32fafb573401f5d346799af38a5b85134611ee72"
+  },
+  {
+   "path": "archive/ca_test.geojson",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "31359431b2b756a5267ff8be0ac3a423246ba12e",
+   "size": 1863596,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/31359431b2b756a5267ff8be0ac3a423246ba12e"
+  },
+  {
+   "path": "archive/windy_massive.geojson",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "26ce2dc5db911b39581e74aeae9231ccdaa16b8e",
+   "size": 43766450,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/26ce2dc5db911b39581e74aeae9231ccdaa16b8e"
+  },
+  {
+   "path": "eslint.config.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ef614d25c11dd1e89a8df0b2eaf934170b44daa8",
+   "size": 591,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ef614d25c11dd1e89a8df0b2eaf934170b44daa8"
+  },
+  {
+   "path": "index.html",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ead82ee0e27b01fa4759f1dc4ce6d166e7165e01",
+   "size": 388,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ead82ee0e27b01fa4759f1dc4ce6d166e7165e01"
+  },
+  {
+   "path": "package-lock.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b6a7de9fd5524b42f60886fe27deec9715ea9eaf",
+   "size": 167929,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b6a7de9fd5524b42f60886fe27deec9715ea9eaf"
+  },
+  {
+   "path": "package.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8341c9b815d1cade35144f96c136d00d1fabff26",
+   "size": 1110,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8341c9b815d1cade35144f96c136d00d1fabff26"
+  },
+  {
+   "path": "postcss.config.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1c8784688c2d54ef45063be7ccd612dcab316151",
+   "size": 91,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1c8784688c2d54ef45063be7ccd612dcab316151"
+  },
+  {
+   "path": "public",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "4aeafc56757d95c8c133298a83a8c141a20741c9",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/4aeafc56757d95c8c133298a83a8c141a20741c9"
+  },
+  {
+   "path": "public/cameras.core.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b6a270cbcf503dde8edbf713d2d9bda3258b2ad3",
+   "size": 7005700,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b6a270cbcf503dde8edbf713d2d9bda3258b2ad3"
+  },
+  {
+   "path": "public/cameras.detail",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "0149c2116f1d9d08a26c2cf509fcca6ec9bccfa9",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/0149c2116f1d9d08a26c2cf509fcca6ec9bccfa9"
+  },
+  {
+   "path": "public/cameras.detail/0.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e3b2ad2806754ddddf88091b76ea33a95d6af6d3",
+   "size": 136332,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e3b2ad2806754ddddf88091b76ea33a95d6af6d3"
+  },
+  {
+   "path": "public/cameras.detail/1.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "15b2ccf7c8fe569b690dee48b3aeb6ca05db1a12",
+   "size": 119791,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/15b2ccf7c8fe569b690dee48b3aeb6ca05db1a12"
+  },
+  {
+   "path": "public/cameras.detail/10.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "48abb3a4a26363d0e64be3adc9e66bb874d86433",
+   "size": 142698,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/48abb3a4a26363d0e64be3adc9e66bb874d86433"
+  },
+  {
+   "path": "public/cameras.detail/100.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0afd3196ff97a220950ce2f06021b0f1aa791bdf",
+   "size": 90059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0afd3196ff97a220950ce2f06021b0f1aa791bdf"
+  },
+  {
+   "path": "public/cameras.detail/101.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fa5737fec8c4730eb7c16e62908c1736cbdeddcc",
+   "size": 90059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fa5737fec8c4730eb7c16e62908c1736cbdeddcc"
+  },
+  {
+   "path": "public/cameras.detail/102.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b50e5d1ec4f36c96cd2f37be00eee83648aa6bc1",
+   "size": 152122,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b50e5d1ec4f36c96cd2f37be00eee83648aa6bc1"
+  },
+  {
+   "path": "public/cameras.detail/103.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1798096434e6b36bce93f5e872c4c4d640434faf",
+   "size": 127875,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1798096434e6b36bce93f5e872c4c4d640434faf"
+  },
+  {
+   "path": "public/cameras.detail/104.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "99722adf059a4622e32a5ae375e2ed253ff78627",
+   "size": 120555,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/99722adf059a4622e32a5ae375e2ed253ff78627"
+  },
+  {
+   "path": "public/cameras.detail/105.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8a5ec7eae0ff7d99091b38858443508c6ae6ca71",
+   "size": 113462,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8a5ec7eae0ff7d99091b38858443508c6ae6ca71"
+  },
+  {
+   "path": "public/cameras.detail/106.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "459436f00ccbcfeaad295331d66d1edeabc30438",
+   "size": 141059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/459436f00ccbcfeaad295331d66d1edeabc30438"
+  },
+  {
+   "path": "public/cameras.detail/107.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b87ff0048f7b6d8dac7e735735cec38cd5ed7d60",
+   "size": 141059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b87ff0048f7b6d8dac7e735735cec38cd5ed7d60"
+  },
+  {
+   "path": "public/cameras.detail/108.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "da0562717001f1664bdf4b899ab1881163dccbaa",
+   "size": 144946,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/da0562717001f1664bdf4b899ab1881163dccbaa"
+  },
+  {
+   "path": "public/cameras.detail/109.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fc373e4c7a6a7c75038a82e1a16643d2b28ff822",
+   "size": 180928,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fc373e4c7a6a7c75038a82e1a16643d2b28ff822"
+  },
+  {
+   "path": "public/cameras.detail/11.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "be8c8c9e3ecc853c4bcf83f45222c98cfb7ec181",
+   "size": 154046,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/be8c8c9e3ecc853c4bcf83f45222c98cfb7ec181"
+  },
+  {
+   "path": "public/cameras.detail/110.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "efc10d5d0a69321c03d5768d455086e136964529",
+   "size": 143238,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/efc10d5d0a69321c03d5768d455086e136964529"
+  },
+  {
+   "path": "public/cameras.detail/111.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "964c9aa96ba4c6d16b89f43207a334f1779117d7",
+   "size": 156155,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/964c9aa96ba4c6d16b89f43207a334f1779117d7"
+  },
+  {
+   "path": "public/cameras.detail/112.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1b75dd5fe9e1c955412d8537cf3645193cac85b0",
+   "size": 142059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1b75dd5fe9e1c955412d8537cf3645193cac85b0"
+  },
+  {
+   "path": "public/cameras.detail/113.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "732a05bf99977b3a011c9c0e4921202193ae3252",
+   "size": 142059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/732a05bf99977b3a011c9c0e4921202193ae3252"
+  },
+  {
+   "path": "public/cameras.detail/114.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d6d87995ae44c4a36c83ed4aa1293c09c1c15e4c",
+   "size": 169018,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d6d87995ae44c4a36c83ed4aa1293c09c1c15e4c"
+  },
+  {
+   "path": "public/cameras.detail/115.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4f4fc7bfc7de784695ed8804a20ea2100a9a0cdd",
+   "size": 177587,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4f4fc7bfc7de784695ed8804a20ea2100a9a0cdd"
+  },
+  {
+   "path": "public/cameras.detail/116.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3511d8c5d7f7633d4a5cb2322b55459399863f7a",
+   "size": 115771,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3511d8c5d7f7633d4a5cb2322b55459399863f7a"
+  },
+  {
+   "path": "public/cameras.detail/117.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a4a081fdfbab4780fe639005d45e961c2a36011e",
+   "size": 107677,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a4a081fdfbab4780fe639005d45e961c2a36011e"
+  },
+  {
+   "path": "public/cameras.detail/118.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "81a65d1ef69b3004b759dad5b3897c22757b171a",
+   "size": 109982,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/81a65d1ef69b3004b759dad5b3897c22757b171a"
+  },
+  {
+   "path": "public/cameras.detail/119.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e1bc20be4e04bccf14ff3ec013995ed2bbbf6997",
+   "size": 103106,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e1bc20be4e04bccf14ff3ec013995ed2bbbf6997"
+  },
+  {
+   "path": "public/cameras.detail/12.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "95a39b62206f5341ab1db01362472d7dd644d82e",
+   "size": 172579,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/95a39b62206f5341ab1db01362472d7dd644d82e"
+  },
+  {
+   "path": "public/cameras.detail/120.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6908b5bdc0d5d7356c2b407fb22a001384ed7f8e",
+   "size": 99290,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/6908b5bdc0d5d7356c2b407fb22a001384ed7f8e"
+  },
+  {
+   "path": "public/cameras.detail/121.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a432d17f64c5eb78b4c4602fd5171f6a97d89843",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a432d17f64c5eb78b4c4602fd5171f6a97d89843"
+  },
+  {
+   "path": "public/cameras.detail/122.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a2e11f35e296bf9c074166d6b787e40e6d7978b3",
+   "size": 122632,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a2e11f35e296bf9c074166d6b787e40e6d7978b3"
+  },
+  {
+   "path": "public/cameras.detail/123.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b0028490bb69e1cf570c05eaa589ab1d9cc7029a",
+   "size": 183089,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b0028490bb69e1cf570c05eaa589ab1d9cc7029a"
+  },
+  {
+   "path": "public/cameras.detail/124.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f2dd0686ed9adf7ae0864575653b599e124ebe3a",
+   "size": 172357,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f2dd0686ed9adf7ae0864575653b599e124ebe3a"
+  },
+  {
+   "path": "public/cameras.detail/125.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "91f558701f6d78b4c9e0b11840b80215aa992687",
+   "size": 182477,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/91f558701f6d78b4c9e0b11840b80215aa992687"
+  },
+  {
+   "path": "public/cameras.detail/126.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2bd6c90085895f3fa4e6ebf89a65f487492fd327",
+   "size": 169585,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2bd6c90085895f3fa4e6ebf89a65f487492fd327"
+  },
+  {
+   "path": "public/cameras.detail/127.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "bf365ba7b3dfe2cf4b1162bc3d201aefb3f81a00",
+   "size": 199014,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/bf365ba7b3dfe2cf4b1162bc3d201aefb3f81a00"
+  },
+  {
+   "path": "public/cameras.detail/128.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7abe584d395968b4030008a4842bddf638d3308e",
+   "size": 157688,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7abe584d395968b4030008a4842bddf638d3308e"
+  },
+  {
+   "path": "public/cameras.detail/129.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c48f0f53f0026841644bcf29964c275cfbf12c7a",
+   "size": 135560,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c48f0f53f0026841644bcf29964c275cfbf12c7a"
+  },
+  {
+   "path": "public/cameras.detail/13.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "81fdf7832a667c7ae27bde37c6af48146d2e490b",
+   "size": 146401,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/81fdf7832a667c7ae27bde37c6af48146d2e490b"
+  },
+  {
+   "path": "public/cameras.detail/130.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "59ed4b634ac8f7cd70b7c7b9f197cc5bc2f290f2",
+   "size": 127550,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/59ed4b634ac8f7cd70b7c7b9f197cc5bc2f290f2"
+  },
+  {
+   "path": "public/cameras.detail/131.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "98895ef323549755a96c0982ea143be04a59fd6f",
+   "size": 134473,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/98895ef323549755a96c0982ea143be04a59fd6f"
+  },
+  {
+   "path": "public/cameras.detail/132.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9a2799470b1dbb944c2fc41b6faf037cbe893616",
+   "size": 140475,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/9a2799470b1dbb944c2fc41b6faf037cbe893616"
+  },
+  {
+   "path": "public/cameras.detail/133.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f645e75ffe663b6cf4ee57b0e960486234d44ef3",
+   "size": 127358,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f645e75ffe663b6cf4ee57b0e960486234d44ef3"
+  },
+  {
+   "path": "public/cameras.detail/134.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8546c0b3810926ddc1b2abbd5a48bc77c1394af6",
+   "size": 127717,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8546c0b3810926ddc1b2abbd5a48bc77c1394af6"
+  },
+  {
+   "path": "public/cameras.detail/135.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b15b7f0a483821b3c3f8e6da3fe7b08e61efbe5d",
+   "size": 128748,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b15b7f0a483821b3c3f8e6da3fe7b08e61efbe5d"
+  },
+  {
+   "path": "public/cameras.detail/136.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "da92be120c45fbe57052f88ffe820f74df8a7a21",
+   "size": 129117,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/da92be120c45fbe57052f88ffe820f74df8a7a21"
+  },
+  {
+   "path": "public/cameras.detail/137.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "13c8980cdc6c6db33400de4a7e75faafcef996f0",
+   "size": 128884,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/13c8980cdc6c6db33400de4a7e75faafcef996f0"
+  },
+  {
+   "path": "public/cameras.detail/138.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ae421fc192876ed7a2115f8767cf6cfd959ee75c",
+   "size": 127626,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ae421fc192876ed7a2115f8767cf6cfd959ee75c"
+  },
+  {
+   "path": "public/cameras.detail/139.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c582314c1106196299e44e48444988b96f8a947f",
+   "size": 129154,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c582314c1106196299e44e48444988b96f8a947f"
+  },
+  {
+   "path": "public/cameras.detail/14.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "25159d42ddd1391042ba0ac1aa999948413ebe0f",
+   "size": 122618,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/25159d42ddd1391042ba0ac1aa999948413ebe0f"
+  },
+  {
+   "path": "public/cameras.detail/140.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "bbe1bcbfb114c43e170cca2465676ac867e4299b",
+   "size": 127145,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/bbe1bcbfb114c43e170cca2465676ac867e4299b"
+  },
+  {
+   "path": "public/cameras.detail/141.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "36c343a8b01b799d9eeb820ca154f9d16020c5b9",
+   "size": 127162,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/36c343a8b01b799d9eeb820ca154f9d16020c5b9"
+  },
+  {
+   "path": "public/cameras.detail/142.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "33a6f5f5123bd8e664ced356728c456f047adf68",
+   "size": 128556,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/33a6f5f5123bd8e664ced356728c456f047adf68"
+  },
+  {
+   "path": "public/cameras.detail/143.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "78c6a2267e4505a54919a032a1720f8eb15ab414",
+   "size": 127593,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/78c6a2267e4505a54919a032a1720f8eb15ab414"
+  },
+  {
+   "path": "public/cameras.detail/144.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c31788060e681a601b037f9a57ed34650ce65c25",
+   "size": 127765,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c31788060e681a601b037f9a57ed34650ce65c25"
+  },
+  {
+   "path": "public/cameras.detail/145.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9405c97cd854595373990ea803d56933ab7e1f83",
+   "size": 127913,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/9405c97cd854595373990ea803d56933ab7e1f83"
+  },
+  {
+   "path": "public/cameras.detail/146.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "672039fce0914712e7004235c95d72d12a99731d",
+   "size": 126547,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/672039fce0914712e7004235c95d72d12a99731d"
+  },
+  {
+   "path": "public/cameras.detail/147.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9e0c0d9bceba0aacd7e84a6716c3ac41b064099b",
+   "size": 126660,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/9e0c0d9bceba0aacd7e84a6716c3ac41b064099b"
+  },
+  {
+   "path": "public/cameras.detail/148.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "75aff3b8280a79d7e6577e8e3b73dd0205f83cc4",
+   "size": 126354,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/75aff3b8280a79d7e6577e8e3b73dd0205f83cc4"
+  },
+  {
+   "path": "public/cameras.detail/149.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5ad97b4f9705243368c54261c02b9d8e88425749",
+   "size": 117894,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/5ad97b4f9705243368c54261c02b9d8e88425749"
+  },
+  {
+   "path": "public/cameras.detail/15.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0183ded292481f8eacd9a9663225ad17aa2b33b7",
+   "size": 150219,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0183ded292481f8eacd9a9663225ad17aa2b33b7"
+  },
+  {
+   "path": "public/cameras.detail/150.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "968686bdcec828b9404a0c3de59bfff9be0c727b",
+   "size": 109564,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/968686bdcec828b9404a0c3de59bfff9be0c727b"
+  },
+  {
+   "path": "public/cameras.detail/151.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8071ed59754e63c52df08f8c213ae31aaa4231f7",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8071ed59754e63c52df08f8c213ae31aaa4231f7"
+  },
+  {
+   "path": "public/cameras.detail/152.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8d26d4a18de2c517f1cb1043e3dd63cb325c867d",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8d26d4a18de2c517f1cb1043e3dd63cb325c867d"
+  },
+  {
+   "path": "public/cameras.detail/153.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0c949382d88f7beafca07c0f1467a36fc2a76e97",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0c949382d88f7beafca07c0f1467a36fc2a76e97"
+  },
+  {
+   "path": "public/cameras.detail/154.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b7432636fb09b033265a437d472bad3f3dccb7d3",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b7432636fb09b033265a437d472bad3f3dccb7d3"
+  },
+  {
+   "path": "public/cameras.detail/155.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b31eedd25b293495702f2d9366a69f9fcce25a4d",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b31eedd25b293495702f2d9366a69f9fcce25a4d"
+  },
+  {
+   "path": "public/cameras.detail/156.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e3e3a04a01b535d5702b5674aae66aa81a558038",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e3e3a04a01b535d5702b5674aae66aa81a558038"
+  },
+  {
+   "path": "public/cameras.detail/157.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "14c0dbf1ecd62d5f8e2ce9710d395f97bda15912",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/14c0dbf1ecd62d5f8e2ce9710d395f97bda15912"
+  },
+  {
+   "path": "public/cameras.detail/158.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "530f296cbb237012eca163aadbbe49b9f2b6a818",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/530f296cbb237012eca163aadbbe49b9f2b6a818"
+  },
+  {
+   "path": "public/cameras.detail/159.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "894fd34ba003706e078426d3e01972701b762223",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/894fd34ba003706e078426d3e01972701b762223"
+  },
+  {
+   "path": "public/cameras.detail/16.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "087b836a8c9fd540ce8d37e06a8c860526b40a18",
+   "size": 138160,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/087b836a8c9fd540ce8d37e06a8c860526b40a18"
+  },
+  {
+   "path": "public/cameras.detail/160.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "710ee7ab6644213a120eaa44be3a2fc72e137152",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/710ee7ab6644213a120eaa44be3a2fc72e137152"
+  },
+  {
+   "path": "public/cameras.detail/161.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "889eed5541504c6cb08a1b2d1da95ed62042d711",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/889eed5541504c6cb08a1b2d1da95ed62042d711"
+  },
+  {
+   "path": "public/cameras.detail/162.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6618158c3e7713dc83267a51219c152690c3507b",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/6618158c3e7713dc83267a51219c152690c3507b"
+  },
+  {
+   "path": "public/cameras.detail/163.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "54550c71a509aaeea67a9fbff7b7fee2e7e11b56",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/54550c71a509aaeea67a9fbff7b7fee2e7e11b56"
+  },
+  {
+   "path": "public/cameras.detail/164.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2f45d69303c140dc41ea9edd16d3cfd729e657b0",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2f45d69303c140dc41ea9edd16d3cfd729e657b0"
+  },
+  {
+   "path": "public/cameras.detail/165.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f0fe781592de1eaeed6c8df2d85d3c5d15b6e383",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f0fe781592de1eaeed6c8df2d85d3c5d15b6e383"
+  },
+  {
+   "path": "public/cameras.detail/166.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "51ac5e75c629a8dad66ee544d113a1b1d7649ebb",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/51ac5e75c629a8dad66ee544d113a1b1d7649ebb"
+  },
+  {
+   "path": "public/cameras.detail/167.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "90a39a3206494dff2c6f48410d50823b22b854f1",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/90a39a3206494dff2c6f48410d50823b22b854f1"
+  },
+  {
+   "path": "public/cameras.detail/168.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cfa495870e20610bcca7083560fdb325894b49b1",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/cfa495870e20610bcca7083560fdb325894b49b1"
+  },
+  {
+   "path": "public/cameras.detail/169.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "24f673aec8c99bf005eb3273055267816246066b",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/24f673aec8c99bf005eb3273055267816246066b"
+  },
+  {
+   "path": "public/cameras.detail/17.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b426231edd01c508df9b91fb174cc4e45e5acdea",
+   "size": 128922,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b426231edd01c508df9b91fb174cc4e45e5acdea"
+  },
+  {
+   "path": "public/cameras.detail/170.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ddb6e3c70243473dd18e1c3e2f3e0005157f57c4",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ddb6e3c70243473dd18e1c3e2f3e0005157f57c4"
+  },
+  {
+   "path": "public/cameras.detail/171.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ba4b0b9ae5c1023477b22cf0f9880655f3e8989d",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ba4b0b9ae5c1023477b22cf0f9880655f3e8989d"
+  },
+  {
+   "path": "public/cameras.detail/172.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "36a226e78ca498cbc0f7fe93f685609c0208e5c8",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/36a226e78ca498cbc0f7fe93f685609c0208e5c8"
+  },
+  {
+   "path": "public/cameras.detail/173.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fc34512fdc94aa48a0d8f50d71e6db189fe17ae9",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fc34512fdc94aa48a0d8f50d71e6db189fe17ae9"
+  },
+  {
+   "path": "public/cameras.detail/174.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a1f10e63998b294a0631b7aaf57b0e6fd4e33a23",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a1f10e63998b294a0631b7aaf57b0e6fd4e33a23"
+  },
+  {
+   "path": "public/cameras.detail/175.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f0c391108b6f50b18f66f2711320f2bb2b290741",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f0c391108b6f50b18f66f2711320f2bb2b290741"
+  },
+  {
+   "path": "public/cameras.detail/176.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "580277e7ce64be1fd68f23748067737cc212a81d",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/580277e7ce64be1fd68f23748067737cc212a81d"
+  },
+  {
+   "path": "public/cameras.detail/177.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "10991d79f34c14b5bbd74e496d92d4fe9862f6ff",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/10991d79f34c14b5bbd74e496d92d4fe9862f6ff"
+  },
+  {
+   "path": "public/cameras.detail/178.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "05929806e578229cd44d2da6e3d71948d2cb7449",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/05929806e578229cd44d2da6e3d71948d2cb7449"
+  },
+  {
+   "path": "public/cameras.detail/179.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6f20074a68c1bf0e6157d69893002271ed197458",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/6f20074a68c1bf0e6157d69893002271ed197458"
+  },
+  {
+   "path": "public/cameras.detail/18.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "05fb22ac0f2dd4ce507b71e226ebc8e7e1a46c6a",
+   "size": 123008,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/05fb22ac0f2dd4ce507b71e226ebc8e7e1a46c6a"
+  },
+  {
+   "path": "public/cameras.detail/180.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "35fd4bcb0ca54c14c60b04b47f8fe4e186b6a20e",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/35fd4bcb0ca54c14c60b04b47f8fe4e186b6a20e"
+  },
+  {
+   "path": "public/cameras.detail/181.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8a5ee4fe8102635d6ec9e9f02d6b46bdfbd249ed",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8a5ee4fe8102635d6ec9e9f02d6b46bdfbd249ed"
+  },
+  {
+   "path": "public/cameras.detail/182.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fe29806224ea2e0e89e154c7f9f209612a4330e9",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fe29806224ea2e0e89e154c7f9f209612a4330e9"
+  },
+  {
+   "path": "public/cameras.detail/183.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7a0792cf530717c218571a0286edf5fdd59f216c",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7a0792cf530717c218571a0286edf5fdd59f216c"
+  },
+  {
+   "path": "public/cameras.detail/184.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fc17d53716b769b6e446bf5066df64dce29039a7",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fc17d53716b769b6e446bf5066df64dce29039a7"
+  },
+  {
+   "path": "public/cameras.detail/185.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fc49ba988030cc58d2e7766a43d395ae7011ffc9",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fc49ba988030cc58d2e7766a43d395ae7011ffc9"
+  },
+  {
+   "path": "public/cameras.detail/186.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "952fb0110792d136da5a92e98c8e30628c1cc547",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/952fb0110792d136da5a92e98c8e30628c1cc547"
+  },
+  {
+   "path": "public/cameras.detail/187.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1d97669030a9467ac1db2771f5a14e1dda1fcf9a",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1d97669030a9467ac1db2771f5a14e1dda1fcf9a"
+  },
+  {
+   "path": "public/cameras.detail/188.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e043c1a85ddc5d29f55f279958ebe38402539168",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e043c1a85ddc5d29f55f279958ebe38402539168"
+  },
+  {
+   "path": "public/cameras.detail/189.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e87c8d43a2f37ef0567f90acd08bbb5d60ca243c",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e87c8d43a2f37ef0567f90acd08bbb5d60ca243c"
+  },
+  {
+   "path": "public/cameras.detail/19.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0fd7941352f1a4fa0361ca9d8e4012e3ea299cc7",
+   "size": 159036,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0fd7941352f1a4fa0361ca9d8e4012e3ea299cc7"
+  },
+  {
+   "path": "public/cameras.detail/190.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fdf5d33597b57ef2d05b5f0de4db709b58cd5e40",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fdf5d33597b57ef2d05b5f0de4db709b58cd5e40"
+  },
+  {
+   "path": "public/cameras.detail/191.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c023f4f2f713bb4bb385ef0ecf7c0fd7bd9fc483",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c023f4f2f713bb4bb385ef0ecf7c0fd7bd9fc483"
+  },
+  {
+   "path": "public/cameras.detail/192.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "436444bcace8c0b5b91133b82a7b07ba2681456f",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/436444bcace8c0b5b91133b82a7b07ba2681456f"
+  },
+  {
+   "path": "public/cameras.detail/193.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8018805d639e334589f3def9f26c66c9221061f5",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8018805d639e334589f3def9f26c66c9221061f5"
+  },
+  {
+   "path": "public/cameras.detail/194.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c1ca4540131de08efeef5c41eb7fcbd3c293f350",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c1ca4540131de08efeef5c41eb7fcbd3c293f350"
+  },
+  {
+   "path": "public/cameras.detail/195.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ab2df892b086269ff01b3852b46650acff7b463b",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ab2df892b086269ff01b3852b46650acff7b463b"
+  },
+  {
+   "path": "public/cameras.detail/196.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5bb4c0c7e5dc258fa95ccaa858407542841d47c7",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/5bb4c0c7e5dc258fa95ccaa858407542841d47c7"
+  },
+  {
+   "path": "public/cameras.detail/197.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e939a065de590c38b0db0b35dbedbc5204dd0e44",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e939a065de590c38b0db0b35dbedbc5204dd0e44"
+  },
+  {
+   "path": "public/cameras.detail/198.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8c7b912144bbbc8d09a02f8898cae2487e7e5831",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8c7b912144bbbc8d09a02f8898cae2487e7e5831"
+  },
+  {
+   "path": "public/cameras.detail/199.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "acf50bff3063a86a4bbfd810dfd9bc898c804175",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/acf50bff3063a86a4bbfd810dfd9bc898c804175"
+  },
+  {
+   "path": "public/cameras.detail/2.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d4f4dbcad4122c465da01a7a9282cc4d55215b08",
+   "size": 142249,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d4f4dbcad4122c465da01a7a9282cc4d55215b08"
+  },
+  {
+   "path": "public/cameras.detail/20.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "72f0e6cb40d9b32253d6c53af9bd3614f937c056",
+   "size": 188183,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/72f0e6cb40d9b32253d6c53af9bd3614f937c056"
+  },
+  {
+   "path": "public/cameras.detail/200.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "762853c31d9f912a96634e90098dadab11bc859e",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/762853c31d9f912a96634e90098dadab11bc859e"
+  },
+  {
+   "path": "public/cameras.detail/201.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4dc69a8391201297a05128d03da28a21487ad225",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4dc69a8391201297a05128d03da28a21487ad225"
+  },
+  {
+   "path": "public/cameras.detail/202.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ac27f72c83a07cefcf054f7f32b79eb8d3ea9846",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ac27f72c83a07cefcf054f7f32b79eb8d3ea9846"
+  },
+  {
+   "path": "public/cameras.detail/203.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "01dd809e30ac5157ef43f53ba85f82e81ba4cd1d",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/01dd809e30ac5157ef43f53ba85f82e81ba4cd1d"
+  },
+  {
+   "path": "public/cameras.detail/204.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "17ac446741b79883aef84539593fb3d7b73aed93",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/17ac446741b79883aef84539593fb3d7b73aed93"
+  },
+  {
+   "path": "public/cameras.detail/205.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7f0bea22bb5d4f4cc690ac792577f329519004ff",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7f0bea22bb5d4f4cc690ac792577f329519004ff"
+  },
+  {
+   "path": "public/cameras.detail/206.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a4d892dd645a6f1c78572d57d66bb7698d9d2129",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a4d892dd645a6f1c78572d57d66bb7698d9d2129"
+  },
+  {
+   "path": "public/cameras.detail/207.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5545c044fda9591c02f60420714281a7302f9073",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/5545c044fda9591c02f60420714281a7302f9073"
+  },
+  {
+   "path": "public/cameras.detail/208.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7c51fa64e120ac95f0750ae7d0ef85501f21118b",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7c51fa64e120ac95f0750ae7d0ef85501f21118b"
+  },
+  {
+   "path": "public/cameras.detail/209.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d29d6ba2bfe1545b3ac744b480a228f6416a1376",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d29d6ba2bfe1545b3ac744b480a228f6416a1376"
+  },
+  {
+   "path": "public/cameras.detail/21.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e1d97198690c38ae6fc9c8cccbd10dce0485c81d",
+   "size": 216880,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e1d97198690c38ae6fc9c8cccbd10dce0485c81d"
+  },
+  {
+   "path": "public/cameras.detail/210.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "24672b6688f2250b478941896cc5ccab9bfddc12",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/24672b6688f2250b478941896cc5ccab9bfddc12"
+  },
+  {
+   "path": "public/cameras.detail/211.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "11d8ebd4e33a8ce633ffb7f5eaea560621cb4361",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/11d8ebd4e33a8ce633ffb7f5eaea560621cb4361"
+  },
+  {
+   "path": "public/cameras.detail/212.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4a8610113daecaf70973660638a7206ccbe5c9c0",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4a8610113daecaf70973660638a7206ccbe5c9c0"
+  },
+  {
+   "path": "public/cameras.detail/213.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b95be595f405db73c4154241f8cf2c7050175577",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b95be595f405db73c4154241f8cf2c7050175577"
+  },
+  {
+   "path": "public/cameras.detail/214.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "eeee8dfb583748bdec4df69dca6fb882a546a16c",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/eeee8dfb583748bdec4df69dca6fb882a546a16c"
+  },
+  {
+   "path": "public/cameras.detail/215.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7d2c0ea6136caf69ea101b5ae379c4be078736cc",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7d2c0ea6136caf69ea101b5ae379c4be078736cc"
+  },
+  {
+   "path": "public/cameras.detail/216.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e0682fc23e71a48234be828fc1daf507cf12c6c5",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e0682fc23e71a48234be828fc1daf507cf12c6c5"
+  },
+  {
+   "path": "public/cameras.detail/217.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "933d61078c19732fb7d6b198ff4ad41849c48fee",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/933d61078c19732fb7d6b198ff4ad41849c48fee"
+  },
+  {
+   "path": "public/cameras.detail/218.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a290462a82a9938bb6a3c262298ed86d0eb735ed",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a290462a82a9938bb6a3c262298ed86d0eb735ed"
+  },
+  {
+   "path": "public/cameras.detail/219.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0278cd2d20769ecb2c531900cfe7f6b9ac4bb949",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0278cd2d20769ecb2c531900cfe7f6b9ac4bb949"
+  },
+  {
+   "path": "public/cameras.detail/22.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d8141121bf65110e0f2b4cdfa0d84397c4a58e48",
+   "size": 233614,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d8141121bf65110e0f2b4cdfa0d84397c4a58e48"
+  },
+  {
+   "path": "public/cameras.detail/220.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "65a6922fc92ba8e9d7b4a44ec9e3582773c39209",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/65a6922fc92ba8e9d7b4a44ec9e3582773c39209"
+  },
+  {
+   "path": "public/cameras.detail/221.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1a7bcc3c942f80dccd2d0428af933a9a17d479a9",
+   "size": 104059,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1a7bcc3c942f80dccd2d0428af933a9a17d479a9"
+  },
+  {
+   "path": "public/cameras.detail/222.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5af8dc42834af4bf6b60d39c18b8ce9ff0006b8a",
+   "size": 157084,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/5af8dc42834af4bf6b60d39c18b8ce9ff0006b8a"
+  },
+  {
+   "path": "public/cameras.detail/223.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "23411e3cfc0bd1c4ef663085f49977e800237dc4",
+   "size": 162814,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/23411e3cfc0bd1c4ef663085f49977e800237dc4"
+  },
+  {
+   "path": "public/cameras.detail/224.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5a4cf34a966fd567e63f2ee8dc87d05930197168",
+   "size": 183207,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/5a4cf34a966fd567e63f2ee8dc87d05930197168"
+  },
+  {
+   "path": "public/cameras.detail/225.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "da1246719b4b69276ef23724ad4b3bdc9c0e41f7",
+   "size": 149680,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/da1246719b4b69276ef23724ad4b3bdc9c0e41f7"
+  },
+  {
+   "path": "public/cameras.detail/226.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f392aa092b159475116c38ee26a3de2a1c69f5c7",
+   "size": 102868,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f392aa092b159475116c38ee26a3de2a1c69f5c7"
+  },
+  {
+   "path": "public/cameras.detail/227.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "259e89556d91e59911d84ab51abfcab1390f891a",
+   "size": 138475,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/259e89556d91e59911d84ab51abfcab1390f891a"
+  },
+  {
+   "path": "public/cameras.detail/228.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3525a8882072fe9eba92a739aea75965fd6b5ad2",
+   "size": 135806,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3525a8882072fe9eba92a739aea75965fd6b5ad2"
+  },
+  {
+   "path": "public/cameras.detail/229.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e966edf55c6cf8ffd52e371f3285173ed5b19f71",
+   "size": 46859,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e966edf55c6cf8ffd52e371f3285173ed5b19f71"
+  },
+  {
+   "path": "public/cameras.detail/23.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "97e0f59b0e99659a1972a55ee69dc8c027034ce8",
+   "size": 161107,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/97e0f59b0e99659a1972a55ee69dc8c027034ce8"
+  },
+  {
+   "path": "public/cameras.detail/24.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "afa9b3ebe87b8f67074f17203c30d456ddea44a1",
+   "size": 162075,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/afa9b3ebe87b8f67074f17203c30d456ddea44a1"
+  },
+  {
+   "path": "public/cameras.detail/25.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3225350c3b94b921329ac3e6956a2cc159af532f",
+   "size": 153609,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3225350c3b94b921329ac3e6956a2cc159af532f"
+  },
+  {
+   "path": "public/cameras.detail/26.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "df3a09f82314ad807060427975501032a4650373",
+   "size": 111935,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/df3a09f82314ad807060427975501032a4650373"
+  },
+  {
+   "path": "public/cameras.detail/27.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ca62c07566c8d55b4a8dfab4a11054a7c0ad79bc",
+   "size": 90629,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ca62c07566c8d55b4a8dfab4a11054a7c0ad79bc"
+  },
+  {
+   "path": "public/cameras.detail/28.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "45a24db0754d90ac19a0a8b1a0ecf879ea71e29a",
+   "size": 118373,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/45a24db0754d90ac19a0a8b1a0ecf879ea71e29a"
+  },
+  {
+   "path": "public/cameras.detail/29.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6628ac3ace31717d47caf01727a55f05f8d09543",
+   "size": 124273,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/6628ac3ace31717d47caf01727a55f05f8d09543"
+  },
+  {
+   "path": "public/cameras.detail/3.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "67f6966c964cf858ab3539744ebdf12ac577cd83",
+   "size": 118952,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/67f6966c964cf858ab3539744ebdf12ac577cd83"
+  },
+  {
+   "path": "public/cameras.detail/30.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f072eb0971133f29780544a0226726c54c4d7d0d",
+   "size": 87058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f072eb0971133f29780544a0226726c54c4d7d0d"
+  },
+  {
+   "path": "public/cameras.detail/31.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "921484d564f5e79857e61b25e4ec4c94b4bb04af",
+   "size": 87058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/921484d564f5e79857e61b25e4ec4c94b4bb04af"
+  },
+  {
+   "path": "public/cameras.detail/32.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1d830784d490d232de6d644e5627540943e02829",
+   "size": 87058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1d830784d490d232de6d644e5627540943e02829"
+  },
+  {
+   "path": "public/cameras.detail/33.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "94033229d4e5a59db7e8e531a90c9b045972b6b8",
+   "size": 94617,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/94033229d4e5a59db7e8e531a90c9b045972b6b8"
+  },
+  {
+   "path": "public/cameras.detail/34.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "b111a0e2b6eaabe782bda240da172f6b3383c109",
+   "size": 149351,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/b111a0e2b6eaabe782bda240da172f6b3383c109"
+  },
+  {
+   "path": "public/cameras.detail/35.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "bc818b81d43349ad1829ce49e5461d50ac8ac153",
+   "size": 183001,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/bc818b81d43349ad1829ce49e5461d50ac8ac153"
+  },
+  {
+   "path": "public/cameras.detail/36.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a50a238ee37a55c042444d4f29a26f06e13551ac",
+   "size": 127426,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a50a238ee37a55c042444d4f29a26f06e13551ac"
+  },
+  {
+   "path": "public/cameras.detail/37.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "de956d07af1f3b3cc7fcbaa8913800cb1f3e308c",
+   "size": 113380,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/de956d07af1f3b3cc7fcbaa8913800cb1f3e308c"
+  },
+  {
+   "path": "public/cameras.detail/38.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "54c3f060bb7249490b08638ede6b211417c151c6",
+   "size": 142512,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/54c3f060bb7249490b08638ede6b211417c151c6"
+  },
+  {
+   "path": "public/cameras.detail/39.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3e9937d55c76bdad3dfcd5bf32b7db6f43cb4cf9",
+   "size": 131067,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3e9937d55c76bdad3dfcd5bf32b7db6f43cb4cf9"
+  },
+  {
+   "path": "public/cameras.detail/4.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "48feab2222b9496b7f8c5278cacc4d53b10ef522",
+   "size": 143140,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/48feab2222b9496b7f8c5278cacc4d53b10ef522"
+  },
+  {
+   "path": "public/cameras.detail/40.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "29d304c8ff8083c2f7cebb2513c98fef82451ac0",
+   "size": 163614,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/29d304c8ff8083c2f7cebb2513c98fef82451ac0"
+  },
+  {
+   "path": "public/cameras.detail/41.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ae1b8d71eb20d79013e1044db0dd996967ba124c",
+   "size": 117670,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ae1b8d71eb20d79013e1044db0dd996967ba124c"
+  },
+  {
+   "path": "public/cameras.detail/42.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "873ae0229cb9ccc0fbfb400a67c9e7ad8500eadd",
+   "size": 199690,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/873ae0229cb9ccc0fbfb400a67c9e7ad8500eadd"
+  },
+  {
+   "path": "public/cameras.detail/43.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4a6439f86f13e6f8bc82f0a839712603b77519ff",
+   "size": 124558,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4a6439f86f13e6f8bc82f0a839712603b77519ff"
+  },
+  {
+   "path": "public/cameras.detail/44.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4dfa7c94c8a629396dc539396c3c9a555433f4be",
+   "size": 182900,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4dfa7c94c8a629396dc539396c3c9a555433f4be"
+  },
+  {
+   "path": "public/cameras.detail/45.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "77151e6445a9ed9d1ff01f00035ec81cfd383e8b",
+   "size": 131701,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/77151e6445a9ed9d1ff01f00035ec81cfd383e8b"
+  },
+  {
+   "path": "public/cameras.detail/46.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1f5731577693f40ef665fd685e086ec2dcc526b9",
+   "size": 133042,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1f5731577693f40ef665fd685e086ec2dcc526b9"
+  },
+  {
+   "path": "public/cameras.detail/47.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fffd3450cad4f621a846d196c74e9aca1e468cfc",
+   "size": 105017,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fffd3450cad4f621a846d196c74e9aca1e468cfc"
+  },
+  {
+   "path": "public/cameras.detail/48.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0cd1ce7b992fecec54daea72d5568339ad335cdb",
+   "size": 125877,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0cd1ce7b992fecec54daea72d5568339ad335cdb"
+  },
+  {
+   "path": "public/cameras.detail/49.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "29d5699eed4ec5277876d22ea4457bc1997fbaab",
+   "size": 163259,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/29d5699eed4ec5277876d22ea4457bc1997fbaab"
+  },
+  {
+   "path": "public/cameras.detail/5.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0d03dd151f6f83cbe5c90333752e741fc377124f",
+   "size": 157223,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0d03dd151f6f83cbe5c90333752e741fc377124f"
+  },
+  {
+   "path": "public/cameras.detail/50.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "cbf1e76d1aac365940879fc7e237ef9c17da72a4",
+   "size": 158049,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/cbf1e76d1aac365940879fc7e237ef9c17da72a4"
+  },
+  {
+   "path": "public/cameras.detail/51.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9c11f5e53cbd43271b54cc826b62dfc41f11f992",
+   "size": 92028,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/9c11f5e53cbd43271b54cc826b62dfc41f11f992"
+  },
+  {
+   "path": "public/cameras.detail/52.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c44210cb5a2f890fb7289900b2323364f3510999",
+   "size": 148435,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c44210cb5a2f890fb7289900b2323364f3510999"
+  },
+  {
+   "path": "public/cameras.detail/53.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f5397ffccf976627aa4e17bb2aabb99bc5ed7eb4",
+   "size": 125368,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f5397ffccf976627aa4e17bb2aabb99bc5ed7eb4"
+  },
+  {
+   "path": "public/cameras.detail/54.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "30942a00946e4d85c684c7374a322fb7a18e91ce",
+   "size": 98043,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/30942a00946e4d85c684c7374a322fb7a18e91ce"
+  },
+  {
+   "path": "public/cameras.detail/55.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fd7d3770115d002ff5aecc713bba738ed491e75f",
+   "size": 126919,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fd7d3770115d002ff5aecc713bba738ed491e75f"
+  },
+  {
+   "path": "public/cameras.detail/56.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "daa60f38d92236df8b1b3e7bb1e2d72a4a3fca68",
+   "size": 109173,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/daa60f38d92236df8b1b3e7bb1e2d72a4a3fca68"
+  },
+  {
+   "path": "public/cameras.detail/57.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1ac6f9a49d85093a5bb581e5e0b82ccd530a7845",
+   "size": 111143,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1ac6f9a49d85093a5bb581e5e0b82ccd530a7845"
+  },
+  {
+   "path": "public/cameras.detail/58.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "31b13ac719c0ef97c5430d0825db8773547bd4df",
+   "size": 158051,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/31b13ac719c0ef97c5430d0825db8773547bd4df"
+  },
+  {
+   "path": "public/cameras.detail/59.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c0c0568c14eef1d30cc4ee706328750b46b245dc",
+   "size": 176300,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c0c0568c14eef1d30cc4ee706328750b46b245dc"
+  },
+  {
+   "path": "public/cameras.detail/6.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "554525b484b053b17a7349ea044cc33257e8070e",
+   "size": 168991,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/554525b484b053b17a7349ea044cc33257e8070e"
+  },
+  {
+   "path": "public/cameras.detail/60.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "910f1b60e22440f0f919d617155f9d9960efb9e8",
+   "size": 131273,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/910f1b60e22440f0f919d617155f9d9960efb9e8"
+  },
+  {
+   "path": "public/cameras.detail/61.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "01d4235402eb63fb1f7c4c316867c2ab85572820",
+   "size": 105468,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/01d4235402eb63fb1f7c4c316867c2ab85572820"
+  },
+  {
+   "path": "public/cameras.detail/62.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d1174ca53f4fd90806f4a04054232d99f1c4cdeb",
+   "size": 118691,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d1174ca53f4fd90806f4a04054232d99f1c4cdeb"
+  },
+  {
+   "path": "public/cameras.detail/63.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "863bac129a7d984be9a66fba2aaffafc10b76f55",
+   "size": 132383,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/863bac129a7d984be9a66fba2aaffafc10b76f55"
+  },
+  {
+   "path": "public/cameras.detail/64.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7a2a87eee92a975546674503e225ae5825f0389f",
+   "size": 102238,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7a2a87eee92a975546674503e225ae5825f0389f"
+  },
+  {
+   "path": "public/cameras.detail/65.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "39fd682512703524864f9f5217517da3bfca9916",
+   "size": 102058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/39fd682512703524864f9f5217517da3bfca9916"
+  },
+  {
+   "path": "public/cameras.detail/66.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3f094d412086bc4c2b1b0957577debab9962f383",
+   "size": 102070,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3f094d412086bc4c2b1b0957577debab9962f383"
+  },
+  {
+   "path": "public/cameras.detail/67.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2c99358ebb367a05c0a82af09630015eec7d6cbb",
+   "size": 102214,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2c99358ebb367a05c0a82af09630015eec7d6cbb"
+  },
+  {
+   "path": "public/cameras.detail/68.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ceabb9537c7e78e722f98603af5eb5bc13dcd5af",
+   "size": 102058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ceabb9537c7e78e722f98603af5eb5bc13dcd5af"
+  },
+  {
+   "path": "public/cameras.detail/69.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "32516dd6134be0c76478d5be057abe8e02b69995",
+   "size": 106543,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/32516dd6134be0c76478d5be057abe8e02b69995"
+  },
+  {
+   "path": "public/cameras.detail/7.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "bedd4b2696a5670551ed07cbf275eca14ded9e88",
+   "size": 165918,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/bedd4b2696a5670551ed07cbf275eca14ded9e88"
+  },
+  {
+   "path": "public/cameras.detail/70.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8d9286c4de06a15717e5f22d4e8dd556d9b09252",
+   "size": 112937,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8d9286c4de06a15717e5f22d4e8dd556d9b09252"
+  },
+  {
+   "path": "public/cameras.detail/71.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "164c311b3b756b003377feaf53506aef0ea6ab36",
+   "size": 111914,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/164c311b3b756b003377feaf53506aef0ea6ab36"
+  },
+  {
+   "path": "public/cameras.detail/72.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "614260b8022961166c2c2469dbc67c6235c89e76",
+   "size": 113058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/614260b8022961166c2c2469dbc67c6235c89e76"
+  },
+  {
+   "path": "public/cameras.detail/73.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2051e0155d058458bc36b664b8e77d8d2eaa1315",
+   "size": 112640,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2051e0155d058458bc36b664b8e77d8d2eaa1315"
+  },
+  {
+   "path": "public/cameras.detail/74.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2ccb4a9e65099f7774c48644753d84b4bc322ef4",
+   "size": 121486,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2ccb4a9e65099f7774c48644753d84b4bc322ef4"
+  },
+  {
+   "path": "public/cameras.detail/75.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7f57128988112f53ceac042f3f6ef43fbd91493a",
+   "size": 153907,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7f57128988112f53ceac042f3f6ef43fbd91493a"
+  },
+  {
+   "path": "public/cameras.detail/76.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "24cbf223cbca760ec034b4734ec6f98cccaddb87",
+   "size": 82370,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/24cbf223cbca760ec034b4734ec6f98cccaddb87"
+  },
+  {
+   "path": "public/cameras.detail/77.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2a7d1606c5aef6a7cd2e09678b85f0c415da0849",
+   "size": 78750,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2a7d1606c5aef6a7cd2e09678b85f0c415da0849"
+  },
+  {
+   "path": "public/cameras.detail/78.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0a6fc7d8dc159a304b99eafde2710d6008e8bda4",
+   "size": 80680,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0a6fc7d8dc159a304b99eafde2710d6008e8bda4"
+  },
+  {
+   "path": "public/cameras.detail/79.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fa0f2446530f40ada124f1a3a267d6dbb06f0a3b",
+   "size": 81058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fa0f2446530f40ada124f1a3a267d6dbb06f0a3b"
+  },
+  {
+   "path": "public/cameras.detail/8.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "93a6aa1efa8b17fb323185b17a3de2cfad5fa6d2",
+   "size": 143209,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/93a6aa1efa8b17fb323185b17a3de2cfad5fa6d2"
+  },
+  {
+   "path": "public/cameras.detail/80.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d4e366323258d58d38fcdc20acbe64958674f072",
+   "size": 80998,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d4e366323258d58d38fcdc20acbe64958674f072"
+  },
+  {
+   "path": "public/cameras.detail/81.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d36aa6a6ec0e3b4c8810fb01258ecf9ca065cc4f",
+   "size": 85263,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d36aa6a6ec0e3b4c8810fb01258ecf9ca065cc4f"
+  },
+  {
+   "path": "public/cameras.detail/82.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9b38fb16dc95121001786dcaa35353aa8c6361c0",
+   "size": 85056,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/9b38fb16dc95121001786dcaa35353aa8c6361c0"
+  },
+  {
+   "path": "public/cameras.detail/83.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "70e4583401c9d4db88c0dcf1b03026b980c991c4",
+   "size": 84409,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/70e4583401c9d4db88c0dcf1b03026b980c991c4"
+  },
+  {
+   "path": "public/cameras.detail/84.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a99438ead4a6b027acf9cfdb0dbe89513a6035df",
+   "size": 94116,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a99438ead4a6b027acf9cfdb0dbe89513a6035df"
+  },
+  {
+   "path": "public/cameras.detail/85.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6d08da55d8d93218e41dfe3123605abb52f69f0f",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/6d08da55d8d93218e41dfe3123605abb52f69f0f"
+  },
+  {
+   "path": "public/cameras.detail/86.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0ba6f3f14a24f09e252c808f0cf57979b3d1ae28",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0ba6f3f14a24f09e252c808f0cf57979b3d1ae28"
+  },
+  {
+   "path": "public/cameras.detail/87.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a7009d7478ac3f74c545aca8740eb0622e7365e6",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a7009d7478ac3f74c545aca8740eb0622e7365e6"
+  },
+  {
+   "path": "public/cameras.detail/88.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "24b294967416c6b84b1e49e51419f8dd7f2aae81",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/24b294967416c6b84b1e49e51419f8dd7f2aae81"
+  },
+  {
+   "path": "public/cameras.detail/89.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7ea2fc3f1f4c73764a913d37aab01952718d6ad8",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7ea2fc3f1f4c73764a913d37aab01952718d6ad8"
+  },
+  {
+   "path": "public/cameras.detail/9.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "55843c739a957d9297230ab5cf8a5f4a153615ba",
+   "size": 158131,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/55843c739a957d9297230ab5cf8a5f4a153615ba"
+  },
+  {
+   "path": "public/cameras.detail/90.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ed12e9098c32bbc6380b2036b621a834e6c153eb",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ed12e9098c32bbc6380b2036b621a834e6c153eb"
+  },
+  {
+   "path": "public/cameras.detail/91.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4b92dfd4e4ec9f849b520cc8db88b1676353babc",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4b92dfd4e4ec9f849b520cc8db88b1676353babc"
+  },
+  {
+   "path": "public/cameras.detail/92.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e7b9dbe330a5f90e26acb60af3275a39a95e1e9c",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e7b9dbe330a5f90e26acb60af3275a39a95e1e9c"
+  },
+  {
+   "path": "public/cameras.detail/93.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "fe7439a93c78cca1fe04068881789c5a866562d3",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/fe7439a93c78cca1fe04068881789c5a866562d3"
+  },
+  {
+   "path": "public/cameras.detail/94.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f9e9c4e8ffaa104ce8fbeb8fbf3bc7ef8652e302",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f9e9c4e8ffaa104ce8fbeb8fbf3bc7ef8652e302"
+  },
+  {
+   "path": "public/cameras.detail/95.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "47ff5324940c4d5b71cd0f54b28c4bfdfd1779ec",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/47ff5324940c4d5b71cd0f54b28c4bfdfd1779ec"
+  },
+  {
+   "path": "public/cameras.detail/96.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7e6ec44dc07641228ccac906b31f58ff23dc048e",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7e6ec44dc07641228ccac906b31f58ff23dc048e"
+  },
+  {
+   "path": "public/cameras.detail/97.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c586086215885e9c26772e72af543c3126f54a42",
+   "size": 92058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c586086215885e9c26772e72af543c3126f54a42"
+  },
+  {
+   "path": "public/cameras.detail/98.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3513dfc97bfcc590c9e3d772ddec6fd58beae735",
+   "size": 91170,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3513dfc97bfcc590c9e3d772ddec6fd58beae735"
+  },
+  {
+   "path": "public/cameras.detail/99.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "553dfaa909aa6e9cc94caf82ea592d1ceb27e576",
+   "size": 90058,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/553dfaa909aa6e9cc94caf82ea592d1ceb27e576"
+  },
+  {
+   "path": "public/cameras.geojson",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e2afc8d577f1f274f2d8b389f8ee4e98d1b3c2ff",
+   "size": 100770547,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e2afc8d577f1f274f2d8b389f8ee4e98d1b3c2ff"
+  },
+  {
+   "path": "public/cameras.labels.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "766c3f639ffaa41623f0adace987f52126a19f34",
+   "size": 9235953,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/766c3f639ffaa41623f0adace987f52126a19f34"
+  },
+  {
+   "path": "public/favicon.svg",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "6893eb13237060adc0c968a690149a49faa2d7d3",
+   "size": 9522,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/6893eb13237060adc0c968a690149a49faa2d7d3"
+  },
+  {
+   "path": "scripts",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "c5fc5a059211946058698223047fd4955c4df502",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/c5fc5a059211946058698223047fd4955c4df502"
+  },
+  {
+   "path": "scripts/legacy",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "092496ef67356e924515dfb36c53dcd082c86201",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/092496ef67356e924515dfb36c53dcd082c86201"
+  },
+  {
+   "path": "scripts/legacy/fetch_cameras.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4fac0c2077003b52153b1bee5ebd8ee2b59c66e2",
+   "size": 18280,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4fac0c2077003b52153b1bee5ebd8ee2b59c66e2"
+  },
+  {
+   "path": "scripts/legacy/fetch_windy_dense.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "18fd2d726ff293258781679d1845d4e862990cab",
+   "size": 7099,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/18fd2d726ff293258781679d1845d4e862990cab"
+  },
+  {
+   "path": "scripts/legacy/fetch_windy_massive.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f9dbcdbd422893ccf934af58c306fafe84d9d4b1",
+   "size": 6389,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f9dbcdbd422893ccf934af58c306fafe84d9d4b1"
+  },
+  {
+   "path": "scripts/scraper.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ec5edf74c1fc7540a5282f9d911a4ea6a3bb4f17",
+   "size": 39938,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ec5edf74c1fc7540a5282f9d911a4ea6a3bb4f17"
+  },
+  {
+   "path": "scripts/scrapers",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "fbaf8ab54b71b0ae73847ad40fad19591e347b6f",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/fbaf8ab54b71b0ae73847ad40fad19591e347b6f"
+  },
+  {
+   "path": "scripts/scrapers/asia",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "9b831a788fbb9e03fb7d9a1772f8bd71ad4e63ce",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/9b831a788fbb9e03fb7d9a1772f8bd71ad4e63ce"
+  },
+  {
+   "path": "scripts/scrapers/asia/singapore",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "77aca7b4cf6f1b4046f3e041c6839543c1c0920d",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/77aca7b4cf6f1b4046f3e041c6839543c1c0920d"
+  },
+  {
+   "path": "scripts/scrapers/asia/singapore/lta.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2fc7d38c14c1d9e82f926dbe15627ca22e7d4c9a",
+   "size": 1482,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2fc7d38c14c1d9e82f926dbe15627ca22e7d4c9a"
+  },
+  {
+   "path": "scripts/scrapers/canada",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "db72b83052d410064641eee70cb86dfb6b960f53",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/db72b83052d410064641eee70cb86dfb6b960f53"
+  },
+  {
+   "path": "scripts/scrapers/canada/bc",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "220965fc423ca0a3c9ca0c805d8253f43bf78aa5",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/220965fc423ca0a3c9ca0c805d8253f43bf78aa5"
+  },
+  {
+   "path": "scripts/scrapers/canada/bc/drivebc.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "5dc1bbe1c78c3a2ff9487e576ca53f65932aaa6c",
+   "size": 1718,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/5dc1bbe1c78c3a2ff9487e576ca53f65932aaa6c"
+  },
+  {
+   "path": "scripts/scrapers/europe",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "fafdf7619f32649d13c399c2b2753ede25b60ee6",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/fafdf7619f32649d13c399c2b2753ede25b60ee6"
+  },
+  {
+   "path": "scripts/scrapers/europe/uk",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "c4dc8343cd59ce7282308dcf742f41e92e3603c5",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/c4dc8343cd59ce7282308dcf742f41e92e3603c5"
+  },
+  {
+   "path": "scripts/scrapers/europe/uk/tfl_london.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1b4a42118eb8008408d24362c55e4b77e8b41020",
+   "size": 1921,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1b4a42118eb8008408d24362c55e4b77e8b41020"
+  },
+  {
+   "path": "scripts/scrapers/global",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "1a7341989a4128cd786bf8fa0ccc533a85fee461",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/1a7341989a4128cd786bf8fa0ccc533a85fee461"
+  },
+  {
+   "path": "scripts/scrapers/global/windy.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "72ca6133c4504e30fda8a02cdeddabee2f5a292c",
+   "size": 11023,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/72ca6133c4504e30fda8a02cdeddabee2f5a292c"
+  },
+  {
+   "path": "scripts/scrapers/host_prober.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "48d683d728e6d886db54032b85dc38e85c6d9fda",
+   "size": 6228,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/48d683d728e6d886db54032b85dc38e85c6d9fda"
+  },
+  {
+   "path": "scripts/scrapers/ipcamlive_resolver.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3a8df837cb920e3607312a29e64257a424890a7e",
+   "size": 2448,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3a8df837cb920e3607312a29e64257a424890a7e"
+  },
+  {
+   "path": "scripts/scrapers/oceania",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "b676f100a61aba0614781f1f2899b3f8bc8af697",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/b676f100a61aba0614781f1f2899b3f8bc8af697"
+  },
+  {
+   "path": "scripts/scrapers/oceania/nz",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "c03350453f14f346bf6623b2fe795297f992fb24",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/c03350453f14f346bf6623b2fe795297f992fb24"
+  },
+  {
+   "path": "scripts/scrapers/oceania/nz/nzta.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d6e1618092d61344977d4ebd95be957745c20913",
+   "size": 2758,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d6e1618092d61344977d4ebd95be957745c20913"
+  },
+  {
+   "path": "scripts/scrapers/opencctv_bridge.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ac1ae2c7d1f1fcbabb5e4c12085b3242e0aaf18d",
+   "size": 7074,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ac1ae2c7d1f1fcbabb5e4c12085b3242e0aaf18d"
+  },
+  {
+   "path": "scripts/scrapers/txdot_resolver.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "476f84bb0fffed6474a3125b544caf590e944e02",
+   "size": 1507,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/476f84bb0fffed6474a3125b544caf590e944e02"
+  },
+  {
+   "path": "scripts/scrapers/usa",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "1a8561775784e6947ff5177c46e33c8617160414",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/1a8561775784e6947ff5177c46e33c8617160414"
+  },
+  {
+   "path": "scripts/scrapers/usa/california",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "071336aba588bdd5a1a2ffe1ca65afcec58e05a7",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/071336aba588bdd5a1a2ffe1ca65afcec58e05a7"
+  },
+  {
+   "path": "scripts/scrapers/usa/california/caltrans.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "ed35261e0a4350396390d25f2189a0badf6414bc",
+   "size": 2945,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/ed35261e0a4350396390d25f2189a0badf6414bc"
+  },
+  {
+   "path": "scripts/scrapers/usa/iowa",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "4bce523897137f19e7634423a9d28d9b69d8fa79",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/4bce523897137f19e7634423a9d28d9b69d8fa79"
+  },
+  {
+   "path": "scripts/scrapers/usa/iowa/iowa511.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "a96deab1bd44ba085ed0ac5c7fe68e3bea3c0df7",
+   "size": 2430,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/a96deab1bd44ba085ed0ac5c7fe68e3bea3c0df7"
+  },
+  {
+   "path": "scripts/scrapers/usa/new_york",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "550ab0539abc04e2f9a12e3872a20fce90575492",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/550ab0539abc04e2f9a12e3872a20fce90575492"
+  },
+  {
+   "path": "scripts/scrapers/usa/new_york/nyc_dot.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "c5b220a780a15a96653fb54d49011c39182ac540",
+   "size": 1647,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/c5b220a780a15a96653fb54d49011c39182ac540"
+  },
+  {
+   "path": "scripts/scrapers/usa/road511.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d62e888b48e990df21fc27e5f5ff6eab77d10a23",
+   "size": 6469,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d62e888b48e990df21fc27e5f5ff6eab77d10a23"
+  },
+  {
+   "path": "scripts/scrapers/utils.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f4a8564d996a99318a2e6fefb6a2a5f8c19642cf",
+   "size": 6735,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f4a8564d996a99318a2e6fefb6a2a5f8c19642cf"
+  },
+  {
+   "path": "scripts/server.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "3c10726c536da062ad44c13a23781ef7382f1237",
+   "size": 12683,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/3c10726c536da062ad44c13a23781ef7382f1237"
+  },
+  {
+   "path": "scripts/store.py",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "0d124eedf3aca29124f1782f7aff7b829bfecafb",
+   "size": 22398,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/0d124eedf3aca29124f1782f7aff7b829bfecafb"
+  },
+  {
+   "path": "src",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "99fddb8feb58bf0ee73a1e6de67ac86c6c910afd",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/99fddb8feb58bf0ee73a1e6de67ac86c6c910afd"
+  },
+  {
+   "path": "src/App.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "4841c490a06f2f9b400995c4ac83ec152fbb0282",
+   "size": 84466,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/4841c490a06f2f9b400995c4ac83ec152fbb0282"
+  },
+  {
+   "path": "src/assets",
+   "mode": "040000",
+   "type": "tree",
+   "sha": "9c2adeb4c285133ae5e3028fdbef70960252bfcd",
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/trees/9c2adeb4c285133ae5e3028fdbef70960252bfcd"
+  },
+  {
+   "path": "src/assets/DemoInterface.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "e8e42cfa84c7869ec3edbdd2ff8e748e25405839",
+   "size": 770256,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/e8e42cfa84c7869ec3edbdd2ff8e748e25405839"
+  },
+  {
+   "path": "src/assets/DemoInterface1.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "aac2ca571145d76fbe641064d23013d744bf5b0b",
+   "size": 1293476,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/aac2ca571145d76fbe641064d23013d744bf5b0b"
+  },
+  {
+   "path": "src/assets/DemoInterface2.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2e3f78a6c59b482ae6886794284edf8563e29dfa",
+   "size": 1143077,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2e3f78a6c59b482ae6886794284edf8563e29dfa"
+  },
+  {
+   "path": "src/assets/Demointerface2.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "2e3f78a6c59b482ae6886794284edf8563e29dfa",
+   "size": 1143077,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/2e3f78a6c59b482ae6886794284edf8563e29dfa"
+  },
+  {
+   "path": "src/assets/argus_demo_1.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "282b10c27f8a09c5d4878fe49e6b3865a6dd1fbc",
+   "size": 1166470,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/282b10c27f8a09c5d4878fe49e6b3865a6dd1fbc"
+  },
+  {
+   "path": "src/assets/argus_demo_2.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "9c7b61e6bbdae732c934f43576485566da637dc9",
+   "size": 1575381,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/9c7b61e6bbdae732c934f43576485566da637dc9"
+  },
+  {
+   "path": "src/assets/hero.png",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "02251f4b956c55af2d76fd0788124d7eee2b45eb",
+   "size": 13057,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/02251f4b956c55af2d76fd0788124d7eee2b45eb"
+  },
+  {
+   "path": "src/binWorker.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f44ed8b3508179576b83f757340e890439585810",
+   "size": 2208,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f44ed8b3508179576b83f757340e890439585810"
+  },
+  {
+   "path": "src/index.css",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "f5c165eed0dc7a58c9cc2376928c4fff24018a7e",
+   "size": 243,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/f5c165eed0dc7a58c9cc2376928c4fff24018a7e"
+  },
+  {
+   "path": "src/main.tsx",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "bef5202a32cbd0632c43de40f6e908532903fd42",
+   "size": 230,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/bef5202a32cbd0632c43de40f6e908532903fd42"
+  },
+  {
+   "path": "tailwind.config.js",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "97b6ac308acea75ae26fe005f87a7abbdaf7421b",
+   "size": 330,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/97b6ac308acea75ae26fe005f87a7abbdaf7421b"
+  },
+  {
+   "path": "tsconfig.app.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "7f42e5f7cd2e79c7b5a25b753e56b1bcf94e1381",
+   "size": 617,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/7f42e5f7cd2e79c7b5a25b753e56b1bcf94e1381"
+  },
+  {
+   "path": "tsconfig.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "1ffef600d959ec9e396d5a260bd3f5b927b2cef8",
+   "size": 119,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/1ffef600d959ec9e396d5a260bd3f5b927b2cef8"
+  },
+  {
+   "path": "tsconfig.node.json",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "d3c52ea64c6cd6bad118474410f5322f48e257a6",
+   "size": 591,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/d3c52ea64c6cd6bad118474410f5322f48e257a6"
+  },
+  {
+   "path": "vite.config.ts",
+   "mode": "100644",
+   "type": "blob",
+   "sha": "8b0f57b91aeb45c54467e29f983a0893dc83c4d9",
+   "size": 161,
+   "url": "https://api.github.com/repos/GoSlowPoke168/Argus/git/blobs/8b0f57b91aeb45c54467e29f983a0893dc83c4d9"
+  }
+ ],
+ "truncated": false
+}
