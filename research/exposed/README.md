@@ -18,3 +18,23 @@
 
 ## insecam.org direct probe (2026-10-05)
 - `https://www.insecam.org/` and `/en/bycountry/US/` via curl: **HTTP 000 / 0 bytes** (connection failed — likely bot protection requiring browser lane). Raw responses saved (`insecam-probe-*.html` = empty). Mechanics →W5 child (browser-lane likely needed; maybe Cloudflare).
+
+## Build task B — exposure ingesters (2026-10-05)
+
+`wfd/ingest/exposure.py` normalizes the three era snapshots as **static dataset files only**
+(no listed device or insecam page is ever contacted; credentials redacted at parse time via
+`wfd.schema.redact_url` before storage/logging). Every row: `provenance=exposure_aggregator`,
+`status=unverified`, `geo_confidence=low`, required `snapshot_date`; dedupe per dataset only.
+
+| family | rows kept | source rows | dupes dropped | redactions | snapshot | raw sha256 (manifest has full) | output |
+|---|---|---|---|---|---|---|---|
+| jrw-2019 | 17,034 | 17,398 | 364 | 3,836 | 2019-02-21 | `8db77747…a4c0` | `data/ingest/exposure-jrw-2019.jsonl` |
+| godeye-2026-05 | 1,775 | 1,775 | 0 | 38 | 2026-05-27 | `e8b17875…8de3` | `data/ingest/exposure-godeye-2026-05.jsonl` |
+| rafasapiens-2026-10 | 2,072 | 2,100 | 28 | 96 | fetch date (2026-10-05) | `b86745d1…a359` (+csv `a3078f5f…bd24`) | `data/ingest/exposure-rafasapiens-2026-10.jsonl` |
+
+Run/refresh: `py -3.11 -m wfd.ingest.exposure <jrw|godeye|rafasapiens|all> [--refresh]` —
+downloads go to `research/exposed/raw/` (gitignored; the 2019 jrw TSV is the committed corpus file),
+normalized outputs + `data/ingest/manifest-exposure.json` are gitignored (`data/`).
+Verified on the full outputs: 0 credential values / 0 userinfo shapes remain (only `<redacted>`).
+Tests: `py -3.11 tests/test_exposure.py` (sanitized fixtures under `tests/fixtures/exposure/`;
+synthetic fake credentials for the redaction units).

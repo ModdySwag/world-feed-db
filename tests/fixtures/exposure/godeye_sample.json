@@ -1,0 +1,272 @@
+[
+  {
+    "id": "162",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.1:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "175",
+    "country": "Japan",
+    "city": "Fukuoka",
+    "manufacturer": "Panasonic",
+    "lat": 33.583,
+    "lng": 130.4,
+    "stream": "http://198.51.100.2:8080/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "198",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.3:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "213",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.4:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "459",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.5:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "598",
+    "country": "Italy",
+    "city": "Viareggio",
+    "manufacturer": "Panasonic",
+    "lat": 43.87354,
+    "lng": 10.2558,
+    "stream": "http://198.51.100.6:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "24441",
+    "country": "Japan",
+    "city": "Osaka",
+    "manufacturer": "Panasonic",
+    "lat": 34.69389,
+    "lng": 135.50222,
+    "stream": "http://198.51.100.7:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "24444",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.8:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "80660",
+    "country": "United States",
+    "city": "Saint Louis",
+    "manufacturer": "Panasonic",
+    "lat": 38.66249,
+    "lng": -90.32379,
+    "stream": "http://198.51.100.9:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "106229",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.10:8080/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "120963",
+    "country": "Japan",
+    "city": "Okayama",
+    "manufacturer": "Panasonic",
+    "lat": 34.65,
+    "lng": 133.917,
+    "stream": "http://198.51.100.11:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "120990",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.12:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "125752",
+    "country": "Japan",
+    "city": "Nagano",
+    "manufacturer": "Panasonic",
+    "lat": 36.633,
+    "lng": 138.183,
+    "stream": "http://198.51.100.13:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "125761",
+    "country": "Italy",
+    "city": "Guanzate",
+    "manufacturer": "Panasonic",
+    "lat": 45.72758,
+    "lng": 9.01984,
+    "stream": "http://198.51.100.14:8082/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "125762",
+    "country": "Japan",
+    "city": "Nagano",
+    "manufacturer": "Panasonic",
+    "lat": 36.633,
+    "lng": 138.183,
+    "stream": "http://198.51.100.15:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "125796",
+    "country": "Japan",
+    "city": "Nagano",
+    "manufacturer": "Panasonic",
+    "lat": 36.633,
+    "lng": 138.183,
+    "stream": "http://198.51.100.16:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "125798",
+    "country": "Japan",
+    "city": "Okayama",
+    "manufacturer": "Panasonic",
+    "lat": 34.65,
+    "lng": 133.917,
+    "stream": "http://198.51.100.17:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "125806",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.18:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "130895",
+    "country": "Japan",
+    "city": "Nagano",
+    "manufacturer": "Panasonic",
+    "lat": 36.633,
+    "lng": 138.183,
+    "stream": "http://198.51.100.19:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "137385",
+    "country": "Japan",
+    "city": "Nagano",
+    "manufacturer": "Panasonic",
+    "lat": 36.633,
+    "lng": 138.183,
+    "stream": "http://198.51.100.20:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "143125",
+    "country": "Japan",
+    "city": "Tokyo",
+    "manufacturer": "Panasonic",
+    "lat": 35.689506,
+    "lng": 139.6917,
+    "stream": "http://198.51.100.21:8080/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "143219",
+    "country": "United States",
+    "city": "Saint Louis",
+    "manufacturer": "Panasonic",
+    "lat": 38.66249,
+    "lng": -90.32379,
+    "stream": "http://198.51.100.22:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "150987",
+    "country": "United States",
+    "city": "Portland",
+    "manufacturer": "Panasonic",
+    "lat": 45.52345,
+    "lng": -122.67621,
+    "stream": "http://198.51.100.23:82/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "151090",
+    "country": "Japan",
+    "city": "-",
+    "manufacturer": "Panasonic",
+    "lat": 35.61488,
+    "lng": 139.5813,
+    "stream": "http://198.51.100.24:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "151102",
+    "country": "Japan",
+    "city": "Okayama",
+    "manufacturer": "Panasonic",
+    "lat": 34.65,
+    "lng": 133.917,
+    "stream": "http://198.51.100.25:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "166388",
+    "country": "United States",
+    "city": "San Jose",
+    "manufacturer": "Panasonic",
+    "lat": 37.33939,
+    "lng": -121.89496,
+    "stream": "http://198.51.100.26:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "166389",
+    "country": "United States",
+    "city": "San Jose",
+    "manufacturer": "Panasonic",
+    "lat": 37.33939,
+    "lng": -121.89496,
+    "stream": "http://198.51.100.27:80/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER"
+  },
+  {
+    "id": "753947",
+    "country": "Czech Republic",
+    "city": "Chomutov",
+    "manufacturer": "Megapixel",
+    "lat": 50.46048,
+    "lng": 13.41779,
+    "stream": "http://198.51.100.28:80/jpgmulreq/1/image.jpg?key=<redacted>&lq=1&COUNTER"
+  },
+  {
+    "id": "795653",
+    "country": "Turkey",
+    "city": "Ankara",
+    "manufacturer": "Defeway",
+    "lat": 39.91987,
+    "lng": 32.85427,
+    "stream": "http://198.51.100.29:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER"
+  },
+  {
+    "id": "812505",
+    "country": "Belarus",
+    "city": "Minsk",
+    "manufacturer": "Megapixel",
+    "lat": 53.9,
+    "lng": 27.56667,
+    "stream": "http://198.51.100.30:80/jpgmulreq/1/image.jpg?key=<redacted>&lq=1&COUNTER"
+  }
+]

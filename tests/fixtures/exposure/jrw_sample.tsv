@@ -1,0 +1,31 @@
+ip:port	country	city	image feed link
+192.0.2.1:60001	Aland Islands	Mariehamn	http://192.0.2.1:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.2:80	Albania	Tirana	http://192.0.2.2:80/webcapture.jpg?command=snap&channel=1?COUNTER
+192.0.2.3:8080	Albania	Shkoder	http://192.0.2.3:8080/webcapture.jpg?command=snap&channel=1?COUNTER
+192.0.2.4:8000	Albania	Tirana	http://192.0.2.4:8000/cgi-bin/camera?resolution=640&amp
+192.0.2.5:80	Albania	Lushnje	http://192.0.2.5:80/jpgmulreq/1/image.jpg?key=<redacted>&lq=1&COUNTER
+192.0.2.6:8001	Albania	Tirana	http://192.0.2.6:8001/cgi-bin/camera?resolution=640&amp
+192.0.2.7:88	Albania	Durres	http://192.0.2.7:88/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.8:84	Albania	Tirana	http://192.0.2.8:84/IMAGE.JPG
+192.0.2.9:8090	Andorra	Arinsal	http://192.0.2.9:8090/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER
+192.0.2.10:80	Antigua And Barbuda	Saint John's	http://192.0.2.10:80/mjpg/video.mjpg
+192.0.2.11:80	Antigua And Barbuda	Saint John's	http://192.0.2.11:80/mjpg/video.mjpg
+192.0.2.12:80	Antigua And Barbuda	Saint John's	http://192.0.2.12:80/mjpg/video.mjpg
+192.0.2.13:8090	Argentina	Rosario	http://192.0.2.13:8090/cgi-bin/viewer/video.jpg?r=COUNTER
+192.0.2.14:8080	Argentina	Avellaneda	http://192.0.2.14:8080/cgi-bin/viewer/video.jpg?r=COUNTER
+192.0.2.15:8090	Argentina	Rosario	http://192.0.2.15:8090/cgi-bin/viewer/video.jpg?r=COUNTER
+192.0.2.16:8090	Argentina	Rosario	http://192.0.2.16:8090/cgi-bin/viewer/video.jpg?r=COUNTER
+192.0.2.17:81	Argentina	Santiago Del Estero	http://192.0.2.17:81/videostream.cgi?user=<redacted>&pwd=<redacted>
+192.0.2.18:60001	Argentina	Mendoza	http://192.0.2.18:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.19:84	Argentina	Castelar	http://192.0.2.19:84/videostream.cgi?user=<redacted>&pwd=<redacted>
+192.0.2.20:60001	Argentina	Rio Tercero	http://192.0.2.20:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.21:60001	Argentina	Mar Del Plata	http://192.0.2.21:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.22:60001	Argentina	Mar Del Plata	http://192.0.2.22:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.23:8888	Argentina	Castelar	http://192.0.2.23:8888/oneshotimage1?COUNTER
+192.0.2.24:60001	Argentina	Castelar	http://192.0.2.24:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.25:85	Argentina	San Luis	http://192.0.2.25:85/videostream.cgi?user=<redacted>&pwd=<redacted>
+192.0.2.26:60001	Argentina	Castelar	http://192.0.2.26:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.27:60001	Argentina	Campana	http://192.0.2.27:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.28:60001	Argentina	Cordoba	http://192.0.2.28:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.29:60001	Argentina	Buenos Aires	http://192.0.2.29:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER
+192.0.2.30:60001	Argentina	Mendoza	http://192.0.2.30:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER

@@ -1,0 +1,31 @@
+title,url,image,location,source,city
+"Live camera in Canada, Abbotsford",http://www.insecam.org/en/view/622832/,http://203.0.113.1:80/mjpg/video.mjpg,"Live camera in Abbotsford, Canada",Insecam,Abbotsford
+"Live camera in United Kingdom, Abingdon",http://www.insecam.org/en/view/850577/,http://203.0.113.2:80/mjpg/video.mjpg,"Live camera in Abingdon, United Kingdom",Insecam,Abingdon
+"Live camera in Germany, Abtnaundorf",http://www.insecam.org/en/view/987585/,http://203.0.113.3:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER,"Live camera in Abtnaundorf, Germany",Insecam,Abtnaundorf
+"Live camera in Germany, Achern",http://www.insecam.org/en/view/797198/,http://203.0.113.4:8888/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER,"Live camera in Achern, Germany",Insecam,Achern
+"Live camera in Turkey, Adana",http://www.insecam.org/en/view/559716/,http://203.0.113.5:91/mjpg/video.mjpg,"Live camera in Adana, Turkey",Insecam,Adana
+"Live camera in Spain, Adeje",http://www.insecam.org/en/view/829971/,http://203.0.113.6:80/webcapture.jpg?command=snap&channel=1?COUNTER,"Live camera in Adeje, Spain",Insecam,Adeje
+"Live camera in Switzerland, Adelboden",http://www.insecam.org/en/view/807248/,http://203.0.113.7:8081/mjpg/video.mjpg,"Live camera in Adelboden, Switzerland",Insecam,Adelboden
+"Live camera in Sweden, AElvsbyn",http://www.insecam.org/en/view/278111/,http://203.0.113.8:80/mjpg/video.mjpg,"Live camera in AElvsbyn, Sweden",Insecam,Aelvsbyn
+"Live camera in Switzerland, Aesch",http://www.insecam.org/en/view/636880/,http://203.0.113.9:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER,"Live camera in Aesch, Switzerland",Insecam,Aesch
+"Live camera in Greece, Agia",http://www.insecam.org/en/view/1010274/,http://203.0.113.10:5000/jpgmulreq/1/image.jpg?key=<redacted>&lq=1&COUNTER,"Live camera in Agia, Greece",Insecam,Agia
+"Live camera in Finland, Ahtari",http://www.insecam.org/en/view/898931/,http://203.0.113.11:6001/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER,"Live camera in Ahtari, Finland",Insecam,Ahtari
+"Live camera in Turkey, Akdagmadeni",http://www.insecam.org/en/view/526664/,http://203.0.113.12:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER,"Live camera in Akdagmadeni, Turkey",Insecam,Akdagmadeni
+"Live camera in Japan, Aki",http://www.insecam.org/en/view/961703/,http://203.0.113.13:8001/jpg/image.jpg?COUNTER,"Live camera in Aki, Japan",Insecam,Aki
+"Live camera in Japan, Aki",http://www.insecam.org/en/view/920219/,http://203.0.113.14:8001/jpg/image.jpg?COUNTER,"Live camera in Aki, Japan",Insecam,Aki
+"Live camera in Syria, Al 'Annazah",http://www.insecam.org/en/view/950892/,http://203.0.113.15:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER,"Live camera in Al 'Annazah, Syria",Insecam,Al 'Annazah
+"Live camera in Tunisia, AL MARSA",http://www.insecam.org/en/view/243112/,http://203.0.113.16:8001/mjpg/video.mjpg,"Live camera in AL MARSA, Tunisia",Insecam,Al Marsa
+"Live camera in United States, Alamogordo",http://www.insecam.org/en/view/906885/,http://203.0.113.17:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER,"Live camera in Alamogordo, United States",Insecam,Alamogordo
+"Live camera in United States, Alamogordo",http://www.insecam.org/en/view/900930/,http://203.0.113.18:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER,"Live camera in Alamogordo, United States",Insecam,Alamogordo
+"Live camera in United States, Alamogordo",http://www.insecam.org/en/view/875373/,http://203.0.113.19:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER,"Live camera in Alamogordo, United States",Insecam,Alamogordo
+"Live camera in United States, Albany",http://www.insecam.org/en/view/1010704/,http://203.0.113.20:8086/mjpg/video.mjpg,"Live camera in Albany, United States",Insecam,Albany
+"Live camera in United States, Albany",http://www.insecam.org/en/view/455398/,http://203.0.113.21:80/mjpg/video.mjpg,"Live camera in Albany, United States",Insecam,Albany
+"Live camera in United States, Albion",http://www.insecam.org/en/view/722988/,http://203.0.113.22:80/mjpg/video.mjpg,"Live camera in Albion, United States",Insecam,Albion
+"Live camera in United States, Albion",http://www.insecam.org/en/view/560424/,http://203.0.113.23:80/mjpg/video.mjpg,"Live camera in Albion, United States",Insecam,Albion
+"Live camera in United States, Albuquerque",http://www.insecam.org/en/view/983985/,http://203.0.113.24:80/nph-jpeg.cgi?0,"Live camera in Albuquerque, United States",Insecam,Albuquerque
+"Live camera in United States, Albuquerque",http://www.insecam.org/en/view/976449/,http://203.0.113.25:80/nph-jpeg.cgi?0,"Live camera in Albuquerque, United States",Insecam,Albuquerque
+"Live camera in Spain, Alcazar de San Juan",http://www.insecam.org/en/view/802056/,http://203.0.113.26:8888/out.jpg?q=30&id=0.1317044913727916&r=COUNTER,"Live camera in Alcazar de San Juan, Spain",Insecam,Alcazar De San Juan
+"Live camera in United Kingdom, ALDERLEY EDGE",http://www.insecam.org/en/view/237453/,http://203.0.113.27:82/mjpg/video.mjpg,"Live camera in ALDERLEY EDGE, United Kingdom",Insecam,Alderley Edge
+"Live camera in Norway, Alesund",http://www.insecam.org/en/view/850038/,http://203.0.113.28:8080/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER,"Live camera in Alesund, Norway",Insecam,Alesund
+"Live camera in Norway, Alesund",http://www.insecam.org/en/view/850037/,http://203.0.113.29:8081/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER,"Live camera in Alesund, Norway",Insecam,Alesund
+"Live camera in Norway, Alesund",http://www.insecam.org/en/view/717537/,http://203.0.113.30:8090/mjpg/video.mjpg,"Live camera in Alesund, Norway",Insecam,Alesund

@@ -1,0 +1,242 @@
+[
+  {
+    "title": "Live camera in Canada, Abbotsford",
+    "url": "http://www.insecam.org/en/view/622832/",
+    "image": "http://203.0.113.1:80/mjpg/video.mjpg",
+    "location": "Live camera in Abbotsford, Canada",
+    "source": "Insecam",
+    "city": "Abbotsford"
+  },
+  {
+    "title": "Live camera in United Kingdom, Abingdon",
+    "url": "http://www.insecam.org/en/view/850577/",
+    "image": "http://203.0.113.2:80/mjpg/video.mjpg",
+    "location": "Live camera in Abingdon, United Kingdom",
+    "source": "Insecam",
+    "city": "Abingdon"
+  },
+  {
+    "title": "Live camera in Germany, Abtnaundorf",
+    "url": "http://www.insecam.org/en/view/987585/",
+    "image": "http://203.0.113.3:8080/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+    "location": "Live camera in Abtnaundorf, Germany",
+    "source": "Insecam",
+    "city": "Abtnaundorf"
+  },
+  {
+    "title": "Live camera in Germany, Achern",
+    "url": "http://www.insecam.org/en/view/797198/",
+    "image": "http://203.0.113.4:8888/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+    "location": "Live camera in Achern, Germany",
+    "source": "Insecam",
+    "city": "Achern"
+  },
+  {
+    "title": "Live camera in Turkey, Adana",
+    "url": "http://www.insecam.org/en/view/559716/",
+    "image": "http://203.0.113.5:91/mjpg/video.mjpg",
+    "location": "Live camera in Adana, Turkey",
+    "source": "Insecam",
+    "city": "Adana"
+  },
+  {
+    "title": "Live camera in Spain, Adeje",
+    "url": "http://www.insecam.org/en/view/829971/",
+    "image": "http://203.0.113.6:80/webcapture.jpg?command=snap&channel=1?COUNTER",
+    "location": "Live camera in Adeje, Spain",
+    "source": "Insecam",
+    "city": "Adeje"
+  },
+  {
+    "title": "Live camera in Switzerland, Adelboden",
+    "url": "http://www.insecam.org/en/view/807248/",
+    "image": "http://203.0.113.7:8081/mjpg/video.mjpg",
+    "location": "Live camera in Adelboden, Switzerland",
+    "source": "Insecam",
+    "city": "Adelboden"
+  },
+  {
+    "title": "Live camera in Sweden, AElvsbyn",
+    "url": "http://www.insecam.org/en/view/278111/",
+    "image": "http://203.0.113.8:80/mjpg/video.mjpg",
+    "location": "Live camera in AElvsbyn, Sweden",
+    "source": "Insecam",
+    "city": "Aelvsbyn"
+  },
+  {
+    "title": "Live camera in Switzerland, Aesch",
+    "url": "http://www.insecam.org/en/view/636880/",
+    "image": "http://203.0.113.9:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+    "location": "Live camera in Aesch, Switzerland",
+    "source": "Insecam",
+    "city": "Aesch"
+  },
+  {
+    "title": "Live camera in Greece, Agia",
+    "url": "http://www.insecam.org/en/view/1010274/",
+    "image": "http://203.0.113.10:5000/jpgmulreq/1/image.jpg?key=<redacted>&lq=1&COUNTER",
+    "location": "Live camera in Agia, Greece",
+    "source": "Insecam",
+    "city": "Agia"
+  },
+  {
+    "title": "Live camera in Finland, Ahtari",
+    "url": "http://www.insecam.org/en/view/898931/",
+    "image": "http://203.0.113.11:6001/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+    "location": "Live camera in Ahtari, Finland",
+    "source": "Insecam",
+    "city": "Ahtari"
+  },
+  {
+    "title": "Live camera in Turkey, Akdagmadeni",
+    "url": "http://www.insecam.org/en/view/526664/",
+    "image": "http://203.0.113.12:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER",
+    "location": "Live camera in Akdagmadeni, Turkey",
+    "source": "Insecam",
+    "city": "Akdagmadeni"
+  },
+  {
+    "title": "Live camera in Japan, Aki",
+    "url": "http://www.insecam.org/en/view/961703/",
+    "image": "http://203.0.113.13:8001/jpg/image.jpg?COUNTER",
+    "location": "Live camera in Aki, Japan",
+    "source": "Insecam",
+    "city": "Aki"
+  },
+  {
+    "title": "Live camera in Japan, Aki",
+    "url": "http://www.insecam.org/en/view/920219/",
+    "image": "http://203.0.113.14:8001/jpg/image.jpg?COUNTER",
+    "location": "Live camera in Aki, Japan",
+    "source": "Insecam",
+    "city": "Aki"
+  },
+  {
+    "title": "Live camera in Syria, Al 'Annazah",
+    "url": "http://www.insecam.org/en/view/950892/",
+    "image": "http://203.0.113.15:60001/cgi-bin/snapshot.cgi?chn=0&u=<redacted>&p=<redacted>&q=0&COUNTER",
+    "location": "Live camera in Al 'Annazah, Syria",
+    "source": "Insecam",
+    "city": "Al 'Annazah"
+  },
+  {
+    "title": "Live camera in Tunisia, AL MARSA",
+    "url": "http://www.insecam.org/en/view/243112/",
+    "image": "http://203.0.113.16:8001/mjpg/video.mjpg",
+    "location": "Live camera in AL MARSA, Tunisia",
+    "source": "Insecam",
+    "city": "Al Marsa"
+  },
+  {
+    "title": "Live camera in United States, Alamogordo",
+    "url": "http://www.insecam.org/en/view/906885/",
+    "image": "http://203.0.113.17:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+    "location": "Live camera in Alamogordo, United States",
+    "source": "Insecam",
+    "city": "Alamogordo"
+  },
+  {
+    "title": "Live camera in United States, Alamogordo",
+    "url": "http://www.insecam.org/en/view/900930/",
+    "image": "http://203.0.113.18:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+    "location": "Live camera in Alamogordo, United States",
+    "source": "Insecam",
+    "city": "Alamogordo"
+  },
+  {
+    "title": "Live camera in United States, Alamogordo",
+    "url": "http://www.insecam.org/en/view/875373/",
+    "image": "http://203.0.113.19:80/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+    "location": "Live camera in Alamogordo, United States",
+    "source": "Insecam",
+    "city": "Alamogordo"
+  },
+  {
+    "title": "Live camera in United States, Albany",
+    "url": "http://www.insecam.org/en/view/1010704/",
+    "image": "http://203.0.113.20:8086/mjpg/video.mjpg",
+    "location": "Live camera in Albany, United States",
+    "source": "Insecam",
+    "city": "Albany"
+  },
+  {
+    "title": "Live camera in United States, Albany",
+    "url": "http://www.insecam.org/en/view/455398/",
+    "image": "http://203.0.113.21:80/mjpg/video.mjpg",
+    "location": "Live camera in Albany, United States",
+    "source": "Insecam",
+    "city": "Albany"
+  },
+  {
+    "title": "Live camera in United States, Albion",
+    "url": "http://www.insecam.org/en/view/722988/",
+    "image": "http://203.0.113.22:80/mjpg/video.mjpg",
+    "location": "Live camera in Albion, United States",
+    "source": "Insecam",
+    "city": "Albion"
+  },
+  {
+    "title": "Live camera in United States, Albion",
+    "url": "http://www.insecam.org/en/view/560424/",
+    "image": "http://203.0.113.23:80/mjpg/video.mjpg",
+    "location": "Live camera in Albion, United States",
+    "source": "Insecam",
+    "city": "Albion"
+  },
+  {
+    "title": "Live camera in United States, Albuquerque",
+    "url": "http://www.insecam.org/en/view/983985/",
+    "image": "http://203.0.113.24:80/nph-jpeg.cgi?0",
+    "location": "Live camera in Albuquerque, United States",
+    "source": "Insecam",
+    "city": "Albuquerque"
+  },
+  {
+    "title": "Live camera in United States, Albuquerque",
+    "url": "http://www.insecam.org/en/view/976449/",
+    "image": "http://203.0.113.25:80/nph-jpeg.cgi?0",
+    "location": "Live camera in Albuquerque, United States",
+    "source": "Insecam",
+    "city": "Albuquerque"
+  },
+  {
+    "title": "Live camera in Spain, Alcazar de San Juan",
+    "url": "http://www.insecam.org/en/view/802056/",
+    "image": "http://203.0.113.26:8888/out.jpg?q=30&id=0.1317044913727916&r=COUNTER",
+    "location": "Live camera in Alcazar de San Juan, Spain",
+    "source": "Insecam",
+    "city": "Alcazar De San Juan"
+  },
+  {
+    "title": "Live camera in United Kingdom, ALDERLEY EDGE",
+    "url": "http://www.insecam.org/en/view/237453/",
+    "image": "http://203.0.113.27:82/mjpg/video.mjpg",
+    "location": "Live camera in ALDERLEY EDGE, United Kingdom",
+    "source": "Insecam",
+    "city": "Alderley Edge"
+  },
+  {
+    "title": "Live camera in Norway, Alesund",
+    "url": "http://www.insecam.org/en/view/850038/",
+    "image": "http://203.0.113.28:8080/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER",
+    "location": "Live camera in Alesund, Norway",
+    "source": "Insecam",
+    "city": "Alesund"
+  },
+  {
+    "title": "Live camera in Norway, Alesund",
+    "url": "http://www.insecam.org/en/view/850037/",
+    "image": "http://203.0.113.29:8081/SnapshotJPEG?Resolution=640x480&amp;Quality=Clarity&amp;COUNTER",
+    "location": "Live camera in Alesund, Norway",
+    "source": "Insecam",
+    "city": "Alesund"
+  },
+  {
+    "title": "Live camera in Norway, Alesund",
+    "url": "http://www.insecam.org/en/view/717537/",
+    "image": "http://203.0.113.30:8090/mjpg/video.mjpg",
+    "location": "Live camera in Alesund, Norway",
+    "source": "Insecam",
+    "city": "Alesund"
+  }
+]

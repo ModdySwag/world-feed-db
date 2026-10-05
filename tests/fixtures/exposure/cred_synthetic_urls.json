@@ -1,0 +1,93 @@
+{
+  "note": "SYNTHETIC, FAKE credentials only (hunter2-class placeholders) for redaction unit tests. No real credential values; no real device addresses (RFC 5737 test ranges).",
+  "cases": [
+    {
+      "style": "userinfo-basic",
+      "url": "http://admin:hunter2@192.0.2.10:8080/cgi-bin/snapshot.cgi",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["admin", "hunter2", "@"],
+      "must_keep": ["192.0.2.10:8080", "/cgi-bin/snapshot.cgi"]
+    },
+    {
+      "style": "userinfo-rtsp",
+      "url": "rtsp://bob:s3cr3t-pw@198.51.100.9:554/Streaming/Channels/1",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["bob", "s3cr3t-pw", "@"],
+      "must_keep": ["198.51.100.9:554", "/Streaming/Channels/1"]
+    },
+    {
+      "style": "query-u-p",
+      "url": "http://192.0.2.11/cgi-bin/snapshot.cgi?chn=0&u=admin&p=hunter2&q=0",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["admin", "hunter2"],
+      "must_keep": ["chn=0", "q=0"]
+    },
+    {
+      "style": "query-username-password-cased",
+      "url": "http://192.0.2.12/mjpg/video.mjpg?Username=Admin&Password=hunter2",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["Admin", "hunter2"],
+      "must_keep": []
+    },
+    {
+      "style": "single-letter-cased",
+      "url": "http://192.0.2.18/cgi-bin/snap.cgi?U=Admin&P=hunter2&w=1",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["Admin", "hunter2"],
+      "must_keep": ["w=1"]
+    },
+    {
+      "style": "html-entity-smuggle",
+      "url": "http://192.0.2.13/cgi-bin/snapshot.cgi?chn=0&amp;u=admin&amp;p=hunter2",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["admin", "hunter2", "amp;u="],
+      "must_keep": ["chn=0"]
+    },
+    {
+      "style": "token-key-sig",
+      "url": "http://192.0.2.14/stream?token=tok-abc123&key=k-9x&sig=deadbeef&w=1",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["tok-abc123", "k-9x", "deadbeef"],
+      "must_keep": ["w=1"]
+    },
+    {
+      "style": "semicolon-separated-defensive",
+      "url": "http://192.0.2.15/cam?f=1;u=admin;p=hunter2",
+      "expect_redacted": true,
+      "expect_value_present": true,
+      "must_scrub": ["admin", "hunter2"],
+      "must_keep": ["f=1"]
+    },
+    {
+      "style": "empty-value-only",
+      "url": "http://192.0.2.16/cgi-bin/snapshot.cgi?u=&p=&q=0",
+      "expect_redacted": true,
+      "expect_value_present": false,
+      "must_scrub": [],
+      "must_keep": ["q=0"]
+    },
+    {
+      "style": "passthrough-query",
+      "url": "http://192.0.2.17/mjpg/video.mjpg?counter=42",
+      "expect_redacted": false,
+      "expect_value_present": false,
+      "must_scrub": [],
+      "must_keep": ["counter=42"]
+    },
+    {
+      "style": "passthrough-hls",
+      "url": "https://stream.example.com/live/playlist.m3u8",
+      "expect_redacted": false,
+      "expect_value_present": false,
+      "must_scrub": [],
+      "must_keep": ["stream.example.com"]
+    }
+  ]
+}
