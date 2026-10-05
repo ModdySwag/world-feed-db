@@ -264,3 +264,12 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - **Hamming distribution** (pHash across the 330 s gap): mean 8.48, min 0, max 32; `JPEG_STATIC_MAX=5` cleanly separates live from stale.
 - **Verification vs registry:** union 166/166, no coverage gaps; final registry D12 status matches evidence exactly. Cross-referenced both evidence files (83+83, no duplicates).
 - **D12 cadence + fail_count machinery** now sets per-family refresh policy — this was the validation run for the A14 write-back (apply_result + quarantine). The 30 false deads from the outage provided a natural test of the quarantine lifecycle; all rows now restored.
+
+### A16 · New-sources research wave NS1–NS4 (folded 2026-10-06, early)
+
+> Trigger: owner — camera sites collected in Brave tabs; "send some sub agents to crawl and ingest a lot more working cams".
+
+- 4 research dossiers + synthesis at `research/new-sources/` (NS1 directories · NS2 AU-institutional · NS3 resorts · NS4 nature/vendor) — 14 sites, ≈5,400 camera pages/feeds enumerated; every feed claim live-fetched (status/content-type/bytes; HLS playlist + TS-segment proofs); parent re-verified a sample per dossier (all pass).
+- **ADD NOW families (ranked build menu):** `explore-omega` (≈239 feeds, open JSON API) · `openwebcamdb` (1,882, sitemap + JSON-LD) · `webcamtaxi` (≈2,230, scrape) · `jungfrau-roundshot` (10; list + status + image APIs) · `vailresorts-brownrice` (8 Whistler + 5 Vail verified; multiplier: all Vail properties) · `aus-airservices` (39 airports; AJAX + JPEG) · `streamdays` (Edinburgh Zoo + other zoos; HLS token chain) · `skaping` (vendor sitemap, 877 pages) · `youtube-live-cams` (Steamboat 9 + SPI 4 + all YouTube-embed sources) · `au-goldcoast-beach` (JSON API, 27 beaches) · `au-nsw-marine` (21 HLS widgets) · `camsecure-webcams` (30 HLS, vendor-demo). **LATER:** `au-tas-traffic` (5, Referer-gated) · `ozolio` (robots Disallow — review first).
+- Cross-cutting: YouTube-live embeds dominate (one adapter services OWD/WCT/explore/Steamboat/SPI ≈4,300 feeds); vendor multipliers (Brownrice = Vail chain, Skaping 877 pages, Roundshot, Streamdays) let single adapters cover hundreds of cams; directory-provenance decision queued; drift rule: cloudfront/widget/token URLs re-resolved per sweep (404 → `unknown`, never `dead`).
+- Next moves: owner picks build order (suggest explore-omega → openwebcamdb → jungfrau-roundshot → vailresorts-brownrice) → per-vendor ingesters under `wfd/ingest/` → per-family health sweeps.
