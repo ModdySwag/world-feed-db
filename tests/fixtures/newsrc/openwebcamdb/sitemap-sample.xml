@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <!-- trimmed fixture: subset of 1966 <url> blocks from the live
+         https://openwebcamdb.com/sitemap.xml (2026-10-06, 458,471 bytes);
+         selected blocks are verbatim, order of camera blocks is deliberate. -->
+<url>
+        <loc>https://openwebcamdb.com</loc>
+        <lastmod>2026-10-05T17:08:44+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/webcams</loc>
+        <changefreq>hourly</changefreq>
+        <priority>0.9</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/categories</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/countries</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/submit</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/api/docs</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/webcams/peregrine-falcon-nest-at-csu-australia</loc>
+        <lastmod>2026-10-05T16:45:04+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/webcams/newcastle-harbor-cargo-ships-view</loc>
+        <lastmod>2026-10-05T16:24:40+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/webcams/melbourne-skyline-urban-vista</loc>
+        <lastmod>2026-10-05T16:25:38+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/webcams/anglesea-golf-course-seaside-panorama</loc>
+        <lastmod>2026-10-05T16:25:40+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/webcams/lamai-beach-views-from-baobab-spot</loc>
+        <lastmod>2026-10-05T10:27:00+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+<url>
+        <loc>https://openwebcamdb.com/webcams/kiten-atliman-beach-panorama</loc>
+        <lastmod>2026-10-05T17:03:10+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.7</priority>
+    </url>
+</urlset>
