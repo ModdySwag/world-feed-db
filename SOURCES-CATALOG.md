@@ -64,23 +64,30 @@ Key artifacts: `research/seed-tabs/github-topics/traffic-cameras--stars.json` (3
 
 ---
 
-## 2 · Class A — Aggregators (non-government, consumer/nature/tourism)
+## 2 · Class A — Aggregators (non-government: consumer/nature/tourism)
 
-| Family | Scale (L-E-S) | Access mechanism | Notes |
+*(S1 fold-in — measured 2026-10-05; full detail: `research/sources/S1-aggregators.md`; L-E-S-scope counts retained where different.)*
+
+| Family | Scale (measured; date) | Access mechanism | Notes |
 |---|---|---|---|
-| Skyline Webcams | 1,684 (1,284 active) | HTML pages; direct HLS uses **expiring tokens** (token_refresh) | Biggest single consumer network; YouTube arm: 167 (13 active) |
-| OpenCCTV.com | 746 (668 active) | mixes HLS + pages + YouTube | "OpenCCTV Public Feed Aggregator" |
-| worldviewstream | 82 (79 active) | HLS + YouTube | |
-| balticlivecam | 64 (45) | HLS | |
-| camguide.net | 53 (26) | HLS+YouTube (ipcamlive entries) | |
-| webcamera.pl | 52 (47) | HLS | PL |
-| beachcam (Meo) | 31 (31) | HLS | PT |
-| resortcams | 12 (8) | HLS | US resorts |
-| wetmet-poconos | 11 (10) | html | |
-| Windy Webcams | (API; keyed) | `api.windy.com/webcams/api/v3/webcams` — keyless 403 (verified 10-03) | image URLs expire ~10 min |
-| webcams.travel, EarthCam, WebcamTaxi, Lookr, worldcams.tv, EarthTV, AfriCam, Roundshot | — | →W1 (deep detail this wave) | |
-| explore.org | YouTube backbone (verified family) | channel `@ExploreLiveNatureCams` etc. | philanthropic, made to be watched |
-| **TrafficVision.Live** | **155,000+ claimed / 700+ sources / 130+ countries** | site + API recon →W3 | see §4 — closest peer system |
+| Skyline Webcams | **2,447 cam pages / 71 countries / 217 regions** (full crawl) vs 1,684 in L-E-S scope | HTML crawl (country→region→city→cam); JS token player | ADOPT registry; stream = token spike |
+| Windy Webcams (API v3) | 40K (2021) → 70,000+ (2026) claimed | REST, key required (403 keyless ✓); `/webcams /categories /countries /regions /cities /continents /map/clusters` | absorbed webcams.travel + lookr (302→Windy) |
+| EarthCam | **365 cams keyless** (36 countries + 45 US states); app claims 1,500+ | `network_search.php` + `playlist.php`; tokenized HLS; `cam_state` | ≥1.5 s spacing + Referer; ADOPT |
+| explore.org | **101 groups / ~1,140 feeds** | keyless omega API (`video_id`, `is_offline`, `current_viewers`) | ADOPT; viewer = yt-dlp |
+| Roundshot | **561 livecams — 469 working / 53 broken / 32 idle / 6 late / 1 error** | keyless directory JSON + per-site `structure.json` | exemplary liveness model; JPEG panorama tier |
+| WebcamTaxi | 1,950 cams / 67 listing pages | HTML → YouTube embeds | ADOPT registry |
+| CamGuide.net | 5,052 unique pages (25,260 w/ translations) | sitemap → iframe upstreams (DOT/YT) | ADOPT registry |
+| BalticLiveCam | 1,278 camera pages (435 online counter) | HTML crawl; admin-ajax `auth_token` → HLS | ADOPT registry; token spike |
+| WorldCams.tv | 775 cam cards | HTML → YouTube embeds; robots disallows `/list/ /player /ajax/ /go` | REFERENCE |
+| webcamera.pl | 600+ claimed | per-cam subdomains; `imageserver.webcamera.pl/rec/<slug>/latest.mp4` | REFERENCE |
+| earthTV | 495 places (API) / 278 webcam pages | keyless places API; tokenized player | REFERENCE |
+| AfriCam | 43 lodges / 6 countries | HTML → YouTube embeds | REFERENCE |
+| Skyline YouTube | 580 composite entries | yt-dlp channel | viewer filler |
+| ~~OpenCCTV.com~~ | **DEAD — parked (HugeDomains); last Wayback 2025-07-12** | — | purge the 746 index entries; opencctv.**org** is a different live site (see §6 / S5 A.18) |
+| worldViewStream · beachcam Meo · resortcams · wetmet-poconos | 82 · 31 · 12 · 11 (L-E-S) | HLS/HTML per L-E-S | retained from L-E-S index |
+| **TrafficVision.Live** | **155,000+ claimed / 700+ sources / 130+ countries** | see §4 | closest peer system |
+
+**S1 patterns → build rules:** YouTube-embed prevalence → yt-dlp resolution subsystem = the highest-leverage shared component for this slice (matches WV1 M2). Token-gated players everywhere (Skyline JS, BalticLiveCam admin-ajax, EarthCam time-stamped tokens, earthTV playerToken, Windy 10-min image tokens) → **resolve-on-demand adapters; never store tokenized URLs as durable records**. ≈14,000 keyless records enumerated in this slice before dedupe. Rate tiers: EarthCam ≥1.5 s/call; Skyline tolerated ~6-way; BalticLiveCam keep gentlest (WP shared hosting).
 
 ---
 

@@ -43,11 +43,11 @@ Full table: `SOURCES-CATALOG.md`.
 
 | Wave | Topic | Evidence file | Status |
 |---|---|---|---|
-| W1 | Aggregator networks (non-gov) | `research/sources/S1-aggregators.md` | in flight |
-| W2 | Government / institutional | `research/gov/S2-gov-institutional.md` | in flight |
-| W3 | Platforms / lists / datasets | `research/platforms/S3-platforms-lists.md` | in flight (steered: dissect trafficvision.live) |
-| W4 | Verification / self-heal / scale | `research/ingest/S4-verification-selfheal.md` | in flight |
-| W5 | OSINT / policy / management | `research/osint/S5-osint-policy-mgmt.md` | in flight |
+| W1 | Aggregator networks (non-gov) | `research/sources/S1-aggregators.md` | done → folded (A5) |
+| W2 | Government / institutional | `research/gov/S2-gov-institutional.md` | done → folded (A4) |
+| W3 | Platforms / lists / datasets | `research/platforms/S3-platforms-lists.md` | done → folded (A3) |
+| W4 | Verification / self-heal / scale | `research/ingest/S4-verification-selfheal.md` | done → folded (A1) |
+| W5 | OSINT / policy / management | `research/osint/S5-osint-policy-mgmt.md` | done → folded (A2) |
 
 ## 6 · Open questions (owner decisions)
 
@@ -126,3 +126,20 @@ Status: read end-to-end; spot-checks OK. File: `research/gov/S2-gov-institutiona
 - Keys needed (free): Windy, Road511, NSW, QLD, LTA DataMall alt.
 
 Next moves: catalog §1 updated with the verified menu; at build start, code enumerators in S2's "QUICK BUILD NOTES" order (registry → liveness exemptions → viewer tiers).
+
+### A5 · Wave S1 — non-government aggregator networks (folded 2026-10-05)
+
+> Trigger: the original brief — "all publically available… public cam or absolutely any other internet camera or webcam stream… find 'the lot'".
+
+Status: read end-to-end; parent spot-checks OK — EarthCam `network_search` (Canada) → HTTP 200, 7 cams ✓ (with the documented Referer); Windy keyless → 403 ✓; Skyline hub 200 ✓; Roundshot → 561 (469 working · 53 broken · 32 idle · 6 late · 1 error — one cam drifted since the child's check) ✓; explore.org → 101 groups / 1,141 feeds live (child 1,137; live drift) ✓. File: `research/sources/S1-aggregators.md` (18 entries).
+
+- Skyline: full crawl = 2,447 cam pages / 71 countries / 217 regions (richest keyless directory); stream layer = JS token player (spike needed). ADOPT registry.
+- EarthCam: 365 cams enumerated keylessly (36 countries + 45 US states); endpoints `network_search.php` + `playlist.php` (tokenized HLS, `cam_state`); 429s without Referer; ≥1.5 s spacing proven. ADOPT.
+- Windy v3: key required; full endpoint list documented; webcams.travel + lookr permanently 302 → Windy (one key covers all three brands). ADOPT (metadata layer, images expire 10 min).
+- explore.org: keyless omega API (101 groups / ~1,140 feeds) with `video_id`, `is_offline`, `current_viewers`. ADOPT.
+- Roundshot: 561 livecams with per-cam `status` (perfect liveness model) + per-site JSON. ADOPT.
+- Others: WebcamTaxi 1,950 · CamGuide 5,052 pages · BalticLiveCam 1,278 (+ admin-ajax token flow) · WorldCams 775 · webcamera.pl 600+ (`latest.mp4` imageserver) · earthTV 495 places · AfriCam 43 lodges · Skyline-YouTube 580 composites · IPCamLive / CamStreamer = viewer notes.
+- **Correction: opencctv.com is DEAD** (parked; last Wayback 2025-07-12) — the 746 `opencctv` records in the L-E-S index point at a dead domain; opencctv.**org** is a different live site (S5 A.18). Flag dead-source.
+- Patterns: YouTube-embed prevalence → yt-dlp = highest-leverage shared component for this slice; token-gated players everywhere → resolve-on-demand adapters, never store tokenized URLs; ≈14,000 keyless records enumerated in this slice before dedupe.
+
+Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Windy free key (Q3); EarthCam / explore.org / Roundshot importers → discovery backlog.

@@ -6,9 +6,10 @@ Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see 
 
 ## Status
 
-- **2026-10-05 — Research phase.** Seed ingest complete: all 19 open Brave tabs + session extras fetched and saved under `research/seed-tabs/`. Five research waves dispatched (S1 aggregators · S2 government · S3 platforms · S4 verification/self-heal · S5 OSINT/policy) — evidence lands under `research/<area>/S<n>-*.md`. Catalog + plan are living documents.
-- The collation of sources + endpoints: `SOURCES-CATALOG.md`.
-- Decisions + waves log + open questions: `PLAN.md` (addenda appended per wave; earlier text never rewritten).
+- **2026-10-05 — Research phase: all five waves DONE and folded.** Seed ingest: 19 Brave tabs + session extras (`research/seed-tabs/`). Waves S1–S5 executed by subagents; every evidence file read + spot-checked by the parent and folded into `PLAN.md` as addenda A1–A5, with the catalog updated per wave (all committed to git).
+- The collation of sources + endpoints: `SOURCES-CATALOG.md` — gov/institutional verified menu (§1), aggregator measurements (§2), platforms/fixtures (§3), reference systems (§4), ready-made corpora (§5), flagged exposure category (§6).
+- Decisions + waves log + open questions **Q2–Q11**: `PLAN.md` (living; earlier text never rewritten).
+- Next: owner decisions on Q2–Q11, then build-phase framing — first small artifacts are the dataset ingesters + provenance/redaction gate, and the enumerator set from the S1/S2 endpoint menus.
 
 ## Map
 
