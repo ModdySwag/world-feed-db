@@ -30,6 +30,8 @@ Reuse candidates: zero-hud `world_feed.py` channel/health patterns; GEV app sche
 - **D7** (10-05, OWNER) **Open-source-ready + credential layer.** Personal-first build, but designed so the repo can be published at any time: **no secrets in code or git**; all credentials via a per-user settings layer (secure store — OS keyring/DPAPI — with `.env` fallback); honest `UNAVAILABLE · KEY REQUIRED` states for every gated source; onboarding checklist driven by `ACCOUNTS-AND-KEYS.md`. Owner instruction: **prompt me along the way so I can create the needed accounts** — the checklist is the prompt surface.
 - **D7.1** (10-05, owner clarification) **Two artifacts, one codebase:** ① **Clean template** — the public/repo version: ships with **no secrets and no personal curation**; runs degraded-but-honest (`KEY REQUIRED` states everywhere) so anyone can clone, supply their own keys, and go. ② **Moddy build** — the template **plus a private profile overlay** (keys, source curation, preferences, account-bound tokens): ready-to-go for the owner. Mechanics: profile system (`profiles/` loader — clean default + `moddy` overlay); the private overlay lives **outside git** (local `profiles/moddy/` gitignored now; can graduate to a separate private repo for multi-machine later); release gate = a secret-scan of the repo before any push (the template must be publishable at any time); `ACCOUNTS-AND-KEYS.md` is the input checklist for the moddy profile.
 
+**D8** (2026-10-05, owner) **Build phase opened — Q2–Q11 closed or defaulted:** Q2 keep repo as-is · Q4 shared backend + local web UI first (other surfaces later) · Q6 exposure = datasets first, polite listing crawl later · Q8 exposure display = metadata + click-through warning · Q11 = respect robots, re-derive from originals. Quiet defaults: Q3 no Nimble top-up · Q5 YouTube stance kept · Q7 no-probe kept · Q9 private-first · Q10 deferred. Sprint 1: credential/settings layer + exposure dataset ingesters (GODEYE → rafasapiens era chain) + L-E-S/gov enumerator scaffolds.
+
 ## 4 · Seed corpus headline numbers (2026-10-05)
 
 - Live-Environment-Streams: 5,997 streams / 98 countries / 67 sources / 4,226 verified active / 4,229 directly usable. (Source: repo README + our parse of `streams.geojson`.)
@@ -61,16 +63,16 @@ Full table: `SOURCES-CATALOG.md`.
 ## 6 · Open questions (owner decisions)
 
 - **Q1 (RESOLVED 10-05)** Scope of "the lot": insecam-class exposed-camera corpora **INCLUDED** as a flagged category — see D6. (Grey edge noted: keep provenance flags so any future public release can diverge.)
-- **Q2 Naming / home**: folder currently `C:\Users\user\world-feed-db`. Keep? Rename? Standalone repo vs fold into zero-hud GEV / moddys.net?
-- **Q3 Keys / quotas**: Windy Webcams API key? webcams.travel key? Nimble quota exhausted (402 "trial quota finished" during research — top up if future crawls want it). Hound MCP works as fallback.
-- **Q4 Viewer target**: desktop app (GEV-style)? web on moddys.net? zero-hud panel? all three (shared backend)?
-- **Q5 YouTube grey zone**: keep "personal/local, non-redistributed" stance per WV1, or adjust?
-- **Q6 Exposure ingest route**: datasets-only [recommended] vs also the live directory crawl (`/en/bycountry/{CC}`, `/en/bytype/{Type}`, polite rate + kill-switch); and which dataset first — OpenEyes (7,170, newer, has manufacturer) vs jrw (17.4K, 2019-stale). (see A2) **UPDATE 10-05 evening: owner "and 3 go" read as approval — baseline sitemap census captured (2,271 current IDs → `research/exposed/insecam-census-2026-10-05.json`; 1 request, robots-allowed, no device contact). Next: ingest GODEYE + rafasapiens era snapshots; listing-level crawl timing at build.**
-- **Q7 No-probe rule for exposure entries**: [recommended: keep — status `unverified` + snapshot date shown; never contact listed devices]
-- **Q8 Exposure display**: metadata + click-through warning [recommended] vs blurred thumbnail vs inline preview.
-- **Q9 Distribution**: private build first [recommended — `PRIVATE_EXPOSURE_SURFACE` gate] vs plan a public exposure surface (then: noindex + warnings + takedown SLA + legal review).
-- **Q10 Takedown workflow**: public contact point, response SLA, hard-remove + tombstone; dataset refresh cadence (monthly?).
-- **Q11 trafficvision.live data files**: robots.txt disallows `/camera-data/` + ToS bans automated access (the 853 `*-cameras.json` files are otherwise public/unauthenticated). Options: respect it and re-derive from the named original agencies [recommended] / contact them for permissioned API access / other owner call. (see A3)
+- **Q2 (RESOLVED 2026-10-05, owner)**: keep as-is — standalone repo at `C:\Users\user\world-feed-db`; no rename, no fold-in.
+- **Q3 Keys / quotas**: Windy Webcams API key? webcams.travel key? Nimble quota exhausted (402 "trial quota finished" during research). Hound MCP works as fallback. **Default taken 2026-10-05: no Nimble top-up for now — Hound MCP is the working fallback for crawls; the Windy key already covers webcams.travel/lookr brands; revisit Nimble only if a build crawl needs it.**
+- **Q4 (RESOLVED 2026-10-05, owner)**: shared backend + simple local web UI first; desktop / moddys.net / zero-hud surfaces decided later.
+- **Q5 YouTube grey zone (default kept 2026-10-05)**: keep "personal/local, non-redistributed" stance per WV1.
+- **Q6 Exposure ingest route**: datasets-only [recommended] vs also the live directory crawl (`/en/bycountry/{CC}`, `/en/bytype/{Type}`, polite rate + kill-switch); and which dataset first — OpenEyes (7,170, newer, has manufacturer) vs jrw (17.4K, 2019-stale). (see A2) **UPDATE 10-05 evening: owner "and 3 go" read as approval — baseline sitemap census captured (2,271 current IDs → `research/exposed/insecam-census-2026-10-05.json`; 1 request, robots-allowed, no device contact). Next: ingest GODEYE + rafasapiens era snapshots; listing-level crawl timing at build.** **RESOLVED 2026-10-05 (owner, re-confirmed): datasets first — GODEYE + rafasapiens era chain now; the polite listing crawl is its own separate later step (not in the first build sprint).**
+- **Q7 No-probe rule (default kept 2026-10-05)**: [keep — status `unverified` + snapshot date shown; never contact listed devices].
+- **Q8 (RESOLVED 2026-10-05, owner)**: metadata + click-through warning; no autoplay, no preview (private build default).
+- **Q9 Distribution (default kept 2026-10-05)**: private build first — `PRIVATE_EXPOSURE_SURFACE` gate; no public exposure surface planned.
+- **Q10 Takedown workflow (deferred 2026-10-05)**: revisit only if/when a public exposure surface is actually planned.
+- **Q11 trafficvision.live data files**: robots.txt disallows `/camera-data/` + ToS bans automated access (the 853 `*-cameras.json` files are otherwise public/unauthenticated). **RESOLVED 2026-10-05 (owner): respect robots — re-derive the 853 source names from the original agencies; no automated access to `/camera-data/`.** (see A3)
 
 ## 7 · Addenda (wave fold-ins)
 
@@ -185,3 +187,12 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - New datasets beyond the 7: **GODEYE 1,775 (2026-05-27)** + **rafasapiens 2,100 (2026-10)** (parent re-counted GODEYE = 1,775 ✓) — plus reconeyes (OpenEyes-lineage, log) and EyeFinder 256 (77 insecam). **Era chain now 2019 → 2022 → 2026** — unique value = timeline diffs ("gone dark" views).
 - Community: **AAD Mawson (Antarctica) cam verified** — remote-stations class opened (naocam.com Greenland airports, overwatch.earth, DOT-mapper leads queued).
 - Housekeeping: children's stray scratch files were removed (commit 39610be); practice rule going forward: subagent waves do not run git commands — the parent commits.
+
+### A9 · Owner decisions Q2–Q11 closed → build phase opened (folded 2026-10-05)
+
+> Trigger: owner resumed ("continue world-feed-db") and re-read + re-picked the five build-forking questions; all five landed on the recommended options.
+
+- Locked: **Q2** keep standalone repo · **Q4** shared backend + simple local web UI first (desktop / moddys.net / zero-hud later) · **Q6** datasets-first exposure ingest — GODEYE + rafasapiens era chain now, polite listing crawl = separate later step · **Q8** exposure display = metadata + click-through warning, no autoplay/preview · **Q11** respect robots — re-derive the 853 source names from originals.
+- Quiet defaults kept: **Q3** no Nimble top-up (Hound fallback) · **Q5** YouTube personal/local stance · **Q7** no-probe · **Q9** private-first gate · **Q10** takedown deferred.
+- Build phase opens — sprint 1: (a) credential/settings layer (profiles loader, keyring/DPAPI + `.env` fallback, honest `KEY REQUIRED` states); (b) exposure dataset ingesters (credential redaction + provenance flags per S5 §B); (c) L-E-S + government enumerator scaffolds per S2's "QUICK BUILD NOTES".
+- Small wins queued alongside: Road511 param discovery · QLD email draft (`qldtraffic@tmr.qld.gov.au`) · deno install for yt-dlp · Shodan camera-search dry run (search-only, credit-budgeted).
