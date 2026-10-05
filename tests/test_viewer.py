@@ -30,10 +30,14 @@ _state = {"server": None, "base": None}
 def _base() -> str:
     """Lazily start the shared test server (ephemeral port, daemon thread)."""
     if _state["base"] is None:
-        server = viewer.make_server(port=0, quiet=True)
+        import tempfile
+        _state["tmpdir"] = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        prefs_path = pathlib.Path(_state["tmpdir"].name) / "viewer-prefs.json"
+        server = viewer.make_server(port=0, quiet=True, prefs_path=prefs_path)
         threading.Thread(target=server.serve_forever, name="wfd-viewer-test",
                          daemon=True).start()
         _state["server"] = server
+        _state["prefs_path"] = prefs_path
         _state["base"] = f"http://127.0.0.1:{server.server_address[1]}"
         atexit.register(_shutdown)
     return _state["base"]
@@ -44,7 +48,10 @@ def _shutdown() -> None:
     if server is not None:
         server.shutdown()
         server.server_close()
-        _state["base"] = None
+    tmp = _state.pop("tmpdir", None)
+    if tmp is not None:
+        tmp.cleanup()
+    _state["base"] = None
 
 
 # --- tiny HTTP helpers -------------------------------------------------------
@@ -276,6 +283,159 @@ def test_static_serving_from_web_dir():
         finally:
             server.shutdown()
             server.server_close()
+
+
+
+
+# --- prefs / facets / overview / extended filters (viewer v0.2 surface) -----
+
+def _post(path, payload, headers=None):
+    """POST JSON with the required local-UI header -> (status, payload)."""
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        _base() + path, data=data, method="POST",
+        headers={"Content-Type": "application/json", "X-WFD-Viewer": "1",
+                 **(headers or {})})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return resp.status, json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        raw = exc.read()
+        try:
+            return exc.code, json.loads(raw.decode("utf-8"))
+        except ValueError:
+            return exc.code, {}
+
+
+def _post_raw(path, payload, headers):
+    """POST with exactly the given headers (for the guard test)."""
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(_base() + path, data=data, method="POST",
+                                 headers={"Content-Type": "application/json", **headers})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return resp.status, json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        return exc.code, {}
+
+
+def test_prefs_roundtrip_and_guards():
+    _base()  # ensure the shared server (temp prefs) is up
+    rows = _db_rows("SELECT camera_id FROM cameras WHERE source_family='nsw' "
+                    "AND provenance='public_by_design' LIMIT 2")
+    assert len(rows) == 2
+    cid, cid2 = rows[0]["camera_id"], rows[1]["camera_id"]
+    for c in (cid, cid2):
+        _post("/api/prefs/favourite", {"camera_id": c, "action": "remove"})
+
+    _, _, st = _get("/api/prefs")
+    assert isinstance(st["favourites"], list)
+    assert "settings" in st and "updated_at" in st
+
+    status, res = _post("/api/prefs/favourite", {"camera_id": cid, "action": "add"})
+    assert status == 200 and cid in res["favourite_ids"], (status, res)
+    status, res = _post("/api/prefs/favourite", {"camera_id": cid2, "action": "add"})
+    assert status == 200 and {cid, cid2} <= set(res["favourite_ids"])
+
+    # idempotent add
+    status, res = _post("/api/prefs/favourite", {"camera_id": cid, "action": "add"})
+    assert status == 200 and res["favourite_ids"].count(cid) == 1
+
+    # label a favourite
+    status, res = _post("/api/prefs/favourite",
+                        {"camera_id": cid, "action": "label", "label": "My fav"})
+    assert status == 200
+    item = [f for f in res["favourites"] if f["camera_id"] == cid][0]
+    assert item["label"] == "My fav", item
+
+    # reorder (cid2 first)
+    status, res = _post("/api/prefs/reorder", {"order": [cid2, cid]})
+    ids = res["favourite_ids"]
+    assert status == 200 and ids.index(cid2) < ids.index(cid), ids
+
+    # favourites=1 filter serves them
+    _, _, fc = _get("/api/cameras?favourites=1&geo=any&limit=100")
+    got = {f["properties"]["camera_id"] for f in fc["features"]}
+    assert {cid, cid2} <= got, got
+
+    # cleanup
+    for c in (cid, cid2):
+        status, res = _post("/api/prefs/favourite", {"camera_id": c, "action": "remove"})
+        assert status == 200
+    assert not (set(res["favourite_ids"]) & {cid, cid2})
+
+
+def test_prefs_post_guard_and_errors():
+    _base()
+    status, _ = _post_raw("/api/prefs/favourite", {"camera_id": "a" * 16, "action": "add"}, {})
+    assert status == 403, status                          # missing X-WFD-Viewer
+    status, _ = _post("/api/prefs/favourite", {"camera_id": "nothex", "action": "add"})
+    assert status == 400, status
+    status, _ = _post("/api/prefs/favourite", {"camera_id": "0" * 16, "action": "add"})
+    assert status == 404, status                          # unknown camera
+    status, _ = _post("/api/prefs/favourite", {"camera_id": "a" * 16, "action": "wat"})
+    assert status == 400, status
+    status, _ = _post("/api/prefs/settings", {"settings": "nope"})
+    assert status == 400, status
+
+
+def test_prefs_settings_roundtrip():
+    _base()
+    status, res = _post("/api/prefs/settings",
+                        {"settings": {"ui_test_marker": 7, "sound": False}})
+    assert status == 200 and res["settings"].get("ui_test_marker") == 7
+    _, _, st = _get("/api/prefs")
+    assert st["settings"].get("ui_test_marker") == 7
+
+
+def test_facets_shape_and_filters():
+    _, _, d = _get("/api/facets")
+    for key in ("total", "by_status", "by_provenance", "by_protocol",
+                "by_family", "by_country", "by_tag"):
+        assert key in d, sorted(d)
+    assert d["total"] > 0 and d["by_status"] and d["by_family"]
+    _, _, d2 = _get("/api/facets?family=nsw")
+    assert 0 < d2["total"] <= d["total"], (d2["total"], d["total"])
+    assert "nsw" in d2["by_family"]
+    _, _, d3 = _get("/api/facets?q=Miranda")
+    assert d3["total"] > 0, "facets q=Miranda empty"
+
+
+def test_overview_shape():
+    _, _, d = _get("/api/overview")
+    for key in ("total", "by_status", "by_provenance", "top_families",
+                "top_countries", "favourites_count", "exposure_enabled",
+                "generated_at"):
+        assert key in d, sorted(d)
+    assert d["total"] > 0 and isinstance(d["top_families"], list)
+    assert d["top_families"], "no top families"
+    assert all({"family", "total", "live"} <= set(t) for t in d["top_families"])
+
+
+def test_cameras_extended_filters():
+    proto = _db_rows("SELECT protocol, COUNT(*) AS n FROM cameras "
+                     "GROUP BY protocol ORDER BY n DESC LIMIT 1")[0]["protocol"]
+    _, _, fc = _get(f"/api/cameras?protocol={proto}&geo=any&limit=200")
+    assert fc["features"], proto
+    assert all(f["properties"]["protocol"] == proto for f in fc["features"])
+
+    row = _db_rows("SELECT country FROM cameras WHERE country IS NOT NULL "
+                   "AND trim(country) != '' LIMIT 1")
+    if row:
+        c = row[0]["country"]
+        _, _, fc2 = _get(f"/api/cameras?country={c}&geo=any&limit=500")
+        for f in fc2["features"]:
+            assert f["properties"]["country"].strip().upper() == c.strip().upper()
+
+    _, _, only = _get("/api/cameras?limit=5000")
+    _, _, anyn = _get("/api/cameras?geo=any&limit=5000")
+    assert len(anyn["features"]) >= len(only["features"])
+
+    _, _, srt = _get("/api/cameras?sort=name&order=desc&limit=10")
+    assert len(srt["features"]) == 10
+
+    status, _, _ = _get_http("/api/cameras?sort=drop%20table&limit=5")
+    assert status == 400, status
 
 
 def main() -> int:
