@@ -1,0 +1,352 @@
+{
+ "timestamp": "2026-10-05T11:40:50Z",
+ "timestampMS": "1791200450009",
+ "version": "1.1",
+ "uid": "-8569684966613574390",
+ "status": "normal",
+ "message": "",
+ "cameraCount": 20,
+ "cameraHash": "985819017",
+ "videoCameras": [
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM001.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM001.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM001.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM001.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM001.stream/Manifest"
+   },
+   "id": "KCAM001",
+   "title": "DE 1 @ MILFORD NECK ROAD (NORTH OFF)",
+   "county": "Kent",
+   "lat": 38.990931,
+   "lon": -75.448625,
+   "hash": "1760142867",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM002.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM002.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM002.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM002.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM002.stream/Manifest"
+   },
+   "id": "KCAM002",
+   "title": "W NORTH ST @ WEST DOVER CONNECTOR",
+   "county": "Kent",
+   "lat": 39.153462,
+   "lon": -75.542016,
+   "hash": "-118494871",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM003.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM003.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM003.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM003.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM003.stream/Manifest"
+   },
+   "id": "KCAM003",
+   "title": "US 13 SB @ WEST DOVER CONNECTOR",
+   "county": "Kent",
+   "lat": 39.124642,
+   "lon": -75.532336,
+   "hash": "-1824221177",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM004.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM004.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM004.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM004.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM004.stream/Manifest"
+   },
+   "id": "KCAM004",
+   "title": "US 13 @ RD 88",
+   "county": "Kent",
+   "lat": 39.180998,
+   "lon": -75.529771,
+   "hash": "949924810",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM005.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM005.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM005.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM005.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM005.stream/Manifest"
+   },
+   "id": "KCAM005",
+   "title": "NEW BURTON RD S @ WEST DOVER CONNECTOR",
+   "county": "Kent",
+   "lat": 39.129917,
+   "lon": -75.54346,
+   "hash": "2030851011",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM020.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM020.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM020.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM020.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM020.stream/Manifest"
+   },
+   "id": "KCAM020",
+   "title": "US 13 @ HARRINGTON FAIR RD - HARRINGTON",
+   "county": "Kent",
+   "lat": 38.908166,
+   "lon": -75.569731,
+   "hash": "858214283",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM021.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM021.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM021.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM021.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM021.stream/Manifest"
+   },
+   "id": "KCAM021",
+   "title": "US 13 @ RD 315 (TOWER HILL RD)",
+   "county": "Kent",
+   "lat": 38.89491,
+   "lon": -75.571382,
+   "hash": "-368091583",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM024.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM024.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM024.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM024.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM024.stream/Manifest"
+   },
+   "id": "KCAM024",
+   "title": "LEIPSIC RD @ PLAZA DR",
+   "county": "Kent",
+   "lat": 39.189323,
+   "lon": -75.527593,
+   "hash": "-766485106",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM025.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM025.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM025.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM025.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM025.stream/Manifest"
+   },
+   "id": "KCAM025",
+   "title": "DE 1 @ MAIN TOLL PLAZA",
+   "county": "Kent",
+   "lat": 39.18481,
+   "lon": -75.515299,
+   "hash": "2105442094",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM027.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM027.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM027.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM027.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM027.stream/Manifest"
+   },
+   "id": "KCAM027",
+   "title": "US 13 @ SCARBOROUGH RD",
+   "county": "Kent",
+   "lat": 39.200015,
+   "lon": -75.556265,
+   "hash": "2075091100",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM028.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM028.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM028.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM028.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM028.stream/Manifest"
+   },
+   "id": "KCAM028",
+   "title": "US 13 @ TOWNSEND BLVD",
+   "county": "Kent",
+   "lat": 39.174683,
+   "lon": -75.522474,
+   "hash": "838881541",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM029.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM029.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM029.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM029.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM029.stream/Manifest"
+   },
+   "id": "KCAM029",
+   "title": "US 13 @ WHITE OAK RD",
+   "county": "Kent",
+   "lat": 39.168512,
+   "lon": -75.516881,
+   "hash": "-778151468",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM030.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM030.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM030.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM030.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM030.stream/Manifest"
+   },
+   "id": "KCAM030",
+   "title": "US 13 @ DIVISION ST",
+   "county": "Kent",
+   "lat": 39.163336,
+   "lon": -75.515593,
+   "hash": "-162388562",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM031.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM031.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM031.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM031.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM031.stream/Manifest"
+   },
+   "id": "KCAM031",
+   "title": "DE 8 @ SAULSBURY RD",
+   "county": "Kent",
+   "lat": 39.159117,
+   "lon": -75.542656,
+   "hash": "1681343929",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM032.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM032.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM032.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM032.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM032.stream/Manifest"
+   },
+   "id": "KCAM032",
+   "title": "US 13 @ BAY RD",
+   "county": "Kent",
+   "lat": 39.158657,
+   "lon": -75.51146,
+   "hash": "-1738380045",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM086.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM086.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM086.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM086.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM086.stream/Manifest"
+   },
+   "id": "KCAM086",
+   "title": "US 13 @ DOVER DOWNS (ENT)",
+   "county": "Kent",
+   "lat": 39.1866,
+   "lon": -75.5364,
+   "hash": "1823592514",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM090.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM090.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM090.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM090.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM090.stream/Manifest"
+   },
+   "id": "KCAM090",
+   "title": "DE 1 @ TOLL RAMP E (S. SMYRNA)",
+   "county": "Kent",
+   "lat": 39.281918,
+   "lon": -75.59127,
+   "hash": "-1044843267",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM091.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM091.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM091.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM091.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM091.stream/Manifest"
+   },
+   "id": "KCAM091",
+   "title": "US 13 @ DE 300",
+   "county": "Kent",
+   "lat": 39.306505,
+   "lon": -75.607302,
+   "hash": "-846884165",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM092.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM092.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM092.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM092.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM092.stream/Manifest"
+   },
+   "id": "KCAM092",
+   "title": "DE 1 @ THOMPSONVILLE RD",
+   "county": "Kent",
+   "lat": 38.957405,
+   "lon": -75.427714,
+   "hash": "723455670",
+   "enabled": true,
+   "status": "Active"
+  },
+  {
+   "urls": {
+    "rtmp": "rtmpt://video.deldot.gov:80/live/KCAM102.stream",
+    "f4m": "http://video.deldot.gov:1935/live/KCAM102.stream/manifest.f4m",
+    "m3u8": "http://video.deldot.gov:1935/live/KCAM102.stream/playlist.m3u8",
+    "m3u8s": "https://video.deldot.gov:443/live/KCAM102.stream/playlist.m3u8",
+    "mssmooth": "http://video.deldot.gov:1935/live/KCAM102.stream/Manifest"
+   },
+   "id": "KCAM102",
+   "title": "US 13 SB @ DE 14",
+   "county": "Kent",
+   "lat": 38.923876,
+   "lon": -75.567883,
+   "hash": "1621330606",
+   "enabled": true,
+   "status": "Active"
+  }
+ ]
+}

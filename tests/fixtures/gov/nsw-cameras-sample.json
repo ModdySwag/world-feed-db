@@ -1,0 +1,369 @@
+{
+ "type": "FeatureCollection",
+ "rights": {
+  "copyright": "Transport for NSW",
+  "licence": "https://opendata.transport.nsw.gov.au/dataset/live-traffic-cameras"
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "023651ee-389c-4677-978e-d39b6c24c1e7",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.10533,
+     -34.02977
+    ]
+   },
+   "properties": {
+    "region": "SYD_SOUTH",
+    "title": "5 Ways (Miranda)",
+    "view": "5 Ways at The Boulevarde looking west towards Sutherland.",
+    "direction": "W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/5_ways_miranda.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "9ca3da77-7d9c-4820-a23a-df48d4712522",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.161891,
+     -33.933667
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Airport Drive (Mascot)",
+    "view": "Airport Drive at Marsh Street looking east towards the city.",
+    "direction": "E",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/airport_dr_mascot.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "d103f206-1abb-4056-bf3d-2da06e579be4",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.23122,
+     -33.90641
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Alison Road (Randwick)",
+    "view": "Alison Road at Darley Road looking north-west towards Anzac Parade.",
+    "direction": "N-W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/alison_road_randwick.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "285aad4a-4108-4800-99a5-220b9d27d8b0",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.18022,
+     -33.86789
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Anzac Bridge (Eastbound)",
+    "view": "Intersection of Victoria Road and Anzac Bridge looking east towards the Sydney CBD.",
+    "direction": "E",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/anzac_bridge_eastbound.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "087dafef-dd53-4eec-adfe-bc82c3ee9c1f",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.188029,
+     -33.869692
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Anzac Bridge (Westbound)",
+    "view": "Eastern side of Anzac Bridge looking west towards Rozelle.",
+    "direction": "W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/anzac_bridge_westbound.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "494de179-e5e8-4938-a69b-3caf1aa4074f",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.223699,
+     -33.907296
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Anzac Parade (Kensington)",
+    "view": "Anzac Parade at Goodwood Street looking north towards the city.",
+    "direction": "N",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/anzac_parade_kensington.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "9c4c9329-5f05-4fc4-bb7d-7c1ca8350df8",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.227638,
+     -33.923886
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Anzac Parade (Kingsford)",
+    "view": "Anzac Parade at Rainbow Street looking south towards Maroubra.",
+    "direction": "S",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/anzac_parade_kingsford.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "97229e46-791c-4840-a71c-cad1e46d9eaf",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.22151,
+     -33.89534
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Anzac Parade (Moore Park)",
+    "view": "Corner of Anzac Parade and Cleveland Street looking south towards Randwick.",
+    "direction": "S",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/anzac_parade_moore_park.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "1080e6a0-a9ff-4201-b4be-7505251c4ec0",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.056689,
+     -34.073084
+    ]
+   },
+   "properties": {
+    "region": "SYD_SOUTH",
+    "title": "Audley Road (Audley Weir)",
+    "view": "Audley Road at Audley Weir looking east towards Sir Bertram Stevens Drive.",
+    "direction": "E",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/audley_road_audley_weir.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "ebb3f8ae-2391-4c4a-913d-1ff4ab2206b9",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.057465,
+     -34.0735779
+    ]
+   },
+   "properties": {
+    "region": "SYD_SOUTH",
+    "title": "Audley Weir (East)",
+    "view": "Sir Bertram Stevens Drive looking west at Audley Weir.",
+    "direction": "N-W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/audley_weir_east.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "138fe26b-2232-47ec-958f-f759057d5656",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.05747,
+     -34.073741
+    ]
+   },
+   "properties": {
+    "region": "SYD_SOUTH",
+    "title": "Audley Weir (South)",
+    "view": "Sir Bertram Stevens Drive at Audley Weir looking south towards Waterfall.",
+    "direction": "S",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/audley_weir_south.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "dab8fbc1-2173-4e25-bed3-eed2c7e655ed",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     150.280817,
+     -33.511658
+    ]
+   },
+   "properties": {
+    "region": "REG_WEST",
+    "title": "Chifley Road (Bell)",
+    "view": "Chifley Road at Bells Line of Road looking north towards Lithgow.",
+    "direction": "N",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/chifley_road_bell.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "99ef6a0a-8e29-446f-8cba-39411cb9a4d4",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.112287,
+     -33.936532
+    ]
+   },
+   "properties": {
+    "region": "SYD_SOUTH",
+    "title": "Bexley Road (Bexley North)",
+    "view": "Bexley Road at Wolli Creek looking southeast towards Bexley.",
+    "direction": "S-E",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/bexley_rd_bexley_north.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "9b7cde5c-3680-495f-8ec2-705a5b803135",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.230727,
+     -33.967214
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Botany Road (Matraville)",
+    "view": "Botany Road at Bunnerong Road looking west towards Botany.",
+    "direction": "W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/botany_rd_matraville.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "cccef7e8-15d7-41e5-ac0c-fcde2533107e",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.231128,
+     -33.966895
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Bunnerong Road (Matraville)",
+    "view": "Bunnerong Road at Botany Road looking north towards Kingsford.",
+    "direction": "N",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/bunnerong_rd_matraville.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "2e641353-0357-44c5-9540-4c1acbe1ce08",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.265661,
+     -33.788582
+    ]
+   },
+   "properties": {
+    "region": "SYD_NORTH",
+    "title": "Burnt Bridge Creek (Balgowlah)",
+    "view": "Burnt Bridge Creek at Condamine Street looking north towards Dee Why.",
+    "direction": "N",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/burnt_bridge_creek_balgowlah.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "0b7d30e9-36d3-496f-903b-b319d42d2d8d",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     150.743807,
+     -34.045534
+    ]
+   },
+   "properties": {
+    "region": "SYD_WEST",
+    "title": "Camden Bypass (Narellan)",
+    "view": "Camden Bypass looking north towards Narellan Road.",
+    "direction": "N",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/camden_bypass_narellan.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "c9896623-85d2-4c75-9ae1-0c8d98e7fecc",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.184491,
+     -33.915336
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "Campbell Rd and Euston Rd, St Peters",
+    "view": "Campbell Rd and Euston Road, St Peters looking south towards entrance to the M8 Motorway.",
+    "direction": "S",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/campbell_rd_and_euston_rd_st_peters.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "d6ab6fad-fd37-4964-ae91-6673ba55bfc7",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.080881,
+     -33.770871
+    ]
+   },
+   "properties": {
+    "region": "SYD_NORTH",
+    "title": "Carlingford Road (Epping)",
+    "view": "Carlingford Road at Beecroft Road looking west towards Carlingford.",
+    "direction": "W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/carlingford_road_epping.jpeg"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "4638ff75-d834-4799-ae8c-e8fd1c573c20",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     151.188925,
+     -33.890699
+    ]
+   },
+   "properties": {
+    "region": "SYD_MET",
+    "title": "City Road (Newtown)",
+    "view": "City Road near Carillon Avenue looking south-west towards Newtown.",
+    "direction": "S-W",
+    "href": "https://webcams.transport.nsw.gov.au/livetraffic-webcams/cameras/city_road_newtown.jpeg"
+   }
+  }
+ ]
+}
