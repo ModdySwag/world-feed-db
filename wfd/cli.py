@@ -51,7 +51,7 @@ def main(argv=None) -> int:
     commands = {
         "status": ("profile, key statuses, and db summary", cmd_status),
     }
-    for modname in ("wfd.creds", "wfd.onboarding", "wfd.registry", "wfd.health"):
+    for modname in ("wfd.creds", "wfd.onboarding", "wfd.registry", "wfd.health", "wfd.viewer"):
         try:
             mod = importlib.import_module(modname)
         except ImportError:
