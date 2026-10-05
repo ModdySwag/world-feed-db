@@ -1,2 +1,12 @@
 # Private profile overlay - credentials & personal curation; never committed (D7.1)
 profiles/moddy/
+# Active-profile pointer (personal convenience; a fresh clone has none -> "clean")
+profiles/ACTIVE
+# Working data: registry DB + ingest outputs (never committed)
+data/
+# Raw third-party dataset downloads (unlicensed; re-downloadable via documented URLs)
+research/exposed/raw/
+# Python caches
+__pycache__/
+*.pyc
+.pytest_cache/

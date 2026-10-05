@@ -1,0 +1,5 @@
+{
+  "name": "clean",
+  "description": "Keyless default profile that ships with the template; honest KEY REQUIRED states everywhere.",
+  "private_exposure_surface": false
+}
