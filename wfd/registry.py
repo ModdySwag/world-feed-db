@@ -186,7 +186,7 @@ def _cmd_db(args) -> int:
             rows = search(conn, args.query, limit=args.limit)
             print(f"{len(rows)} result(s) for {args.query!r}:")
             for r in rows:
-                flag = "EXPOSED" if r["provenance"] == "exposure_aggregator" else "public "
+                flag = {"exposure_aggregator": "EXPOSED", "aggregator_directory": "dir"}.get(r["provenance"], "public ")
                 print(f"  [{flag}] {r['camera_id']}  {r['source_family']:<18} "
                       f"{r['name'][:44]:<44} {r['city'][:18]:<18} {r['country']}")
             return 0

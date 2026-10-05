@@ -22,6 +22,7 @@ class Provenance(str, enum.Enum):
 
     PUBLIC = "public_by_design"       # operator / agency / API published
     EXPOSURE = "exposure_aggregator"  # insecam-class dataset aggregation (flagged category, D6)
+    DIRECTORY = "aggregator_directory"  # third-party directory of public feeds (owner decision 2026-10-06)
     UNKNOWN = "unknown"
 
 

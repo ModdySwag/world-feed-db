@@ -11,8 +11,8 @@ Implements the A1 doctrine (research/ingest/S4-verification-selfheal.md):
 
 Honest states only: live / stale / dead / unknown. Probing is bounded and
 polite (global worker cap + per-host concurrency cap + start spacing), and is
-NEVER applied to exposure rows — selection is restricted to
-`provenance='public_by_design'` in the SQL itself.
+NEVER applied to exposure rows — selection is restricted in the SQL itself to
+the probe-eligible set (`public_by_design` + `aggregator_directory`).
 
 Every result writes back to the registry (`status`, `last_verified`, and the
 consecutive-failure streak `fail_count` — auto-quarantine after QUARANTINE_N
@@ -412,7 +412,7 @@ def run_sweep(*, family: Optional[str] = None, where: Optional[str] = None,
     dbmod.init_db(conn)
 
     q = ("SELECT camera_id, url, protocol, source_family FROM cameras "
-         "WHERE provenance='public_by_design' "
+         "WHERE provenance IN ('public_by_design','aggregator_directory') "
          "AND protocol IN ('hls','mjpeg','jpeg','youtube')")
     params: list = []
     if family:

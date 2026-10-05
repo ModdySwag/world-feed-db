@@ -98,6 +98,7 @@ main{display:flex;flex:1;min-height:0}
 .pv{display:inline-block;padding:0 6px;border-radius:9px;font-size:10.5px;line-height:16px;border:1px solid}
 .pv-public{color:var(--accent);border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.08)}
 .pv-exposure{color:#b9a8f5;border-color:rgba(167,139,250,.45);background:rgba(167,139,250,.1)}
+.pv-directory{color:#7fd6c6;border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.08)}
 .pv-unknown{color:var(--unknown);border-color:rgba(136,146,160,.4);background:rgba(136,146,160,.08)}
 
 /* ---------- leaflet skin ---------- */
@@ -286,7 +287,7 @@ function fetchJSON(url){return fetch(url,{headers:{'Accept':'application/json'}}
   if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});}
 function setMapStatus(t,isErr){var el=$('#map-status');el.textContent=t;el.classList.toggle('err',!!isErr);}
 function setWallStatus(t,isErr){var el=$('#wall-status');el.textContent=t;el.classList.toggle('err',!!isErr);}
-function pvClass(p){return p==='public_by_design'?'public':(p==='exposure_aggregator'?'exposure':'unknown');}
+function pvClass(p){return p==='public_by_design'?'public':(p==='exposure_aggregator'?'exposure':(p==='aggregator_directory'?'directory':'unknown'));}
 
 /* ================= stats / chips ================= */
 function renderChips(){

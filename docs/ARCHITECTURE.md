@@ -30,7 +30,8 @@ PLAN.md holds the program decisions; this file holds the engineering contracts.
 
 ## Vocabulary — hard rules
 
-- `provenance`: `public_by_design` | `exposure_aggregator` | `unknown`.
+- `provenance`: `public_by_design` | `aggregator_directory` (third-party directory
+  of public feeds — owner decision 2026-10-06) | `exposure_aggregator` | `unknown`.
 - `status`: `live` | `stale` | `dead` | `unknown` (+ `unverified` for exposure rows;
   `quarantined`/`retired` for lifecycle). **Enumeration NEVER claims liveness** —
   rows enter as `unknown`; only health checks may produce `live`/`stale`/`dead`.
@@ -99,6 +100,22 @@ PLAN.md holds the program decisions; this file holds the engineering contracts.
   + registry of implemented enumerators. Exemplars: `caltrans.py`, `deldot.py` (keyless
   JSON), `nsw.py` (key-gated: key from `profile.secret("NSW_API_KEY")`; missing ⇒ honest
   `key_required_state` result, no crash).
+
+### wfd.ingest.newsrc (build unit NS — new-source families)
+- One module per family under `wfd/ingest/newsrc/`, each exposing a module-level
+  `ENUMERATOR` and runnable directly: `py -3.11 -m wfd.ingest.newsrc.<family>`
+  (package runner `<family|all>` once registered in `__init__.py`).
+- Provenance by family: `explore-omega` / `jungfrau-roundshot` /
+  `vailresorts-brownrice` = `public_by_design`; `openwebcamdb` (third-party
+  directory) = `aggregator_directory` (operator/credit preserved in `meta`).
+- `newsrc/base.py` mirrors `gov/base.py` (`Enumerator`, liveness guard, `run_one`
+  → `data/ingest/newsrc-<name>.jsonl` + sha256 stats) and adds `FetchCache`
+  (per-family cache under `data/ingest/cache/<family>/`; re-runs skip cached
+  fetches, `--refresh` refetches) + `run_cli` for module `__main__`s — long
+  enumerations are resumable. Optional `--limit` caps items (tests/debug).
+- Enumeration never claims liveness (rows enter `status="unknown"`; published
+  flags stay in `meta`). Health sweeps are probe-eligible for
+  `public_by_design` + `aggregator_directory` rows.
 
 ### wfd.cli
 - `py -3.11 -m wfd status` — profile + key statuses + db summary.

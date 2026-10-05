@@ -16,14 +16,15 @@ API (the wfd/web/ frontend is built to exactly this contract):
                                     404 when missing
 
     /api/cameras params:
-        provenance=public|exposure|all   (default all)
+        provenance=public|directory|exposure|all   (default all; "public" =
+            the displayable non-exposure set: public_by_design + aggregator_directory)
         status=<csv>                     family=<csv>
         q=<FTS text>                     (resolved via wfd.db.search ids)
         bbox=minLon,minLat,maxLon,maxLat
         limit (default 2000, max 5000)   offset
     Feature properties: camera_id, name, city, country, source_family,
         provenance, status, protocol, last_verified, snapshot_date, tags,
-        display_policy; ``url`` ONLY for provenance=public_by_design rows.
+        display_policy; ``url`` for public_by_design + aggregator_directory rows only.
 
 Exposure law (D6 / S5 §B / Q8), enforced here:
 - ``exposure_enabled`` mirrors ``wfd.profile.settings()['private_exposure_surface']``.
@@ -32,6 +33,9 @@ Exposure law (D6 / S5 §B / Q8), enforced here:
   name (``provenance=exposure`` yields an empty set; detail lookups answer 404).
 - exposure rows never carry a ``url`` key: ``display_policy="metadata_only"``
   plus the click-through ``warning`` text (Q8: metadata + warning, no preview).
+- aggregator_directory rows are third-party directory listings of public feeds
+  (owner decision 2026-10-06): displayed like public rows (url included);
+  provenance stays honest in the payload.
 
 The registry is opened read-only per request (``file:...?mode=ro`` + query_only);
 this process never writes to it.
@@ -62,6 +66,10 @@ EXPOSURE_WARNING = (
     "Unsecured camera listed by a public aggregator - may capture private "
     "scenes; location approximate; unverified."
 )
+
+# Provenance classes displayed in full (url included). Third-party directories of
+# public feeds belong here (owner decision 2026-10-06); exposure stays metadata-only.
+FULL_DISPLAY_PROVENANCE = ("public_by_design", "aggregator_directory")
 
 
 # ---------------------------------------------------------------------------
@@ -129,10 +137,10 @@ def _display_props(row: sqlite3.Row) -> dict:
         "last_verified": row["last_verified"],
         "snapshot_date": row["snapshot_date"],
         "tags": _json_list(row["tags"]),
-        "display_policy": "full" if provenance == "public_by_design" else "metadata_only",
+        "display_policy": "full" if provenance in FULL_DISPLAY_PROVENANCE else "metadata_only",
     }
-    if provenance == "public_by_design":
-        props["url"] = row["url"]          # url ONLY for public_by_design rows
+    if provenance in FULL_DISPLAY_PROVENANCE:
+        props["url"] = row["url"]          # url for displayable (non-exposure) rows
     elif provenance == "exposure_aggregator":
         props["warning"] = EXPOSURE_WARNING
     return props
@@ -149,9 +157,9 @@ def _feature(row: sqlite3.Row) -> dict:
 def _detail_payload(row) -> dict:
     """Full detail dict for one row — same url/display_policy rules as features."""
     payload = row.as_dict()
-    public = row.provenance == "public_by_design"
-    payload["display_policy"] = "full" if public else "metadata_only"
-    if not public:
+    displayable = row.provenance in FULL_DISPLAY_PROVENANCE
+    payload["display_policy"] = "full" if displayable else "metadata_only"
+    if not displayable:
         payload.pop("url", None)
     if row.provenance == "exposure_aggregator":
         payload["warning"] = EXPOSURE_WARNING
@@ -285,8 +293,8 @@ class ViewerHandler(SimpleHTTPRequestHandler):
             return (params.get(name) or [None])[0]
 
         provenance = (one("provenance") or "all").strip().lower() or "all"
-        if provenance not in ("public", "exposure", "all"):
-            return self._send_json(400, {"error": "provenance must be one of public|exposure|all",
+        if provenance not in ("public", "directory", "exposure", "all"):
+            return self._send_json(400, {"error": "provenance must be one of public|directory|exposure|all",
                                          "provenance": provenance})
         q = (one("q") or "").strip()
         statuses = _csv_params(one("status"))
@@ -318,7 +326,10 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                     # even when provenance=exposure is requested explicitly
                     where.append("provenance != 'exposure_aggregator'")
                 if provenance == "public":
-                    where.append("provenance = 'public_by_design'")
+                    # the displayable non-exposure set (directories included)
+                    where.append("provenance IN ('public_by_design','aggregator_directory')")
+                elif provenance == "directory":
+                    where.append("provenance = 'aggregator_directory'")
                 elif provenance == "exposure":
                     where.append("provenance = 'exposure_aggregator'")
                 if statuses:
