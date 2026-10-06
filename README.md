@@ -4,6 +4,8 @@ A worldwide, self-healing database and viewer for public live video feeds — tr
 
 ## What it looks like
 
+![World Feed DB — watch it in action: the globe, the wall and the Watch stage](docs/shots/demo.gif)
+
 ![World Feed DB — the world-map globe](docs/shots/globe.jpg)
 
 ![World Feed DB — the video wall](docs/shots/wall.jpg)
