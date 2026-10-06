@@ -19,6 +19,19 @@ API (the wfd/web/ frontend is built to exactly this contract):
     GET  /api/cameras            -> GeoJSON FeatureCollection (list/search)
     GET  /api/camera/<camera_id> -> one row, all fields incl. ``meta``;
                                     404 when missing
+    GET  /api/poster/<camera_id> -> cached poster image bytes (og:image from the
+                                    page, or a YouTube thumbnail); 404 with
+                                    {'error':'no poster'} when none can be had
+    GET  /api/live/<camera_id>/index.m3u8 -> resolved HLS playlist rewritten to
+                                    local /api/live/<cid>/seg/<name> URLs so the
+                                    frontend plays it through this server;
+                                    502 on resolve/relay failure
+    GET  /api/live/<camera_id>/seg/<name> -> one relayed media segment (HLS)
+
+    The three /api/live|poster routes exist only while the resolver is enabled
+    (``wfd viewer --no-resolve`` disables them, and row fields below disappear).
+    They serve FULL_DISPLAY_PROVENANCE rows only — exposure rows never get a
+    preview, exactly like the rest of the exposure law.
     GET  /api/prefs              -> {favourites, favourite_ids, settings, updated_at}
     POST /api/prefs/favourite    -> {"camera_id", "action": add|remove|label, "label"?}
     POST /api/prefs/reorder      -> {"order": [camera_id, ...]}
@@ -38,6 +51,9 @@ API (the wfd/web/ frontend is built to exactly this contract):
     Feature properties: camera_id, name, city, country, source_family,
         provenance, status, protocol, last_verified, snapshot_date, tags,
         display_policy; ``url`` for public_by_design + aggregator_directory rows only.
+        Those rows also gain ``resolvable`` (bool) plus ``live_url``/``poster_url``
+        when the resolve cache holds a fresh entry — in-memory lookups only, never
+        for exposure rows, and omitted entirely when the resolver is disabled.
 
 POST hardening: requests must carry ``X-WFD-Viewer: 1`` and, when an Origin
 header is present, it must be localhost/127.0.0.1 — this blocks cross-site
@@ -73,6 +89,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from . import db as dbmod
 from . import prefs as prefsmod
 from . import profile
+from . import resolve as resolvemod
 
 WEB_DIR = pathlib.Path(__file__).resolve().parent / "web"
 DEFAULT_PORT = 8773
@@ -261,7 +278,25 @@ def _fetch_rows(conn, clause, args, *, candidates, sort, order, limit, offset):
 # row -> display payload (the exposure law lives here)
 # ---------------------------------------------------------------------------
 
-def _display_props(row: sqlite3.Row) -> dict:
+def _add_resolved_fields(payload: dict, *, camera_id: str, url, provenance: str,
+                         resolve_on: bool) -> None:
+    """Additive resolve/poster fields for full-display rows only (never exposure).
+
+    Cache lookups are in-memory (memoised index / live.json), so 5000-row
+    /api/cameras lists stay fast; nothing here touches the network.
+    """
+    if not resolve_on or provenance not in FULL_DISPLAY_PROVENANCE:
+        return
+    payload["resolvable"] = bool(resolvemod.host_resolvable(url or ""))
+    entry = resolvemod.cached_live_entry(camera_id)
+    if entry and entry.get("kind") == "hls":
+        payload["live_url"] = f"/api/live/{camera_id}/index.m3u8"
+    poster = resolvemod.cached_poster_url(camera_id)
+    if poster:
+        payload["poster_url"] = poster
+
+
+def _display_props(row: sqlite3.Row, resolve_on: bool = True) -> dict:
     """Feature properties for one camera row, applying url/display_policy rules."""
     provenance = row["provenance"]
     props = {
@@ -280,26 +315,31 @@ def _display_props(row: sqlite3.Row) -> dict:
     }
     if provenance in FULL_DISPLAY_PROVENANCE:
         props["url"] = row["url"]          # url for displayable (non-exposure) rows
+        _add_resolved_fields(props, camera_id=row["camera_id"], url=row["url"],
+                             provenance=provenance, resolve_on=resolve_on)
     elif provenance == "exposure_aggregator":
         props["warning"] = EXPOSURE_WARNING
     return props
 
 
-def _feature(row: sqlite3.Row) -> dict:
+def _feature(row: sqlite3.Row, resolve_on: bool = True) -> dict:
     lon, lat = row["lon"], row["lat"]
     geometry = ({"type": "Point", "coordinates": [lon, lat]}
                 if lon is not None and lat is not None else None)
     return {"type": "Feature", "geometry": geometry,
-            "properties": _display_props(row)}
+            "properties": _display_props(row, resolve_on)}
 
 
-def _detail_payload(row) -> dict:
+def _detail_payload(row, resolve_on: bool = True) -> dict:
     """Full detail dict for one row — same url/display_policy rules as features."""
     payload = row.as_dict()
     displayable = row.provenance in FULL_DISPLAY_PROVENANCE
     payload["display_policy"] = "full" if displayable else "metadata_only"
     if not displayable:
         payload.pop("url", None)
+    else:
+        _add_resolved_fields(payload, camera_id=row.camera_id, url=row.url,
+                             provenance=row.provenance, resolve_on=resolve_on)
     if row.provenance == "exposure_aggregator":
         payload["warning"] = EXPOSURE_WARNING
     return payload
@@ -316,17 +356,18 @@ class ViewerServer(ThreadingHTTPServer):
     allow_reuse_address = True
 
     def __init__(self, address, handler_cls, db_path, quiet: bool = False,
-                 prefs_path=None):
+                 prefs_path=None, resolve_enabled: bool = True):
         self.db_path = pathlib.Path(db_path)
         self.quiet = quiet
         self.prefs = prefsmod.PrefsStore(prefs_path)
+        self.resolve_enabled = bool(resolve_enabled)
         super().__init__(address, handler_cls)
 
 
 class ViewerHandler(SimpleHTTPRequestHandler):
     """/api/* -> JSON API; everything else -> static files from wfd/web/."""
 
-    server_version = "wfd-viewer/0.2"
+    server_version = "wfd-viewer/0.3"
     protocol_version = "HTTP/1.1"
     # Explicit map so .js/.mjs always serve as JS even when the Windows
     # registry-backed mimetypes module guesses text/plain (breaks ES modules).
@@ -392,6 +433,22 @@ class ViewerHandler(SimpleHTTPRequestHandler):
             return self._handle_prefs_get()
         if path.startswith("/api/camera/"):
             return self._handle_camera(urllib.parse.unquote(path[len("/api/camera/"):]))
+        if path.startswith("/api/poster/") or path.startswith("/api/live/"):
+            if not self.server.resolve_enabled:
+                return self._send_json(404, {"error": "resolver disabled "
+                                             "(wfd viewer --no-resolve)", "path": path})
+            if path.startswith("/api/poster/"):
+                return self._handle_poster(
+                    urllib.parse.unquote(path[len("/api/poster/"):]), query)
+            rest = path[len("/api/live/"):]
+            if "/seg/" in rest:                 # checked first: seg names can't contain '/'
+                cid, _, name = rest.partition("/seg/")
+                return self._handle_live_segment(urllib.parse.unquote(cid),
+                                                 urllib.parse.unquote(name))
+            if rest.endswith("/index.m3u8"):
+                return self._handle_live_index(
+                    urllib.parse.unquote(rest[: -len("/index.m3u8")]), query)
+            return self._send_json(404, {"error": "unknown api route", "path": path})
         return self._send_json(404, {"error": "unknown api route", "path": path})
 
     # -- infrastructure -----------------------------------------------------
@@ -420,6 +477,17 @@ class ViewerHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        if self.command != "HEAD":
+            self.wfile.write(body)
+
+    def _send_bytes(self, status: int, body: bytes, content_type: str,
+                    cache_control: str = "no-store"):
+        """Raw-bytes response (poster images, playlists, segments); HEAD-safe."""
+        self.send_response(status)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", cache_control)
         self.end_headers()
         if self.command != "HEAD":
             self.wfile.write(body)
@@ -634,7 +702,7 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                 clause = " AND ".join(where) or "1=1"
                 rows = _fetch_rows(conn, clause, args, candidates=candidates,
                                    sort=sort, order=order, limit=limit, offset=offset)
-                features = [_feature(r) for r in rows]
+                features = [_feature(r, self.server.resolve_enabled) for r in rows]
         finally:
             conn.close()
         self._send_json(200, {"type": "FeatureCollection", "features": features})
@@ -651,10 +719,165 @@ class ViewerHandler(SimpleHTTPRequestHandler):
         if row is None or (row.provenance == "exposure_aggregator"
                            and not self._exposure_enabled()):
             return self._send_json(404, {"error": "camera not found", "camera_id": camera_id})
-        self._send_json(200, _detail_payload(row))
+        self._send_json(200, _detail_payload(row, self.server.resolve_enabled))
 
     def _handle_prefs_get(self):
         return self._send_json(200, self._prefs_payload())
+
+    # -- resolve relay (poster image + HLS playlist/segments) -----------------
+
+    def _relay_row(self, camera_id: str):
+        """(row, db_missing) for relay routes — full-display rows only.
+
+        Same exposure law as _handle_camera (missing rows and hidden exposure
+        rows are both 404); exposure rows never get a preview even while the
+        surface is on, so provenance must be in FULL_DISPLAY_PROVENANCE.
+        """
+        conn = self._open_db()
+        if conn is None:
+            return None, True
+        try:
+            row = dbmod.get(conn, camera_id)
+        finally:
+            conn.close()
+        if row is None or row.provenance not in FULL_DISPLAY_PROVENANCE:
+            return None, False
+        return row, False
+
+    def _resolve_and_fetch(self, camera_id, page_url, *, force: bool):
+        """(live entry|None, upstream playlist text|None) — no exception escapes."""
+        try:
+            entry = resolvemod.get_live(camera_id, page_url, force=force)
+        except Exception:  # noqa: BLE001 — resolution failure is an answer, not a crash
+            entry = None
+        if not entry or entry.get("kind") != "hls":
+            return entry, None
+        try:
+            return entry, resolvemod.fetch_playlist(entry)
+        except Exception:  # noqa: BLE001 — upstream fetch failure is an answer
+            return entry, None
+
+    def _rewrite_or_reason(self, camera_id, text, entry):
+        """(rewritten playlist|None, reason|None) — never raises."""
+        if text is None:
+            return None, "upstream playlist unavailable"
+        if resolvemod.is_filler(text):
+            return None, "upstream sent a filler playlist"
+        if resolvemod.is_dead_playlist(text):
+            return None, "upstream playlist carries no segments (stale token?)"
+        try:
+            return resolvemod.resolve_playlist(
+                camera_id, text,
+                resolvemod.redact((entry or {}).get("url", ""))), None
+        except resolvemod.FillerError:
+            return None, "upstream sent a filler playlist"
+        except Exception:  # noqa: BLE001 — a rewrite bug must not kill the request
+            return None, "playlist rewrite failed"
+
+    def _fetch_seg(self, url, headers):
+        """fetch_segment with a hard no-raise guarantee -> (blob|None, ctype|None).
+
+        An empty upstream body is a failed fetch (evicted segment, CDN hiccup):
+        report None so the one-refresh retry path can take over."""
+        try:
+            blob, ctype = resolvemod.fetch_segment(url, headers)
+        except Exception:  # noqa: BLE001
+            return None, None
+        if not blob:
+            return None, None
+        return blob, ctype
+
+    def _live_playlist_text(self, camera_id, page_url, *, force=False):
+        """Rewritten playlist, or (None, short reason). On filler/dead/failure the
+        resolution is refreshed once (force) and retried once."""
+        entry, text = self._resolve_and_fetch(camera_id, page_url, force=force)
+        bad = (text is None or resolvemod.is_filler(text)
+               or resolvemod.is_dead_playlist(text))
+        if bad and not force:
+            entry, text = self._resolve_and_fetch(camera_id, page_url, force=True)
+        return self._rewrite_or_reason(camera_id, text, entry)
+
+    def _refill_for_segment(self, camera_id, page_url, name, *, force=False):
+        """Resolve + fetch + rewrite the playlist, then look the segment up."""
+        entry, text = self._resolve_and_fetch(camera_id, page_url, force=force)
+        bad = (text is None or resolvemod.is_filler(text)
+               or resolvemod.is_dead_playlist(text))
+        if bad and not force:
+            entry, text = self._resolve_and_fetch(camera_id, page_url, force=True)
+        self._rewrite_or_reason(camera_id, text, entry)   # registers the seg map
+        return entry, resolvemod.seg_upstream(camera_id, name)
+
+    def _handle_poster(self, camera_id: str, query: str):
+        row, db_missing = self._relay_row(camera_id)
+        if db_missing:
+            return self._db_missing()
+        if row is None:
+            return self._send_json(404, {"error": "camera not found",
+                                         "camera_id": camera_id})
+        force = "refresh" in urllib.parse.parse_qs(query, keep_blank_values=True)
+        try:
+            path = resolvemod.get_poster(camera_id, row.url, force=force)
+        except Exception:  # noqa: BLE001
+            path = None
+        if path is None:
+            return self._send_json(404, {"error": "no poster", "camera_id": camera_id})
+        try:
+            blob = pathlib.Path(path).read_bytes()
+        except OSError:
+            return self._send_json(404, {"error": "no poster", "camera_id": camera_id})
+        self._send_bytes(200, blob, resolvemod.image_content_type(blob),
+                         cache_control="max-age=600")
+
+    def _handle_live_index(self, camera_id: str, query: str):
+        row, db_missing = self._relay_row(camera_id)
+        if db_missing:
+            return self._db_missing()
+        if row is None:
+            return self._send_json(404, {"error": "camera not found",
+                                         "camera_id": camera_id})
+        force = "refresh" in urllib.parse.parse_qs(query, keep_blank_values=True)
+        text, reason = self._live_playlist_text(camera_id, row.url, force=force)
+        if text is None:
+            text, reason = self._live_playlist_text(camera_id, row.url, force=True)
+        if text is None:
+            return self._send_json(502, {"error": "live resolve failed",
+                                         "reason": reason or "unknown"})
+        self._send_bytes(200, text.encode("utf-8"),
+                         "application/vnd.apple.mpegurl", cache_control="no-store")
+
+    def _handle_live_segment(self, camera_id: str, name: str):
+        row, db_missing = self._relay_row(camera_id)
+        if db_missing:
+            return self._db_missing()
+        if row is None:
+            return self._send_json(404, {"error": "camera not found",
+                                         "camera_id": camera_id})
+        if not resolvemod.SEG_NAME_RE.fullmatch(name or ""):
+            return self._send_json(404, {"error": "unknown segment", "name": name})
+        upstream = resolvemod.seg_upstream(camera_id, name)
+        entry = None
+        if upstream is None:
+            # map miss: re-resolve + refetch + rewrite once, then retry the lookup
+            entry, upstream = self._refill_for_segment(camera_id, row.url, name)
+        if upstream is None:
+            return self._send_json(404, {"error": "unknown segment", "name": name})
+        if entry is None:
+            try:
+                entry = resolvemod.get_live(camera_id, row.url)
+            except Exception:  # noqa: BLE001
+                entry = None
+        blob, ctype = self._fetch_seg(upstream, (entry or {}).get("headers"))
+        if blob is None:
+            # upstream 403/timeout (stale token): refresh the resolver once, retry once
+            entry, upstream = self._refill_for_segment(camera_id, row.url, name,
+                                                       force=True)
+            if upstream is not None:
+                blob, ctype = self._fetch_seg(upstream,
+                                              (entry or {}).get("headers"))
+        if blob is None:
+            return self._send_json(502, {"error": "segment fetch failed",
+                                         "name": name})
+        self._send_bytes(200, blob, ctype or "video/mp2t", cache_control="no-store")
 
     # -- POST endpoints (prefs; hardened for the local-UI-only rule) ----------
 
@@ -718,19 +941,21 @@ class ViewerHandler(SimpleHTTPRequestHandler):
 # ---------------------------------------------------------------------------
 
 def make_server(host: str = "127.0.0.1", port: int = DEFAULT_PORT, db_path=None,
-                web_dir=None, quiet: bool = False, prefs_path=None) -> ViewerServer:
+                web_dir=None, quiet: bool = False, prefs_path=None,
+                resolve_enabled: bool = True) -> ViewerServer:
     """Build (not start) a viewer server. ``port=0`` -> ephemeral (tests)."""
     db_path = pathlib.Path(db_path) if db_path else dbmod.DEFAULT_DB
     web_dir = pathlib.Path(web_dir) if web_dir else WEB_DIR
     handler = functools.partial(ViewerHandler, directory=str(web_dir))
     return ViewerServer((host, port), handler, db_path, quiet=quiet,
-                        prefs_path=prefs_path)
+                        prefs_path=prefs_path, resolve_enabled=resolve_enabled)
 
 
 def _cmd_viewer(args) -> int:
     port = getattr(args, "port", DEFAULT_PORT)
+    resolve_enabled = not getattr(args, "no_resolve", False)
     try:
-        server = make_server(port=port)
+        server = make_server(port=port, resolve_enabled=resolve_enabled)
     except OSError as exc:
         print(f"viewer: cannot bind 127.0.0.1:{port} ({exc})")
         return 1
@@ -745,7 +970,18 @@ def _cmd_viewer(args) -> int:
     if not (WEB_DIR / "index.html").exists():
         print("                    (index.html not built yet — API only)")
     print(f"  exposure surface: {surface}")
-    print("  api:              /api/{stats,overview,facets,cameras,camera/<id>,prefs}")
+    if server.resolve_enabled:
+        try:
+            n_resolvable = resolvemod.count_resolvable_rows(server.db_path)
+        except Exception:  # noqa: BLE001 — the startup line must never kill the server
+            n_resolvable = -1
+        print(f"  resolver:         on — {n_resolvable} resolvable rows in db "
+              f"(posters cached: {resolvemod.cached_poster_count()}, "
+              f"live cached: {resolvemod.cached_live_count()})")
+    else:
+        print("  resolver:         off (--no-resolve; /api/live + /api/poster disabled)")
+    print("  api:              /api/{stats,overview,facets,cameras,camera/<id>,prefs,"
+          "poster/<id>,live/<id>/index.m3u8,live/<id>/seg/<name>}")
     print("  Ctrl+C to stop")
     try:
         server.serve_forever()
@@ -759,6 +995,9 @@ def _cmd_viewer(args) -> int:
 def _add_viewer_arguments(parser) -> None:
     parser.add_argument("--port", type=int, default=DEFAULT_PORT,
                         help=f"port to bind on 127.0.0.1 (default: {DEFAULT_PORT})")
+    parser.add_argument("--no-resolve", action="store_true",
+                        help="disable live-stream resolution + poster relay "
+                             "(the /api/live + /api/poster routes 404)")
 
 
 _cmd_viewer.add_arguments = _add_viewer_arguments
