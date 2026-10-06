@@ -283,6 +283,16 @@ def _save_json_atomic(path: pathlib.Path, data: dict) -> None:
 
 
 def _save_json_cached(path: pathlib.Path, memo: dict, data: dict) -> None:
+    # Merge with the on-disk state before writing: each process holds only its
+    # OWN view (the read-memo can hide other writers for a few seconds), so a
+    # plain whole-dict write lost entries whenever two resolvers ran at once
+    # (observed: a classification sweep + the self-heal re-check clobbering
+    # each other). Both stores are add/update-only — nothing ever deletes —
+    # so a union (disk first, caller's fresher values on top) is safe.
+    current = _load_json_direct(path)
+    if current:
+        current.update(data)
+        data = current
     _save_json_atomic(path, data)
     memo.update({"path": str(path), "mtime": _mtime(path),
                  "checked_at": time.monotonic(), "data": data})
