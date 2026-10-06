@@ -94,24 +94,46 @@ function streamUrlFor(cam) {
   return relayUrl(cam) || (cam && cam.url);
 }
 
+/** The image a jpeg still row should load: the server-resolved still when present, else the row url. */
+function stillUrlFor(cam) {
+  if (!cam) return null;
+  if (cam.still_url) return cam.still_url;
+  // resolvable page-url rows (skaping): '/api/still/<id>' resolves the current
+  // still on demand server-side — never point the <img> at an HTML page
+  if (cam.resolvable && cam.camera_id && !isMetadataOnly(cam)) return '/api/still/' + cam.camera_id;
+  return cam.url || null;
+}
+
 /** Poster descriptor for cards + player idle state. */
 export function posterInfo(camera) {
   if (!camera) return { kind: 'ph' };
-  if (camera.protocol === 'youtube') {
+  const proto = String(camera.protocol || '').toLowerCase();
+  // '/api/poster/<id>' is lazily generated and cached server-side; a 404 falls
+  // back to the placeholder via the poster image error handler
+  const posterProbe = { kind: 'still', url: '/api/poster/' + camera.camera_id };
+  if (proto === 'youtube') {
     const id = extractYouTubeId(camera.url);
     if (id) return { kind: 'yt', url: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, ytId: id };
     // channel-live rows have no id in the url until the server resolves one
     if (camera.poster_url) return { kind: 'still', url: camera.poster_url };
+    if (camera.yt_id) return { kind: 'yt', url: `https://i.ytimg.com/vi/${camera.yt_id}/hqdefault.jpg`, ytId: camera.yt_id };
+    // no id yet: the server tries a fast og:image first, then a yt-dlp snapshot poster
+    if (camera.url && !isMetadataOnly(camera) && camera.camera_id) return posterProbe;
     return { kind: 'ph' };
   }
-  if (camera.protocol === 'jpeg' && camera.url) return { kind: 'still', url: camera.url };
-  // server-cached poster (og:image of a resolvable source), filled in progressively
+  if (proto === 'jpeg') {
+    // skaping-style rows store an HTML page as url — prefer the resolved still
+    if (camera.poster_url) return { kind: 'still', url: camera.poster_url };
+    if (camera.still_url) return { kind: 'still', url: camera.still_url };
+    if (camera.url) return { kind: 'still', url: camera.url };
+    if (camera.resolvable && !isMetadataOnly(camera) && camera.camera_id) return posterProbe;
+    return { kind: 'ph' };
+  }
+  // server-cached poster (og:image / single-frame snapshot), filled in progressively
   if (camera.poster_url) return { kind: 'still', url: camera.poster_url };
-  const proto = String(camera.protocol || '').toLowerCase();
-  if ((proto === 'iframe' || proto === 'unknown') && camera.url && !isMetadataOnly(camera)) {
-    // '/api/poster/<id>' is lazily resolved and cached server-side; a 404 falls
-    // back to the placeholder via the poster image error handler
-    return { kind: 'still', url: '/api/poster/' + camera.camera_id };
+  if ((proto === 'iframe' || proto === 'unknown' || proto === 'hls' || proto === 'mjpeg')
+    && camera.url && !isMetadataOnly(camera) && camera.camera_id) {
+    return posterProbe;
   }
   return { kind: 'ph' };
 }
@@ -464,8 +486,43 @@ export function createPlayer(camera, opts = {}) {
   }
 
   function startYT() {
-    const id = extractYouTubeId(cam.url);
-    if (!id) { fallbackPanel('No embeddable id', 'Could not extract a YouTube video id from this URL.'); setState('error'); return; }
+    const id = extractYouTubeId(cam.url) || cam.yt_id;
+    if (!id) { resolveYT(); return; }
+    embedYT(id);
+  }
+
+  /** Channel-live rows carry no video id: ask the server to resolve one on demand. */
+  function resolveYT() {
+    teardownMedia();
+    clearPanel();
+    setState('loading');
+    want = true;
+    const cid = cam.camera_id;
+    const stale = () => destroyed || !cam || cam.camera_id !== cid;
+    const fail = (why) => {
+      if (stale()) return;
+      if (!want) { setState('idle'); return; }        // the user paused while resolving
+      fallbackPanel('Channel stream not resolved', why);
+      setState('error');
+    };
+    let settled = false;
+    let guard = 0;
+    const done = (fn) => { if (settled) return; settled = true; clearTimeout(guard); fn(); };
+    // a cold youtube resolve can take ~60s server-side; cut a hung request off at 75s
+    guard = setTimeout(() => done(() => fail('resolve request failed')), 75000);
+    fetch('/api/resolve/' + encodeURIComponent(cid), { headers: { Accept: 'application/json' } })
+      .then((res) => res.json().catch(() => null).then((r) => {
+        done(() => {
+          if (stale()) return;
+          if (!want) { setState('idle'); return; }    // the user paused during resolution
+          if (res.ok && r && r.ok && r.yt_id) { cam.yt_id = r.yt_id; embedYT(r.yt_id); return; }
+          fail((r && r.reason) || 'The channel could not be resolved to a live video (not live, moved, or gone).');
+        });
+      }))
+      .catch(() => done(() => fail('resolve request failed')));
+  }
+
+  function embedYT(id) {
     teardownMedia();
     clearPanel();
     setState('loading');
@@ -594,7 +651,8 @@ export function createPlayer(camera, opts = {}) {
   }
 
   function startStill() {
-    if (!cam || !cam.url) return;
+    const src = stillUrlFor(cam);      // skaping-style rows: the resolved still beats the html url
+    if (!src) return;
     want = true;
     clearPanel();
     if (!imgEl) {
@@ -620,7 +678,7 @@ export function createPlayer(camera, opts = {}) {
       mediaHost.classList.add('on');
     }
     setState('playing');
-    imgEl.src = bust(cam.url);
+    imgEl.src = bust(src);
     scheduleStill();
   }
 
@@ -636,13 +694,15 @@ export function createPlayer(camera, opts = {}) {
     stillTimer = setTimeout(() => {
       if (destroyed || !imgEl) return;
       if (!visible || document.hidden || !want) { scheduleStill(); return; }
-      imgEl.src = bust(cam.url);
+      const src = stillUrlFor(cam);
+      if (src) imgEl.src = bust(src);
       scheduleStill();
     }, s * 1000);
   }
 
   function refreshStill() {
-    if (imgEl && cam && cam.url) imgEl.src = bust(cam.url);
+    const src = stillUrlFor(cam);
+    if (imgEl && src) imgEl.src = bust(src);
     else startStill();
   }
 
