@@ -438,6 +438,63 @@ def test_cameras_extended_filters():
     assert status == 400, status
 
 
+def test_globe_points_shape_and_count():
+    """Compact globe payload: shape + exact geo-valid row count from the same db."""
+    status, ctype, data = _get("/api/globe-points")
+    assert status == 200 and ctype.startswith("application/json"), (status, ctype)
+    assert data["type"] == "FeatureCollection"
+    feats = data["features"]
+
+    surface = bool(profile.settings().get("private_exposure_surface"))
+    gate = "" if surface else " AND provenance != 'exposure_aggregator'"
+    expected = _db_rows(
+        "SELECT COUNT(*) AS n FROM cameras WHERE lat IS NOT NULL AND lon IS NOT NULL "
+        "AND NOT (lat = 0 AND lon = 0)" + gate)[0]["n"]
+    assert len(feats) == expected, (len(feats), expected)
+    assert expected > 13000, expected                      # the doc measured 14,065
+
+    for f in feats:
+        assert f["type"] == "Feature", f
+        assert f["geometry"]["type"] == "Point", f
+        lon, lat = f["geometry"]["coordinates"]
+        assert -180 <= lon <= 180 and -90 <= lat <= 90, (lon, lat)
+        assert not (lon == 0 and lat == 0), f               # null-island rows skipped
+        assert set(f["properties"]) == {"c", "n", "s", "p", "f", "y", "v"}, \
+            sorted(f["properties"])
+
+
+def test_globe_points_exposure_gating():
+    """Exposure rows appear on the globe only while the surface is on."""
+    n_exp = _db_rows(
+        "SELECT COUNT(*) AS n FROM cameras WHERE provenance='exposure_aggregator' "
+        "AND lat IS NOT NULL AND lon IS NOT NULL AND NOT (lat = 0 AND lon = 0)"
+    )[0]["n"]
+    assert n_exp > 0, "no geocoded exposure rows — gating test would be vacuous"
+
+    old = os.environ.get("WFD_PROFILE")
+    os.environ["WFD_PROFILE"] = "clean"
+    try:
+        _, _, fc = _get("/api/globe-points")
+        leaked = [f["properties"]["c"] for f in fc["features"]
+                  if f["properties"]["v"] == "exposure_aggregator"]
+        assert not leaked, leaked[:5]
+    finally:
+        if old is None:
+            os.environ.pop("WFD_PROFILE", None)
+        else:
+            os.environ["WFD_PROFILE"] = old
+
+    original = profile.settings
+    profile.settings = lambda: {**original(), "private_exposure_surface": True}
+    try:
+        _, _, fc = _get("/api/globe-points")
+        exp = [f for f in fc["features"]
+               if f["properties"]["v"] == "exposure_aggregator"]
+        assert len(exp) == n_exp, (len(exp), n_exp)
+    finally:
+        profile.settings = original
+
+
 def main() -> int:
     tests = [v for k, v in sorted(globals().items()) if k.startswith("test_") and callable(v)]
     failed = 0

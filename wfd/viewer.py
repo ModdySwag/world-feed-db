@@ -17,6 +17,13 @@ API (the wfd/web/ frontend is built to exactly this contract):
                                      total, by_status, by_provenance, by_protocol,
                                      by_family, by_country, by_tag
     GET  /api/cameras            -> GeoJSON FeatureCollection (list/search)
+    GET  /api/globe-points       -> compact GeoJSON FeatureCollection of every
+                                    geocoded row for the globe view: short keys
+                                    {c,n,s,p,f,y,v} + Point [lon,lat]. Rows with
+                                    no coordinates and the (0,0) null-island rows
+                                    are skipped; exposure rows are included only
+                                    while the surface is on (they render
+                                    metadata-only on the globe). No params.
     GET  /api/camera/<camera_id> -> one row, all fields incl. ``meta``;
                                     404 when missing
     GET  /api/poster/<camera_id> -> cached poster image bytes (og:image from the
@@ -447,6 +454,8 @@ class ViewerHandler(SimpleHTTPRequestHandler):
             return self._handle_facets(query)
         if path == "/api/cameras":
             return self._handle_cameras(query)
+        if path == "/api/globe-points":
+            return self._handle_globe_points()
         if path == "/api/prefs":
             return self._handle_prefs_get()
         if path.startswith("/api/camera/"):
@@ -730,6 +739,44 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                 features = [_feature(r, self.server.resolve_enabled) for r in rows]
         finally:
             conn.close()
+        self._send_json(200, {"type": "FeatureCollection", "features": features})
+
+    def _handle_globe_points(self):
+        """Compact GeoJSON FeatureCollection for the globe view (no params).
+
+        Every row with usable coordinates, short property keys so the ~14k
+        features stay small for the WebGL layer: c=camera_id, n=name, s=status,
+        p=protocol, f=source_family, y=country (trimmed), v=provenance. Rows
+        with NULL lat/lon and the (0,0) null-island rows are skipped. Exposure
+        rows are served ONLY while the surface is on, and they keep
+        v='exposure_aggregator' so the globe renders them metadata-only.
+        """
+        conn = self._open_db()
+        if conn is None:
+            return self._db_missing()
+        where = ["lat IS NOT NULL", "lon IS NOT NULL", "NOT (lat = 0 AND lon = 0)"]
+        if not self._exposure_enabled():
+            where.append("provenance != 'exposure_aggregator'")
+        try:
+            rows = conn.execute(
+                "SELECT camera_id, name, status, protocol, source_family, country, "
+                "lon, lat, provenance FROM cameras WHERE " + " AND ".join(where)
+            ).fetchall()
+        finally:
+            conn.close()
+        features = [{
+            "type": "Feature",
+            "geometry": {"type": "Point", "coordinates": [row["lon"], row["lat"]]},
+            "properties": {
+                "c": row["camera_id"],
+                "n": row["name"] or "",
+                "s": row["status"] or "",
+                "p": row["protocol"] or "",
+                "f": row["source_family"] or "",
+                "y": (row["country"] or "").strip(),
+                "v": row["provenance"],
+            },
+        } for row in rows]
         self._send_json(200, {"type": "FeatureCollection", "features": features})
 
     def _handle_camera(self, camera_id: str):
