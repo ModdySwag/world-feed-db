@@ -20,18 +20,26 @@ API (the wfd/web/ frontend is built to exactly this contract):
     GET  /api/camera/<camera_id> -> one row, all fields incl. ``meta``;
                                     404 when missing
     GET  /api/poster/<camera_id> -> cached poster image bytes (og:image from the
-                                    page, or a YouTube thumbnail); 404 with
+                                    page, a YouTube thumbnail, or a single-frame
+                                    ffmpeg snapshot for hls/mjpeg rows); 404 with
                                     {'error':'no poster'} when none can be had
+    GET  /api/still/<camera_id>  -> current still image bytes for 'image'-kind
+                                    resolutions (e.g. skaping's newest 10-minute
+                                    S3 JPEG); ?refresh=1 forces a re-resolve;
+                                    404 with {'error':'no still'} otherwise
+    GET  /api/resolve/<camera_id> -> on-demand resolve verdict:
+                                    {ok, kind, yt_id?, live_url?, still_url?,
+                                    poster_url?, reason?} (never a token)
     GET  /api/live/<camera_id>/index.m3u8 -> resolved HLS playlist rewritten to
                                     local /api/live/<cid>/seg/<name> URLs so the
                                     frontend plays it through this server;
                                     502 on resolve/relay failure
     GET  /api/live/<camera_id>/seg/<name> -> one relayed media segment (HLS)
 
-    The three /api/live|poster routes exist only while the resolver is enabled
-    (``wfd viewer --no-resolve`` disables them, and row fields below disappear).
-    They serve FULL_DISPLAY_PROVENANCE rows only — exposure rows never get a
-    preview, exactly like the rest of the exposure law.
+    The /api/live|poster|still|resolve routes exist only while the resolver is
+    enabled (``wfd viewer --no-resolve`` disables them, and row fields below
+    disappear). They serve FULL_DISPLAY_PROVENANCE rows only — exposure rows
+    never get a preview, exactly like the rest of the exposure law.
     GET  /api/prefs              -> {favourites, favourite_ids, settings, updated_at}
     POST /api/prefs/favourite    -> {"camera_id", "action": add|remove|label, "label"?}
     POST /api/prefs/reorder      -> {"order": [camera_id, ...]}
@@ -51,9 +59,11 @@ API (the wfd/web/ frontend is built to exactly this contract):
     Feature properties: camera_id, name, city, country, source_family,
         provenance, status, protocol, last_verified, snapshot_date, tags,
         display_policy; ``url`` for public_by_design + aggregator_directory rows only.
-        Those rows also gain ``resolvable`` (bool) plus ``live_url``/``poster_url``
-        when the resolve cache holds a fresh entry — in-memory lookups only, never
-        for exposure rows, and omitted entirely when the resolver is disabled.
+        Those rows also gain ``resolvable`` (bool) plus ``live_url`` for hls
+        resolutions, ``still_url`` for image resolutions, ``yt_id`` for ytid
+        resolutions, and ``poster_url`` when a cached poster exists — in-memory
+        lookups only, never for exposure rows, and omitted entirely when the
+        resolver is disabled.
 
 POST hardening: requests must carry ``X-WFD-Viewer: 1`` and, when an Origin
 header is present, it must be localhost/127.0.0.1 — this blocks cross-site
@@ -289,8 +299,16 @@ def _add_resolved_fields(payload: dict, *, camera_id: str, url, provenance: str,
         return
     payload["resolvable"] = bool(resolvemod.host_resolvable(url or ""))
     entry = resolvemod.cached_live_entry(camera_id)
-    if entry and entry.get("kind") == "hls":
-        payload["live_url"] = f"/api/live/{camera_id}/index.m3u8"
+    if entry:
+        kind = entry.get("kind")
+        if kind == "hls":
+            payload["live_url"] = f"/api/live/{camera_id}/index.m3u8"
+        elif kind == "image":
+            payload["still_url"] = f"/api/still/{camera_id}"
+        elif kind == "ytid":
+            vid = str(entry.get("id") or "")
+            if len(vid) == 11 and resolvemod._YOUTUBE_ID_RE.fullmatch(vid):
+                payload["yt_id"] = vid
     poster = resolvemod.cached_poster_url(camera_id)
     if poster:
         payload["poster_url"] = poster
@@ -433,13 +451,20 @@ class ViewerHandler(SimpleHTTPRequestHandler):
             return self._handle_prefs_get()
         if path.startswith("/api/camera/"):
             return self._handle_camera(urllib.parse.unquote(path[len("/api/camera/"):]))
-        if path.startswith("/api/poster/") or path.startswith("/api/live/"):
+        if path.startswith("/api/poster/") or path.startswith("/api/still/") \
+                or path.startswith("/api/resolve/") or path.startswith("/api/live/"):
             if not self.server.resolve_enabled:
                 return self._send_json(404, {"error": "resolver disabled "
                                              "(wfd viewer --no-resolve)", "path": path})
             if path.startswith("/api/poster/"):
                 return self._handle_poster(
                     urllib.parse.unquote(path[len("/api/poster/"):]), query)
+            if path.startswith("/api/still/"):
+                return self._handle_still(
+                    urllib.parse.unquote(path[len("/api/still/"):]), query)
+            if path.startswith("/api/resolve/"):
+                return self._handle_resolve(
+                    urllib.parse.unquote(path[len("/api/resolve/"):]), query)
             rest = path[len("/api/live/"):]
             if "/seg/" in rest:                 # checked first: seg names can't contain '/'
                 cid, _, name = rest.partition("/seg/")
@@ -816,7 +841,8 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                                          "camera_id": camera_id})
         force = "refresh" in urllib.parse.parse_qs(query, keep_blank_values=True)
         try:
-            path = resolvemod.get_poster(camera_id, row.url, force=force)
+            path = resolvemod.get_poster(camera_id, row.url, force=force,
+                                         protocol=row.protocol)
         except Exception:  # noqa: BLE001
             path = None
         if path is None:
@@ -827,6 +853,67 @@ class ViewerHandler(SimpleHTTPRequestHandler):
             return self._send_json(404, {"error": "no poster", "camera_id": camera_id})
         self._send_bytes(200, blob, resolvemod.image_content_type(blob),
                          cache_control="max-age=600")
+
+    def _handle_still(self, camera_id: str, query: str):
+        """Current still bytes for an 'image'-kind camera (skaping 10-min JPEG).
+
+        ``?refresh=1`` forces a re-resolve. Misses answer 404 {'error':'no
+        still'}; the bytes memo (~90 s, in wfd.resolve) keeps tile walls calm.
+        """
+        row, db_missing = self._relay_row(camera_id)
+        if db_missing:
+            return self._db_missing()
+        if row is None:
+            return self._send_json(404, {"error": "camera not found",
+                                         "camera_id": camera_id})
+        force = "refresh" in urllib.parse.parse_qs(query, keep_blank_values=True)
+        try:
+            blob, ctype = resolvemod.get_still(camera_id, row.url, force=force)
+        except Exception:  # noqa: BLE001 — a fetch failure is an answer of 'none'
+            blob, ctype = None, None
+        if not blob:
+            return self._send_json(404, {"error": "no still"})
+        self._send_bytes(200, blob, ctype or "image/jpeg",
+                         cache_control="max-age=60")
+
+    def _handle_resolve(self, camera_id: str, query: str):
+        """On-demand resolver verdict for one row (cache-aware; ?refresh=1 forces).
+
+        The response shape is display-only — it never carries a token, cookie
+        or upstream secret. Negative verdicts reuse the 120 s live-cache so
+        repeated calls for an unresolvable row stay cheap.
+        """
+        row, db_missing = self._relay_row(camera_id)
+        if db_missing:
+            return self._db_missing()
+        if row is None:
+            return self._send_json(404, {"error": "camera not found",
+                                         "camera_id": camera_id})
+        if not resolvemod.host_resolvable(row.url):
+            return self._send_json(200, {"camera_id": camera_id, "ok": False,
+                                         "reason": "no-resolver"})
+        force = "refresh" in urllib.parse.parse_qs(query, keep_blank_values=True)
+        try:
+            entry = resolvemod.get_live(camera_id, row.url, force=force)
+        except Exception:  # noqa: BLE001 — resolution failure is an answer
+            entry = None
+        if not entry:
+            return self._send_json(200, {"camera_id": camera_id, "ok": False,
+                                         "reason": "resolve failed"})
+        kind = entry.get("kind")
+        payload = {"camera_id": camera_id, "ok": True, "kind": kind}
+        if kind == "ytid":
+            vid = str(entry.get("id") or "")
+            if len(vid) == 11 and resolvemod._YOUTUBE_ID_RE.fullmatch(vid):
+                payload["yt_id"] = vid
+        elif kind == "image":
+            payload["still_url"] = f"/api/still/{camera_id}"
+        elif kind == "hls":
+            payload["live_url"] = f"/api/live/{camera_id}/index.m3u8"
+        poster = resolvemod.cached_poster_url(camera_id)
+        if poster:
+            payload["poster_url"] = poster
+        self._send_json(200, payload)
 
     def _handle_live_index(self, camera_id: str, query: str):
         row, db_missing = self._relay_row(camera_id)
@@ -979,9 +1066,9 @@ def _cmd_viewer(args) -> int:
               f"(posters cached: {resolvemod.cached_poster_count()}, "
               f"live cached: {resolvemod.cached_live_count()})")
     else:
-        print("  resolver:         off (--no-resolve; /api/live + /api/poster disabled)")
+        print("  resolver:         off (--no-resolve; live/poster/still/resolve routes disabled)")
     print("  api:              /api/{stats,overview,facets,cameras,camera/<id>,prefs,"
-          "poster/<id>,live/<id>/index.m3u8,live/<id>/seg/<name>}")
+          "poster/<id>,still/<id>,resolve/<id>,live/<id>/index.m3u8,live/<id>/seg/<name>}")
     print("  Ctrl+C to stop")
     try:
         server.serve_forever()
@@ -996,8 +1083,8 @@ def _add_viewer_arguments(parser) -> None:
     parser.add_argument("--port", type=int, default=DEFAULT_PORT,
                         help=f"port to bind on 127.0.0.1 (default: {DEFAULT_PORT})")
     parser.add_argument("--no-resolve", action="store_true",
-                        help="disable live-stream resolution + poster relay "
-                             "(the /api/live + /api/poster routes 404)")
+                        help="disable live-stream resolution + poster/still/resolve "
+                             "relay (those routes 404)")
 
 
 _cmd_viewer.add_arguments = _add_viewer_arguments

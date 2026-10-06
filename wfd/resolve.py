@@ -1,12 +1,17 @@
 """wfd.resolve — live-stream resolution + local HLS relay + poster cache.
 
-Fixes the viewer's two blank-tile classes:
+Fixes the viewer's blank-tile classes:
 - directory/iframe rows (www.skylinewebcams.com and similar) whose player page
   exposes a tokenised HLS stream: resolve the page (browser UA + cookie jar),
   build the streaming URL, and let the viewer relay playlist + segments
   locally so the tile actually plays.
 - rows with no poster image: posters are harvested from the page's og:image
   (or a YouTube video's i.ytimg.com thumbnail) and cached on disk.
+- skaping.com rows (url = an HTML player page): the page's og:image meta
+  points at the newest 10-minute S3 JPEG; kind-'image' resolutions serve it
+  through the viewer's /api/still/<cid> (get_still, ~90 s in-process memo).
+- hls/mjpeg tiles without any og:image: a single ffmpeg frame becomes the
+  poster (source 'snapshot'; SNAPSHOT_GATE caps captures at 2 per host).
 
 Cache layout (``DATA_DIR`` from wfd.ingest.base, or ``$WFD_DATA_DIR`` when set
 — tests point that at a temp dir so the real cache stays clean):
@@ -30,7 +35,8 @@ camera resolve once. Every network call has an explicit timeout.
 
 CLI (registered via wfd.cli):
     py -3.11 -m wfd resolve warm [--kind poster|live|both] [--family X]
-                                 [--host skylinewebcams.com] [--limit N] [--refresh]
+                                 [--host skylinewebcams.com] [--protocol hls]
+                                 [--limit N] [--refresh]
     py -3.11 -m wfd resolve show <camera_id>
 """
 from __future__ import annotations
@@ -73,6 +79,9 @@ POSTER_NEG_TTL_S = 3600        # negative poster verdict (no og:image, etc.)
 LIVE_TTL_S = 300               # fresh token+cookies; skyline sessions die in ~5-10 min
 LIVE_NEG_TTL_S = 120           # negative live verdict — don't hammer the site
 SEG_TTL_S = 20 * 60            # per-cid segment-map entry lifetime
+SKAPING_TTL_S = 900            # skaping og:image = a 10-minute slot file, refresh sooner
+STILL_TTL_S = 90               # in-process still-bytes memo (viewer /api/still)
+SNAPSHOT_TIMEOUT_S = 25        # one ffmpeg single-frame attempt
 
 # URL-safe segment name; anything else is sanitised into shape.
 SEG_NAME_RE = re.compile(r"[A-Za-z0-9._-]{1,180}")
@@ -83,18 +92,21 @@ _META_TAG_RE = re.compile(r"<meta\b[^>]*>", re.I)
 _META_ATTR_RE = re.compile(
     r"""([A-Za-z_:][-A-Za-z0-9_:.]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'<>`]+))""")
 _MEDIA_TYPE_RE = re.compile(r"[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+")
+_IMAGE_EXT_RE = re.compile(r"\.(?:jpe?g|png)$", re.I)
 
 # Resolver registry: url host suffix -> resolver name (host_resolvable, no network)
 RESOLVER_REGISTRY = (
     ("skylinewebcams.com", "skylinewebcams"),
     ("youtube.com", "youtube-live"),
     ("youtu.be", "youtube-live"),
+    ("skaping.com", "skaping"),
 )
 
 # Politeness gates: page fetches are rarer but heavier-handed by the site owner;
 # playlist/segment relay traffic is the steady stream and needs more headroom.
 PAGE_GATE = HostGate(cap=2, spacing=0.5)
 RELAY_GATE = HostGate(cap=6, spacing=0.05)
+SNAPSHOT_GATE = HostGate(cap=2, spacing=0.3)   # ffmpeg single-frame captures
 
 
 class FillerError(ValueError):
@@ -272,6 +284,8 @@ def reset_caches() -> None:
         memo.update({"path": None, "mtime": 0.0, "checked_at": 0.0, "data": None})
     with _SEG_LOCK:
         _SEG_MAP.clear()
+    with _STILL_MEM_LOCK:
+        _STILL_MEM.clear()
 
 
 # ---------------------------------------------------------------------------
@@ -292,6 +306,16 @@ def host_resolvable(url) -> Optional[str]:
         if host == suffix or host.endswith("." + suffix):
             return name
     return None
+
+
+def _is_image_bytes(blob: bytes) -> bool:
+    """Magic-byte sniff: is this a servable image at all?"""
+    if not blob or len(blob) < 16:
+        return False
+    return (blob[:2] == b"\xff\xd8"                      # jpeg
+            or blob[:8] == b"\x89PNG\r\n\x1a\n"          # png
+            or blob[:3] == b"GIF"                        # gif
+            or (blob[:4] == b"RIFF" and blob[8:12] == b"WEBP"))
 
 
 def count_resolvable_rows(db_path=None) -> int:
@@ -465,6 +489,32 @@ def resolve_live_youtube(url: str) -> Optional[dict]:
             "ttl_s": 1800}
 
 
+def resolve_live_skaping(page_url: str) -> Optional[dict]:
+    """Resolve one skaping.com player page to its current S3 still JPEG.
+
+    The page (verified recipe, 2026-10-06) carries
+    ``<meta property="og:image" content="https://skaping.s3.gra.io.cloud.ovh.net/
+    <group>/<slug>/YYYY/MM/DD/HH-MM.jpg">`` — a 10-minute slot filename that
+    always names the newest frame. The still URL serves plain (no cookies or
+    referer needed). Returns {'kind':'image', 'url':..., 'headers':{UA},
+    'ttl_s':900} or None (also when the og:image target is not an image file).
+    """
+    fetched = fetch_page(page_url)
+    if fetched is None:
+        return None
+    url = parse_social_image(fetched["html"], fetched.get("final_url") or page_url)
+    if not url:
+        return None
+    try:
+        path = urllib.parse.urlsplit(url).path
+    except ValueError:
+        return None
+    if not _IMAGE_EXT_RE.search(path):
+        return None
+    return {"kind": "image", "url": url,
+            "headers": {"User-Agent": BROWSER_UA}, "ttl_s": SKAPING_TTL_S}
+
+
 # ---------------------------------------------------------------------------
 # live cache (data/resolve/live.json)
 # ---------------------------------------------------------------------------
@@ -545,6 +595,8 @@ def get_live(camera_id: str, page_url: str, *, force: bool = False) -> Optional[
                 result = resolve_live_skyline(page_url)
             elif resolver == "youtube-live":
                 result = resolve_live_youtube(page_url)
+            elif resolver == "skaping":
+                result = resolve_live_skaping(page_url)
         except Exception:  # noqa: BLE001 — resolution failure is a normal outcome
             result = None
         if result:
@@ -652,14 +704,82 @@ def _og_poster_from_page(page_url: str) -> Optional[tuple]:
     return poster, ""
 
 
-def get_poster(camera_id: str, page_url: str, *,
-               force: bool = False) -> Optional[pathlib.Path]:
+def _store_poster_blob(camera_id: str, blob: bytes, source: str) -> pathlib.Path:
+    """Write poster bytes atomically (jpg/png sniff), drop the other ext, record."""
+    ext = _sniff_ext(blob)
+    path = posters_dir() / f"{camera_id}.{ext}"
+    _write_bytes_atomic(path, blob)
+    for other in ("jpg", "png"):
+        if other != ext:
+            try:
+                (posters_dir() / f"{camera_id}.{other}").unlink()
+            except OSError:
+                pass
+    _record_poster(camera_id, ok=True, source=source)
+    return path
+
+
+def _snapshot_stream_frame(camera_id: str, page_url: str) -> Optional[bytes]:
+    """One ffmpeg frame from an hls/mjpeg stream -> JPEG bytes or None.
+
+    Uses the fresh resolved stream url + UA when one is cached (skyline-style
+    pages), else the row url itself (raw m3u8/mjpeg). Captures run through
+    SNAPSHOT_GATE (cap 2 / 0.3 s per host) so a wall of tiles cannot stampede
+    one stream. rc!=0 or a missing/empty/non-image output file is a failure.
+    """
+    ffmpeg = _tool("ffmpeg")
+    if not ffmpeg or not page_url:
+        return None
+    url, ua = str(page_url), None
+    entry = cached_live_entry(camera_id)
+    if entry and entry.get("kind") == "hls" and entry.get("url"):
+        url = entry["url"]
+        ua = (entry.get("headers") or {}).get("User-Agent")
+    try:
+        host = urllib.parse.urlsplit(url).netloc or "-"
+    except ValueError:
+        host = "-"
+    posters_dir().mkdir(parents=True, exist_ok=True)
+    tmp = posters_dir() / (f".snap-{camera_id}-{os.getpid()}-"
+                           f"{time.monotonic_ns()}.jpg")
+    SNAPSHOT_GATE.acquire(host)
+    try:
+        cmd = [ffmpeg, "-v", "error", "-nostdin", "-rw_timeout", "15000000"]
+        if ua:
+            cmd += ["-user_agent", str(ua)]
+        cmd += ["-i", url, "-frames:v", "1", "-vf", "scale=640:-2",
+                "-f", "image2", "-y", str(tmp)]
+        rc, _out, _err = _run(cmd, SNAPSHOT_TIMEOUT_S)
+        if rc != 0:
+            return None
+        try:
+            blob = tmp.read_bytes()
+        except OSError:
+            return None
+        if not _is_image_bytes(blob):
+            return None
+        return blob
+    finally:
+        SNAPSHOT_GATE.release(host)
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+
+
+def get_poster(camera_id: str, page_url: str, *, force: bool = False,
+               protocol: Optional[str] = None) -> Optional[pathlib.Path]:
     """Fetch (or return cached) a poster file for one camera. Per-cid locked.
 
     Fresh positive (12 h) and negative (1 h) verdicts short-circuit the network;
     ``force=True`` refetches regardless. Skyline pages come with their og:image
-    on the same page fetch the live resolver needs; any other http(s) page falls
-    back to a browser-UA fetch + og:image/twitter:image scrape.
+    on the same page fetch the live resolver needs; skaping pages carry their
+    10-minute S3 still as og:image; YouTube tries the page's og:image FIRST
+    (fast, usually the video's best thumbnail) and keeps the yt-dlp/ytimg path
+    as fallback (yt-dlp itself stays for id resolution in get_live). When
+    ``protocol`` is hls/mjpeg and no page poster applies, a single ffmpeg frame
+    is captured instead (source 'snapshot') — that fills stream-tile 'no
+    poster' placeholders.
     """
     lock = _cid_lock(camera_id, kind="poster")
     with lock:
@@ -671,6 +791,7 @@ def get_poster(camera_id: str, page_url: str, *,
                 age = _age_s(entry.get("fetched_at"))
                 if age is not None and age <= POSTER_NEG_TTL_S:
                     return None  # negative verdict still fresh
+        proto = str(protocol or "").lower()
         source = "fail"
         error = ""
         poster_url = None
@@ -681,17 +802,24 @@ def get_poster(camera_id: str, page_url: str, *,
                 if poster_url:
                     source = "og"
             elif resolver == "youtube-live":
-                entry = cached_live_entry(camera_id)
-                if entry and entry.get("kind") == "ytid" and entry.get("poster"):
-                    poster_url, source = entry["poster"], "ytimg"
+                poster_url, error = _og_poster_from_page(page_url)
+                if poster_url:
+                    source = "og"
                 else:
-                    res = resolve_live_youtube(page_url)
-                    if res and res.get("poster"):
-                        poster_url, source = res["poster"], "ytimg"
-                if not poster_url:
-                    poster_url, error = _og_poster_from_page(page_url)
-                    if poster_url:
-                        source = "og"
+                    entry = cached_live_entry(camera_id)
+                    if entry and entry.get("kind") == "ytid" and entry.get("poster"):
+                        poster_url, source = entry["poster"], "ytimg"
+                    else:
+                        res = resolve_live_youtube(page_url)
+                        if res and res.get("poster"):
+                            poster_url, source = res["poster"], "ytimg"
+            elif resolver == "skaping":
+                poster_url, error = _og_poster_from_page(page_url)
+                if poster_url:
+                    source = "og"
+            elif proto in ("hls", "mjpeg"):
+                # a raw stream url has no page to scrape — go straight to frame
+                error = "stream protocol: single-frame snapshot"
             elif page_url and str(page_url).lower().startswith(("http://", "https://")):
                 poster_url, error = _og_poster_from_page(page_url)
                 if poster_url:
@@ -700,6 +828,12 @@ def get_poster(camera_id: str, page_url: str, *,
                 error = "no fetchable page url"
         except Exception as exc:  # noqa: BLE001
             error = f"{type(exc).__name__}: {exc}"
+        if not poster_url and proto in ("hls", "mjpeg"):
+            blob = _snapshot_stream_frame(camera_id, page_url)
+            if blob is not None:
+                return _store_poster_blob(camera_id, blob, "snapshot")
+            if not error:
+                error = "snapshot failed"
         if not poster_url:
             _record_poster(camera_id, ok=False, source="fail",
                            error=error or "no poster found")
@@ -709,17 +843,82 @@ def get_poster(camera_id: str, page_url: str, *,
             _record_poster(camera_id, ok=False, source="fail",
                            error="poster image download failed")
             return None
-        ext = _sniff_ext(blob)
-        path = posters_dir() / f"{camera_id}.{ext}"
-        _write_bytes_atomic(path, blob)
-        for other in ("jpg", "png"):
-            if other != ext:
-                try:
-                    (posters_dir() / f"{camera_id}.{other}").unlink()
-                except OSError:
-                    pass
-        _record_poster(camera_id, ok=True, source=source)
-        return path
+        return _store_poster_blob(camera_id, blob, source)
+
+
+# ---------------------------------------------------------------------------
+# still bytes cache (in-process, ~90 s) — skaping-style 'image' resolutions
+# ---------------------------------------------------------------------------
+
+_STILL_MEM: dict = {}          # cid -> {'blob': bytes, 'ctype': str, 'ts': monotonic}
+_STILL_MEM_LOCK = threading.Lock()
+
+
+def _still_memo_peek(camera_id: str):
+    """(blob, ctype, age_s) for the fresh in-process still memo, else None."""
+    with _STILL_MEM_LOCK:
+        hit = _STILL_MEM.get(camera_id)
+        if hit is not None:
+            age = time.monotonic() - hit.get("ts", 0.0)
+            if age <= STILL_TTL_S:
+                return hit["blob"], hit["ctype"], age
+    return None
+
+
+def still_cached(camera_id: str) -> bool:
+    """True when fresh still bytes sit in the in-process memo. No network."""
+    return _still_memo_peek(camera_id) is not None
+
+
+def _still_memo_put(camera_id: str, blob: bytes, ctype: str) -> None:
+    with _STILL_MEM_LOCK:
+        _STILL_MEM[camera_id] = {"blob": blob, "ctype": ctype, "ts": time.monotonic()}
+
+
+def _fetch_still_image(entry: dict):
+    """Fetch one 'image'-kind entry's still -> (bytes|None, content-type|None)."""
+    url = (entry or {}).get("url")
+    if not url:
+        return None, None
+    body, info, _final = _http_get(url, headers=(entry or {}).get("headers") or {},
+                                   timeout=PAGE_TIMEOUT_S, gate=PAGE_GATE)
+    if not _is_image_bytes(body):
+        return None, None
+    ctype = (info.get("content-type") or "").split(";")[0].strip()
+    if not _MEDIA_TYPE_RE.fullmatch(ctype or ""):
+        ctype = image_content_type(body)
+    return body, ctype
+
+
+def get_still(camera_id: str, page_url: str, *,
+              force: bool = False) -> tuple:
+    """Current still bytes for one camera -> (bytes|None, content_type|None).
+
+    Resolves through :func:`get_live` (kind 'image' — e.g. skaping's newest
+    10-minute S3 JPEG), fetches the image with the entry's headers, and memoises
+    the bytes in process for ~90 s (dict + lock). On an image-fetch failure the
+    resolution is refreshed once (force) and the fetch retried once. Per-cid
+    locked like the other caches; (None, None) on any failure.
+    """
+    lock = _cid_lock(camera_id, kind="still")
+    with lock:
+        if not force:
+            memo = _still_memo_peek(camera_id)
+            if memo is not None:
+                return memo[0], memo[1]
+        entry = get_live(camera_id, page_url, force=force)
+        blob = ctype = None
+        if entry and entry.get("kind") == "image":
+            blob, ctype = _fetch_still_image(entry)
+            if blob is None:
+                entry = get_live(camera_id, page_url, force=True)   # refresh once
+                if entry and entry.get("kind") == "image":
+                    blob, ctype = _fetch_still_image(entry)
+        if blob is None:
+            return None, None
+        ctype = ctype or image_content_type(blob)
+        _still_memo_put(camera_id, blob, ctype)
+        return blob, ctype
 
 
 # ---------------------------------------------------------------------------
@@ -846,8 +1045,15 @@ def fetch_segment(url: str, headers: Optional[dict] = None, *,
 # CLI: wfd resolve warm / show
 # ---------------------------------------------------------------------------
 
-def _warm_candidates(family: str, host: str):
-    """(camera_id, url, resolver) for displayable rows with a resolvable host."""
+def _warm_candidates(family: str, host: str, protocol: str = ""):
+    """[(camera_id, url, resolver, protocol)] for displayable rows worth warming.
+
+    Resolver-host rows (skylinewebcams / youtube / skaping) are always
+    candidates. Raw hls/mjpeg stream rows — whose poster needs an ffmpeg
+    snapshot — are only candidates once the caller narrows with
+    ``--host``/``--family``/``--protocol``; a bare ``warm --kind poster`` must
+    never try to snapshot the whole multi-thousand-row stream wall.
+    """
     db_path = DATA_DIR / "worldfeed.db"
     if not db_path.exists():
         return None
@@ -856,7 +1062,7 @@ def _warm_candidates(family: str, host: str):
     conn.row_factory = sqlite3.Row
     try:
         rows = conn.execute(
-            "SELECT camera_id, url, source_family FROM cameras "
+            "SELECT camera_id, url, source_family, protocol FROM cameras "
             "WHERE provenance IN ('public_by_design','aggregator_directory')"
         ).fetchall()
     finally:
@@ -864,11 +1070,13 @@ def _warm_candidates(family: str, host: str):
     out = []
     fam = (family or "").strip().lower()
     host = (host or "").strip().lower()
+    proto = (protocol or "").strip().lower()
+    narrow = bool(fam or host or proto)
     for r in rows:
         if fam and (r["source_family"] or "").lower() != fam:
             continue
-        resolver = host_resolvable(r["url"])
-        if resolver is None:
+        row_proto = (r["protocol"] or "").lower()
+        if proto and row_proto != proto:
             continue
         if host:
             try:
@@ -877,7 +1085,13 @@ def _warm_candidates(family: str, host: str):
                 h = ""
             if not (h == host or h.endswith("." + host)):
                 continue
-        out.append((r["camera_id"], r["url"], resolver))
+        resolver = host_resolvable(r["url"])
+        if resolver is None:
+            if not narrow:
+                continue          # no explicit narrowing: resolver hosts only
+            if row_proto not in ("hls", "mjpeg"):
+                continue          # only snapshot-grade streams qualify
+        out.append((r["camera_id"], r["url"], resolver, row_proto))
     out.sort()
     return out
 
@@ -886,11 +1100,12 @@ def _cmd_resolve_warm(args) -> int:
     kind = getattr(args, "kind", "both") or "both"
     family = getattr(args, "family", "") or ""
     host = getattr(args, "host", "") or ""
+    protocol = getattr(args, "protocol", "") or ""
     limit = max(0, int(getattr(args, "limit", 0) or 0))
     refresh = bool(getattr(args, "refresh", False))
     kinds = ("poster", "live") if kind == "both" else (kind,)
 
-    candidates = _warm_candidates(family, host)
+    candidates = _warm_candidates(family, host, protocol)
     if candidates is None:
         print(f"resolve warm: registry database not found at {DATA_DIR / 'worldfeed.db'}")
         return 1
@@ -899,15 +1114,19 @@ def _cmd_resolve_warm(args) -> int:
     print(f"resolve warm: kind={kind} candidates={len(candidates)}"
           + (f" family={family}" if family else "")
           + (f" host={host}" if host else "")
+          + (f" protocol={protocol}" if protocol else "")
           + (f" limit={limit}" if limit else "")
           + f"\n  evidence: {ev_path}")
 
     processed = ok = fail = skipped = 0
     with ev_path.open("a", encoding="utf-8") as ev:
-        for cid, url, _resolver in candidates:
+        for cid, url, resolver, proto in candidates:
             for k in kinds:
                 if limit and processed >= limit:
                     break
+                if k == "live" and resolver is None:
+                    skipped += 1       # no resolver for this row — nothing to warm
+                    continue
                 if not refresh:
                     needs = (poster_needs_refresh(cid) if k == "poster"
                              else live_needs_refresh(cid))
@@ -919,7 +1138,8 @@ def _cmd_resolve_warm(args) -> int:
                 good = False
                 try:
                     if k == "poster":
-                        good = get_poster(cid, url, force=refresh) is not None
+                        good = get_poster(cid, url, force=refresh,
+                                          protocol=proto) is not None
                     else:
                         good = get_live(cid, url, force=refresh) is not None
                 except Exception as exc:  # noqa: BLE001 — record, keep going
@@ -972,6 +1192,10 @@ def _cmd_resolve_show(args) -> int:
         print(f"  live:   kind={live.get('kind')} host={live.get('host')} "
               f"resolved_at={live.get('resolved_at')} ttl={live.get('ttl_s')}s "
               f"({state}" + (f", age={int(age)}s" if age is not None else "") + ")")
+        if live.get("kind") == "ytid":
+            vid = str(live.get("id") or "")
+            shown_id = vid if _YOUTUBE_ID_RE.fullmatch(vid) else "<invalid>"
+            print(f"          yt_id={shown_id}")
         if live.get("url"):
             print(f"          url={redact_url_for_display(live['url'])}")
         headers = live.get("headers") or {}
@@ -983,6 +1207,14 @@ def _cmd_resolve_show(args) -> int:
                 break
         if live.get("poster"):
             print(f"          poster={live['poster']}")
+        if live.get("kind") == "image":
+            memo = _still_memo_peek(cid)
+            if memo is not None:
+                print(f"          still:  in-process memo ({len(memo[0])} bytes, "
+                      f"{memo[1]}, age={int(memo[2])}s)")
+            else:
+                print("          still:  not in this process's memo "
+                      f"(/api/still/{cid} fetches on demand)")
         if not live.get("ok") and live.get("error"):
             print(f"          error={live.get('error')}")
     return 0
@@ -1004,6 +1236,10 @@ def _add_resolve_arguments(parser) -> None:
     warm.add_argument("--kind", choices=("poster", "live", "both"), default="both")
     warm.add_argument("--family", default="", help="restrict to one source_family")
     warm.add_argument("--host", default="", help="restrict to one url host (suffix match)")
+    warm.add_argument("--protocol", default="",
+                      help="restrict to one protocol (hls|mjpeg|jpeg|...); plain "
+                           "hls/mjpeg snapshot candidates are only ever included "
+                           "when --host/--family/--protocol narrows the set")
     warm.add_argument("--limit", type=int, default=0,
                       help="max rows to fetch this run (0 = no cap)")
     warm.add_argument("--refresh", action="store_true",

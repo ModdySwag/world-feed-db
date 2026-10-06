@@ -37,6 +37,10 @@ DB_PATH = dbmod.DEFAULT_DB
 SKYLINE_CID = "507b64f69e709039"
 SKYLINE_URL = ("https://www.skylinewebcams.com/en/webcam/ellada/crete/"
                "heraklion/viannos.html")
+SKAPING_CID = "eedcbc5b9badeb3f"
+SKAPING_URL = "https://www.skaping.com/millau/pouncho/panoramique-droite"
+SKAPING_STILL_URL = resolve.parse_social_image(
+    (FIXTURES / "skaping_page.html").read_text(encoding="utf-8"), SKAPING_URL) or ""
 
 _JPEG = b"\xff\xd8\xff\xe0" + b"\x00" * 4096          # sniffable, >1KB
 _PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 2048
@@ -109,6 +113,8 @@ def test_host_resolvable_mapping():
     assert resolve.host_resolvable("https://skylinewebcams.com/x") == "skylinewebcams"
     assert resolve.host_resolvable("https://www.youtube.com/watch?v=abcdefghijk") == "youtube-live"
     assert resolve.host_resolvable("https://youtu.be/abcdefghijk") == "youtube-live"
+    assert resolve.host_resolvable(SKAPING_URL) == "skaping"
+    assert resolve.host_resolvable("https://skaping.com/x") == "skaping"
     assert resolve.host_resolvable("https://example.com/cam") is None
     assert resolve.host_resolvable("") is None
     assert resolve.host_resolvable(None) is None
@@ -311,6 +317,149 @@ def test_youtube_resolver_offline():
         resolve._tool, resolve._run = orig_tool, orig_run
 
 
+def test_fixture_skaping_og():
+    """skaping player pages resolve to their newest 10-minute S3 JPEG (kind image)."""
+    html = _read_fixture("skaping_page.html")
+    og = resolve.parse_social_image(html, SKAPING_URL)
+    assert og, "no og:image in the skaping fixture page"
+    assert og.startswith("https://skaping.s3.gra.io.cloud.ovh.net/"), og
+    assert og.endswith(".jpg"), og
+    assert "/millau/pouncho/panoramique-droite/" in og, og
+
+    orig = resolve.fetch_page
+    resolve.fetch_page = lambda url, **kw: {"html": html, "cookie": "",
+                                            "final_url": url}
+    try:
+        res = resolve.resolve_live_skaping(SKAPING_URL)
+    finally:
+        resolve.fetch_page = orig
+    assert res and res["kind"] == "image", res
+    assert res["url"] == og
+    assert res["ttl_s"] == 900 and res["ttl_s"] == resolve.SKAPING_TTL_S
+    assert res["headers"] == {"User-Agent": resolve.BROWSER_UA}, res["headers"]
+
+    # og:image pointing at a non-image file must be rejected
+    resolve.fetch_page = lambda url, **kw: {
+        "html": '<meta property="og:image" content="https://x.example/player.html">',
+        "cookie": "", "final_url": url}
+    try:
+        assert resolve.resolve_live_skaping(SKAPING_URL) is None
+    finally:
+        resolve.fetch_page = orig
+    # no og:image at all -> None
+    resolve.fetch_page = lambda url, **kw: {"html": "<html></html>", "cookie": "",
+                                            "final_url": url}
+    try:
+        assert resolve.resolve_live_skaping(SKAPING_URL) is None
+    finally:
+        resolve.fetch_page = orig
+
+
+def test_still_flow_offline():
+    """get_still: resolve -> fetch -> ~90 s in-process memo; refresh-once on failure."""
+    cid = "7" * 16
+    calls = {"page": 0, "img": 0}
+    orig_page, orig_get = resolve.fetch_page, resolve._http_get
+
+    def fake_page(url, **kw):
+        calls["page"] += 1
+        return {"html": _read_fixture("skaping_page.html"), "cookie": "",
+                "final_url": url}
+
+    def fake_get(url, **kw):
+        calls["img"] += 1
+        return _JPEG, {"content-type": "image/jpeg"}, url
+
+    resolve.fetch_page = fake_page
+    resolve._http_get = fake_get
+    try:
+        resolve.reset_caches()
+        blob, ctype = resolve.get_still(cid, SKAPING_URL, force=True)
+        assert blob == _JPEG and ctype == "image/jpeg", (blob and len(blob), ctype)
+        entry = resolve.cached_live_entry(cid)
+        assert entry and entry["kind"] == "image", entry
+        assert entry["url"] == SKAPING_STILL_URL
+        assert calls == {"page": 1, "img": 1}, calls
+        assert resolve.still_cached(cid)
+        # second call: bytes come from the in-process memo — zero network
+        assert resolve.get_still(cid, SKAPING_URL) == (blob, ctype)
+        assert calls == {"page": 1, "img": 1}, calls
+        # force bypasses the memo (re-resolves + re-fetches)
+        assert resolve.get_still(cid, SKAPING_URL, force=True)[0] == _JPEG
+        assert calls == {"page": 2, "img": 2}, calls
+        # image fetch failure -> exactly one resolve refresh + one retry
+        cid2 = "6" * 16
+        state = {"fails": 1}
+
+        def flaky_get(url, **kw):
+            calls["img"] += 1
+            if state["fails"]:
+                state["fails"] -= 1
+                return None, {}, url
+            return _JPEG, {"content-type": "image/jpeg"}, url
+
+        resolve._http_get = flaky_get
+        blob2, ctype2 = resolve.get_still(cid2, SKAPING_URL, force=True)
+        assert blob2 == _JPEG and ctype2 == "image/jpeg"
+        assert calls == {"page": 4, "img": 4}, calls
+        # a fresh non-image resolution yields (None, None) without any fetch
+        _write_cache_json("resolve/live.json", {
+            "5" * 16: {"ok": True, "kind": "hls",
+                       "url": "https://x.example/y.m3u8", "ttl_s": 300,
+                       "resolved_at": _now_iso(), "host": "x.example"}})
+        n_img = calls["img"]
+        assert resolve.get_still("5" * 16, "https://x.example/page") == (None, None)
+        assert calls["img"] == n_img
+    finally:
+        resolve.fetch_page = orig_page
+        resolve._http_get = orig_get
+        resolve.reset_caches()
+
+
+def test_poster_snapshot_offline():
+    """get_poster(protocol=hls|mjpeg): single ffmpeg frame -> source 'snapshot'."""
+    cid = "9" * 16
+    url = "https://streams.example/cam.m3u8"
+    orig_tool, orig_run = resolve._tool, resolve._run
+    calls = {"run": 0}
+
+    def fake_tool(name):
+        return "ffmpeg" if name == "ffmpeg" else None
+
+    def fake_run(cmd, timeout):
+        calls["run"] += 1
+        assert cmd[0] == "ffmpeg" and "-rw_timeout" in cmd, cmd
+        assert "-frames:v" in cmd and "scale=640:-2" in cmd, cmd
+        pathlib.Path(cmd[-1]).write_bytes(_JPEG)   # the -y <tmp.jpg> output
+        return (0, "", "")
+
+    resolve._tool = fake_tool
+    resolve._run = fake_run
+    try:
+        resolve.reset_caches()
+        path = resolve.get_poster(cid, url, force=True, protocol="hls")
+        assert path is not None and path.exists(), "snapshot poster not stored"
+        assert path.read_bytes() == _JPEG
+        assert calls["run"] == 1
+        entry = resolve.poster_index_entry(cid)
+        assert entry and entry["ok"] is True and entry["source"] == "snapshot", entry
+        assert resolve.poster_exists(cid)
+        assert not list(resolve.posters_dir().glob(".snap-*"))  # tmp cleaned up
+        # rc != 0 -> negative verdict, no poster file
+        cid2 = "8" * 16
+        resolve._run = lambda cmd, timeout: (1, "", "boom")
+        assert resolve.get_poster(cid2, url, force=True, protocol="mjpeg") is None
+        assert resolve._poster_file(cid2) is None
+        neg = resolve.poster_index_entry(cid2)
+        assert neg and neg["ok"] is False and neg["source"] == "fail"
+        # snapshots stay behind a dedicated gate
+        assert resolve.SNAPSHOT_GATE.cap == 2
+        assert resolve.SNAPSHOT_GATE.spacing == 0.3
+    finally:
+        resolve._tool, resolve._run = orig_tool, orig_run
+        resolve.reset_caches()
+
+
 def test_count_resolvable_rows():
     n = resolve.count_resolvable_rows(DB_PATH)
     assert n > 1500, f"expected the skyline iframe family in the registry, got {n}"
@@ -408,6 +557,14 @@ def _seed_skyline_live():
     resolve.reset_caches()
 
 
+def _seed_live_entry(cid: str, entry: dict) -> None:
+    """Merge one live.json entry for cid (temp cache) and drop memos."""
+    path = CACHE_ROOT / "resolve" / "live.json"
+    data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    data[cid] = entry
+    _write_cache_json("resolve/live.json", data)
+
+
 def test_server_camera_detail_fields():
     _base()
     _seed_skyline_poster()
@@ -419,9 +576,10 @@ def test_server_camera_detail_fields():
     assert d["live_url"] == f"/api/live/{SKYLINE_CID}/index.m3u8"
     assert d["poster_url"] == f"/api/poster/{SKYLINE_CID}"
     # a non-resolvable display row still gets resolvable=False, no live_url
+    excl = " AND ".join(f"lower(url) NOT LIKE '%{s}%'"
+                        for s, _ in resolve.RESOLVER_REGISTRY)
     row = _db_one("SELECT camera_id FROM cameras WHERE provenance='public_by_design' "
-                  "AND url LIKE 'http%' AND url NOT LIKE '%skylinewebcams.com%' "
-                  "AND url NOT LIKE '%youtube.com%' LIMIT 1")
+                  f"AND url LIKE 'http%' AND {excl} LIMIT 1")
     assert row, "no non-resolvable public row in the registry"
     _, _, d2 = _get_json(f"/api/camera/{row['camera_id']}")
     assert d2["resolvable"] is False, d2.get("resolvable")
@@ -438,16 +596,55 @@ def test_server_exposure_rows_have_no_resolve_fields():
     try:
         status, _, d = _get_json(f"/api/camera/{exp_id}")
         assert status == 200, status
-        for key in ("resolvable", "live_url", "poster_url"):
+        for key in ("resolvable", "live_url", "poster_url", "still_url", "yt_id"):
             assert key not in d, (key, sorted(d))
-        status, _, _ = _get_http(f"/api/poster/{exp_id}")
-        assert status == 404, status
-        status, _, _ = _get_http(f"/api/live/{exp_id}/index.m3u8")
-        assert status == 404, status
-        status, _, _ = _get_http(f"/api/live/{exp_id}/seg/x.ts")
-        assert status == 404, status
+        for path in (f"/api/poster/{exp_id}",
+                     f"/api/still/{exp_id}",
+                     f"/api/resolve/{exp_id}",
+                     f"/api/live/{exp_id}/index.m3u8",
+                     f"/api/live/{exp_id}/seg/x.ts"):
+            status, _, _ = _get_http(path)
+            assert status == 404, (path, status)
     finally:
         profile.settings = original
+
+
+def test_server_image_ytid_fields():
+    """Row payloads: kind image -> still_url; kind ytid -> yt_id (fresh only)."""
+    _base()
+    _seed_live_entry(SKAPING_CID, {
+        "ok": True, "kind": "image", "url": SKAPING_STILL_URL,
+        "headers": {"User-Agent": resolve.BROWSER_UA}, "ttl_s": 900,
+        "resolved_at": _now_iso(), "host": "www.skaping.com"})
+    status, _, d = _get_json(f"/api/camera/{SKAPING_CID}")
+    assert status == 200, status
+    assert d["provenance"] == "public_by_design"
+    assert d.get("still_url") == f"/api/still/{SKAPING_CID}", sorted(d)
+    assert "live_url" not in d and "yt_id" not in d
+    # youtube: fresh ytid entry -> yt_id (11-char id only), no live_url
+    yt = _db_one("SELECT camera_id FROM cameras WHERE provenance IN "
+                 "('public_by_design','aggregator_directory') "
+                 "AND lower(url) LIKE '%youtube.com%' LIMIT 1")
+    assert yt, "no youtube rows in registry"
+    _seed_live_entry(yt["camera_id"], {
+        "ok": True, "kind": "ytid", "id": "M1n2O3p4Q5r",
+        "poster": "https://i.ytimg.com/vi/M1n2O3p4Q5r/hqdefault.jpg",
+        "ttl_s": 1800, "resolved_at": _now_iso(), "host": "www.youtube.com"})
+    _, _, d2 = _get_json(f"/api/camera/{yt['camera_id']}")
+    assert d2.get("yt_id") == "M1n2O3p4Q5r", sorted(d2)
+    assert "live_url" not in d2 and "still_url" not in d2
+    # a malformed id never leaks through as yt_id
+    _seed_live_entry(yt["camera_id"], {
+        "ok": True, "kind": "ytid", "id": "short", "ttl_s": 1800,
+        "resolved_at": _now_iso(), "host": "www.youtube.com"})
+    _, _, d3 = _get_json(f"/api/camera/{yt['camera_id']}")
+    assert "yt_id" not in d3
+    # stale image entry -> no still_url (freshness gate)
+    _seed_live_entry(SKAPING_CID, {
+        "ok": True, "kind": "image", "url": SKAPING_STILL_URL, "ttl_s": 900,
+        "resolved_at": _iso_ago(1000), "host": "www.skaping.com"})
+    _, _, d4 = _get_json(f"/api/camera/{SKAPING_CID}")
+    assert "still_url" not in d4
 
 
 def test_server_featurecollection_fields():
@@ -500,6 +697,79 @@ def test_server_poster_route():
     assert status == 404, status
 
 
+def test_server_resolve_route():
+    """GET /api/resolve/<cid>: on-demand verdict, display-only, ?refresh=1 forces."""
+    _base()
+    # 1) fresh ytid entry -> ok true with the 11-char yt_id
+    yt = _db_one("SELECT camera_id FROM cameras WHERE provenance IN "
+                 "('public_by_design','aggregator_directory') "
+                 "AND lower(url) LIKE '%youtube.com%' LIMIT 1")
+    assert yt, "no youtube rows in registry"
+    yt_cid = yt["camera_id"]
+    _seed_live_entry(yt_cid, {
+        "ok": True, "kind": "ytid", "id": "M1n2O3p4Q5r",
+        "poster": "https://i.ytimg.com/vi/M1n2O3p4Q5r/hqdefault.jpg",
+        "ttl_s": 1800, "resolved_at": _now_iso(), "host": "www.youtube.com"})
+    status, ctype, d = _get_json(f"/api/resolve/{yt_cid}")
+    assert status == 200 and ctype.startswith("application/json")
+    assert d["camera_id"] == yt_cid and d["ok"] is True and d["kind"] == "ytid"
+    assert d["yt_id"] == "M1n2O3p4Q5r"
+    # 2) fresh image entry -> ok true with still_url (no yt_id)
+    _seed_live_entry(SKAPING_CID, {
+        "ok": True, "kind": "image", "url": SKAPING_STILL_URL,
+        "headers": {"User-Agent": resolve.BROWSER_UA}, "ttl_s": 900,
+        "resolved_at": _now_iso(), "host": "www.skaping.com"})
+    _, _, d2 = _get_json(f"/api/resolve/{SKAPING_CID}")
+    assert d2["ok"] is True and d2["kind"] == "image"
+    assert d2["still_url"] == f"/api/still/{SKAPING_CID}"
+    assert "yt_id" not in d2 and "live_url" not in d2
+    # 3) ?refresh=1 forces a re-resolve (offline: skaping resolver patched)
+    calls = {"skaping": 0}
+    orig_sk = resolve.resolve_live_skaping
+
+    def fake_skaping(url):
+        calls["skaping"] += 1
+        return {"kind": "image", "url": SKAPING_STILL_URL,
+                "headers": {"User-Agent": resolve.BROWSER_UA}, "ttl_s": 900}
+
+    resolve.resolve_live_skaping = fake_skaping
+    try:
+        _, _, d3 = _get_json(f"/api/resolve/{SKAPING_CID}?refresh=1")
+    finally:
+        resolve.resolve_live_skaping = orig_sk
+    assert calls["skaping"] == 1 and d3["ok"] is True, d3
+    assert d3["kind"] == "image"
+    # 4) resolver failure -> ok false 'resolve failed' (offline: patched)
+    yt2 = _db_one("SELECT camera_id FROM cameras WHERE provenance IN "
+                  "('public_by_design','aggregator_directory') "
+                  "AND lower(url) LIKE '%youtube.com%' AND camera_id != ? LIMIT 1",
+                  (yt_cid,))
+    assert yt2, "need a second youtube row"
+    orig_yt = resolve.resolve_live_youtube
+    resolve.resolve_live_youtube = lambda url: None
+    try:
+        _, _, d4 = _get_json(f"/api/resolve/{yt2['camera_id']}")
+    finally:
+        resolve.resolve_live_youtube = orig_yt
+    assert d4["ok"] is False and d4["reason"] == "resolve failed", d4
+    assert "kind" not in d4
+    # 5) non-resolvable display row -> ok false 'no-resolver'
+    excl = " AND ".join(f"lower(url) NOT LIKE '%{s}%'"
+                        for s, _ in resolve.RESOLVER_REGISTRY)
+    nr = _db_one("SELECT camera_id FROM cameras WHERE provenance IN "
+                 "('public_by_design','aggregator_directory') "
+                 f"AND lower(url) LIKE 'http%' AND {excl} LIMIT 1")
+    assert nr, "no non-resolvable rows"
+    _, _, d5 = _get_json(f"/api/resolve/{nr['camera_id']}")
+    assert d5["ok"] is False and d5["reason"] == "no-resolver", d5
+    assert "kind" not in d5
+    # 6) unknown camera -> 404; nothing ever echoes a token/cookie
+    status, _, _ = _get_http("/api/resolve/0000000000000000")
+    assert status == 404, status
+    blob = json.dumps([d, d2, d3, d4, d5]).lower()
+    assert "token" not in blob and "cookie" not in blob
+
+
 def test_server_resolver_disabled():
     prefs_path = CACHE_ROOT / "viewer-prefs-resolve-off.json"
     server = viewer.make_server(port=0, quiet=True, prefs_path=prefs_path,
@@ -511,9 +781,11 @@ def test_server_resolver_disabled():
         _seed_skyline_live()
         with urllib.request.urlopen(base + f"/api/camera/{SKYLINE_CID}", timeout=30) as resp:
             d = json.loads(resp.read().decode("utf-8"))
-        for key in ("resolvable", "live_url", "poster_url"):
+        for key in ("resolvable", "live_url", "poster_url", "still_url", "yt_id"):
             assert key not in d, (key, sorted(d))
         for path in (f"/api/poster/{SKYLINE_CID}",
+                     f"/api/still/{SKYLINE_CID}",
+                     f"/api/resolve/{SKYLINE_CID}",
                      f"/api/live/{SKYLINE_CID}/index.m3u8",
                      f"/api/live/{SKYLINE_CID}/seg/x.ts"):
             try:
@@ -526,9 +798,88 @@ def test_server_resolver_disabled():
         server.server_close()
 
 
+def test_server_still_route():
+    """GET /api/still/<cid>: serves image-kind bytes; 404 for anything else."""
+    _base()
+    _seed_live_entry(SKYLINE_CID, {
+        "ok": True, "kind": "image", "url": "https://still.example/now.jpg",
+        "headers": {"User-Agent": resolve.BROWSER_UA}, "ttl_s": 900,
+        "resolved_at": _now_iso(), "host": "still.example"})
+    calls = {"img": 0}
+    orig_get = resolve._http_get
+
+    def fake_get(url, **kw):
+        calls["img"] += 1
+        return _JPEG, {"content-type": "image/jpeg"}, url
+
+    resolve._http_get = fake_get
+    try:
+        status, ctype, body = _get_http(f"/api/still/{SKYLINE_CID}")
+        assert status == 200, status
+        assert ctype.startswith("image/jpeg"), ctype
+        assert body == _JPEG
+        assert calls["img"] == 1
+        # HEAD-safe: headers only, no body, 60 s cache
+        req = urllib.request.Request(_base() + f"/api/still/{SKYLINE_CID}",
+                                     method="HEAD")
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            assert resp.status == 200
+            assert resp.headers.get("Content-Length") == str(len(_JPEG))
+            assert "max-age=60" in (resp.headers.get("Cache-Control") or "")
+            assert resp.read() == b""
+        assert calls["img"] == 1       # HEAD used the ~90 s bytes memo
+        # ?refresh=1 forces a re-resolve (skyline resolver patched offline)
+        orig_sk = resolve.resolve_live_skyline
+        resolve.resolve_live_skyline = lambda url: {
+            "kind": "image", "url": "https://still.example/now2.jpg",
+            "headers": {"User-Agent": resolve.BROWSER_UA}, "ttl_s": 900}
+        try:
+            status, _, body = _get_http(f"/api/still/{SKYLINE_CID}?refresh=1")
+        finally:
+            resolve.resolve_live_skyline = orig_sk
+        assert status == 200 and body == _JPEG, (status, len(body))
+        # a non-image resolution -> 404 {'error': 'no still'}
+        _seed_live_entry(SKYLINE_CID, {
+            "ok": True, "kind": "hls",
+            "url": "https://hd-auth.example/live.m3u8?a=x", "ttl_s": 300,
+            "resolved_at": _now_iso(), "host": "h.example"})
+        status, _, body = _get_http(f"/api/still/{SKYLINE_CID}")
+        assert status == 404, status
+        assert json.loads(body).get("error") == "no still"
+        # unknown camera -> 404
+        status, _, _ = _get_http("/api/still/0000000000000000")
+        assert status == 404, status
+    finally:
+        resolve._http_get = orig_get
+        resolve.reset_caches()
+
+
 # ---------------------------------------------------------------------------
 # live end-to-end proof (needs the internet; exercises the real recipe)
 # ---------------------------------------------------------------------------
+
+def test_live_end_to_end_skaping():
+    """Real-network proof: skaping page -> og:image S3 JPEG -> still + /api/resolve."""
+    resolve.reset_caches()
+    blob, ctype = resolve.get_still(SKAPING_CID, SKAPING_URL, force=True)
+    assert blob is not None, "skaping still fetch failed (network?)"
+    assert len(blob) > 5000, f"still too small: {len(blob)}"
+    assert blob[:2] == b"\xff\xd8", blob[:8]
+    assert ctype == "image/jpeg", ctype
+    print(f"  still: {len(blob)}B {ctype} via og:image (src={SKAPING_URL})")
+    _base()
+    status, _, body = _get_http(f"/api/resolve/{SKAPING_CID}")
+    assert status == 200, status
+    d = json.loads(body)
+    assert d["ok"] is True, d
+    assert d["kind"] == "image", d
+    assert d["still_url"] == f"/api/still/{SKAPING_CID}"
+    # the still route serves the still (fresh ~90 s memo -> no extra network)
+    status, ctype2, body2 = _get_http(f"/api/still/{SKAPING_CID}")
+    assert status == 200 and ctype2.startswith("image/jpeg"), (status, ctype2)
+    assert len(body2) > 5000 and body2[:2] == b"\xff\xd8"
+    print(f"  api: resolve ok kind=image; /api/still {len(body2)}B {ctype2}")
+
 
 def test_live_end_to_end_skyline():
     resolve.reset_caches()
