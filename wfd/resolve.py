@@ -12,6 +12,8 @@ Fixes the viewer's blank-tile classes:
   through the viewer's /api/still/<cid> (get_still, ~90 s in-process memo).
 - hls/mjpeg tiles without any og:image: a single ffmpeg frame becomes the
   poster (source 'snapshot'; SNAPSHOT_GATE caps captures at 2 per host).
+- raw jpeg still rows (nsw/qld and friends): the row url IS the live image —
+  the current bytes are stored as the poster (source 'direct').
 
 Cache layout (``DATA_DIR`` from wfd.ingest.base, or ``$WFD_DATA_DIR`` when set
 — tests point that at a temp dir so the real cache stays clean):
@@ -93,6 +95,11 @@ _META_ATTR_RE = re.compile(
     r"""([A-Za-z_:][-A-Za-z0-9_:.]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'<>`]+))""")
 _MEDIA_TYPE_RE = re.compile(r"[A-Za-z0-9.+-]+/[A-Za-z0-9.+-]+")
 _IMAGE_EXT_RE = re.compile(r"\.(?:jpe?g|png)$", re.I)
+
+# Raw (non-resolver) row protocols a warm poster run may fetch directly, once
+# the caller narrows the set: hls/mjpeg become an ffmpeg snapshot; jpeg is the
+# live still itself (direct download).
+_RAW_POSTER_PROTOCOLS = ("hls", "mjpeg", "jpeg")
 
 # Resolver registry: url host suffix -> resolver name (host_resolvable, no network)
 RESOLVER_REGISTRY = (
@@ -779,7 +786,9 @@ def get_poster(camera_id: str, page_url: str, *, force: bool = False,
     as fallback (yt-dlp itself stays for id resolution in get_live). When
     ``protocol`` is hls/mjpeg and no page poster applies, a single ffmpeg frame
     is captured instead (source 'snapshot') — that fills stream-tile 'no
-    poster' placeholders.
+    poster' placeholders. A raw jpeg row's url IS the live image: the current
+    bytes are stored directly (source 'direct'), with the og:image page scrape
+    kept as a fallback when the url does not actually serve image bytes.
     """
     lock = _cid_lock(camera_id, kind="poster")
     with lock:
@@ -817,6 +826,19 @@ def get_poster(camera_id: str, page_url: str, *, force: bool = False,
                 poster_url, error = _og_poster_from_page(page_url)
                 if poster_url:
                     source = "og"
+            elif proto == "jpeg":
+                # a raw still row: the url IS the live image — store the current
+                # bytes directly; when the url does not serve image bytes (e.g.
+                # a mislabeled page row), fall back to the og:image scrape.
+                raw_blob = _download_poster_image(page_url) if page_url else None
+                if raw_blob is not None and _is_image_bytes(raw_blob):
+                    return _store_poster_blob(camera_id, raw_blob, "direct")
+                if page_url and str(page_url).lower().startswith(("http://", "https://")):
+                    poster_url, error = _og_poster_from_page(page_url)
+                    if poster_url:
+                        source = "og"
+                if not poster_url:
+                    error = error or "raw still fetch failed"
             elif proto in ("hls", "mjpeg"):
                 # a raw stream url has no page to scrape — go straight to frame
                 error = "stream protocol: single-frame snapshot"
@@ -1049,10 +1071,11 @@ def _warm_candidates(family: str, host: str, protocol: str = ""):
     """[(camera_id, url, resolver, protocol)] for displayable rows worth warming.
 
     Resolver-host rows (skylinewebcams / youtube / skaping) are always
-    candidates. Raw hls/mjpeg stream rows — whose poster needs an ffmpeg
-    snapshot — are only candidates once the caller narrows with
-    ``--host``/``--family``/``--protocol``; a bare ``warm --kind poster`` must
-    never try to snapshot the whole multi-thousand-row stream wall.
+    candidates. Raw rows — hls/mjpeg (poster via ffmpeg snapshot) and jpeg
+    stills (poster via direct download) — are only candidates once the caller
+    narrows with ``--host``/``--family``/``--protocol``; a bare
+    ``warm --kind poster`` must never try to snapshot the whole
+    multi-thousand-row stream wall.
     """
     db_path = DATA_DIR / "worldfeed.db"
     if not db_path.exists():
@@ -1089,8 +1112,8 @@ def _warm_candidates(family: str, host: str, protocol: str = ""):
         if resolver is None:
             if not narrow:
                 continue          # no explicit narrowing: resolver hosts only
-            if row_proto not in ("hls", "mjpeg"):
-                continue          # only snapshot-grade streams qualify
+            if row_proto not in _RAW_POSTER_PROTOCOLS:
+                continue          # only snapshot-grade rows qualify
         out.append((r["camera_id"], r["url"], resolver, row_proto))
     out.sort()
     return out
@@ -1238,8 +1261,8 @@ def _add_resolve_arguments(parser) -> None:
     warm.add_argument("--host", default="", help="restrict to one url host (suffix match)")
     warm.add_argument("--protocol", default="",
                       help="restrict to one protocol (hls|mjpeg|jpeg|...); plain "
-                           "hls/mjpeg snapshot candidates are only ever included "
-                           "when --host/--family/--protocol narrows the set")
+                           "hls/mjpeg/jpeg snapshot candidates are only ever "
+                           "included when --host/--family/--protocol narrows the set")
     warm.add_argument("--limit", type=int, default=0,
                       help="max rows to fetch this run (0 = no cap)")
     warm.add_argument("--refresh", action="store_true",

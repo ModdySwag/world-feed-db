@@ -460,6 +460,106 @@ def test_poster_snapshot_offline():
         resolve.reset_caches()
 
 
+def test_warm_candidates_raw_rows_need_explicit_filter():
+    """Selector: a family of raw hls/mjpeg/jpeg rows yields candidates with an
+    explicit --family (or --host/--protocol) and stays 0 on a bare run."""
+    dbf = CACHE_ROOT / "warmfix" / "worldfeed.db"
+    conn = dbmod.connect(dbf)
+    dbmod.init_db(conn)
+    raw_rows = [
+        ("a" * 16, "https://raw-stream.example/live.m3u8", "fixturefam", "hls"),
+        ("b" * 16, "https://raw-stream.example/cam2.mjpg", "fixturefam", "mjpeg"),
+        ("c" * 16, "https://raw-still.example/cam.jpg", "fixturefam", "jpeg"),
+    ]
+    for cid, url, fam, proto in raw_rows:
+        conn.execute(
+            "INSERT INTO cameras (camera_id, url, source_family, provenance, protocol) "
+            "VALUES (?,?,?,?,?)", (cid, url, fam, "public_by_design", proto))
+    conn.commit()
+    conn.close()
+
+    orig_data_dir = resolve.DATA_DIR
+    resolve.DATA_DIR = dbf.parent          # _warm_candidates reads DATA_DIR/worldfeed.db
+    try:
+        # bare run: raw rows never qualify; a raw-only registry yields nothing
+        assert resolve._warm_candidates("", "", "") == []
+        # explicit --family includes every raw snapshot-grade row
+        got = resolve._warm_candidates("fixturefam", "", "")
+        assert [g[0] for g in got] == ["a" * 16, "b" * 16, "c" * 16], got
+        assert [g[2] for g in got] == [None, None, None]        # no resolver host
+        assert [g[3] for g in got] == ["hls", "mjpeg", "jpeg"]  # protocols kept
+        # --protocol alone is a narrowing too
+        assert [g[0] for g in resolve._warm_candidates("", "", "jpeg")] == ["c" * 16]
+        # --host narrowing works for raw rows as well
+        assert ([g[0] for g in resolve._warm_candidates("", "raw-still.example", "")]
+                == ["c" * 16])
+        # resolver-host rows stay candidates even on a bare run
+        conn = dbmod.connect(dbf)
+        conn.execute(
+            "INSERT INTO cameras (camera_id, url, source_family, provenance, protocol) "
+            "VALUES (?,?,?,?,?)", ("d" * 16, SKYLINE_URL, "otherfam",
+                                   "aggregator_directory", "iframe"))
+        conn.commit()
+        conn.close()
+        assert [g[0] for g in resolve._warm_candidates("", "", "")] == ["d" * 16]
+        assert ([g[0] for g in resolve._warm_candidates("fixturefam", "", "")]
+                == ["a" * 16, "b" * 16, "c" * 16])
+    finally:
+        resolve.DATA_DIR = orig_data_dir
+
+
+def test_poster_raw_jpeg_direct_offline():
+    """get_poster(protocol=jpeg): the row url is the live still -> source
+    'direct'; non-image bytes fall back to the og:image scrape."""
+    cid, cid2 = "9a" * 8, "8b" * 8
+    url = "https://stills.example/cam-cam.jpeg"
+    orig_get, orig_page = resolve._http_get, resolve.fetch_page
+    calls = {"n": 0}
+    seq = []
+
+    def fake_get(u, **kw):
+        calls["n"] += 1
+        assert u == url, u
+        return (_JPEG, {"content-type": "image/jpeg"}, url)
+
+    page_html = ('<html><head><meta property="og:image" '
+                 'content="https://stills.example/og.jpg"></head></html>')
+
+    def fake_get2(u, **kw):
+        seq.append(u)
+        if u == "https://stills.example/page-y.jpeg":
+            return (b"<html>not an image here</html>",
+                    {"content-type": "text/html"}, u)
+        if u == "https://stills.example/og.jpg":
+            return (_JPEG, {"content-type": "image/jpeg"}, u)
+        return (None, {}, u)
+
+    try:
+        resolve._http_get = fake_get
+        resolve.reset_caches()
+        path = resolve.get_poster(cid, url, force=True, protocol="jpeg")
+        assert path is not None and path.exists(), "direct jpeg poster not stored"
+        assert path.read_bytes() == _JPEG
+        assert calls["n"] == 1, "direct path must not refetch a page"
+        entry = resolve.poster_index_entry(cid)
+        assert entry and entry["ok"] is True and entry["source"] == "direct", entry
+
+        resolve._http_get = fake_get2
+        resolve.fetch_page = (lambda u, **kw:
+                              {"html": page_html, "cookie": "", "final_url": u})
+        resolve.reset_caches()
+        path2 = resolve.get_poster(cid2, "https://stills.example/page-y.jpeg",
+                                   force=True, protocol="jpeg")
+        assert path2 is not None and path2.exists(), "og fallback poster not stored"
+        entry2 = resolve.poster_index_entry(cid2)
+        assert entry2 and entry2["ok"] is True and entry2["source"] == "og", entry2
+        assert seq == ["https://stills.example/page-y.jpeg",
+                       "https://stills.example/og.jpg"], seq
+    finally:
+        resolve._http_get, resolve.fetch_page = orig_get, orig_page
+        resolve.reset_caches()
+
+
 def test_count_resolvable_rows():
     n = resolve.count_resolvable_rows(DB_PATH)
     assert n > 1500, f"expected the skyline iframe family in the registry, got {n}"
