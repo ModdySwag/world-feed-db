@@ -6,6 +6,11 @@ profiles/ACTIVE
 data/
 # Raw third-party dataset downloads (unlicensed; re-downloadable via documented URLs)
 research/exposed/raw/
+# Globe proof-harness bulk (reproducible; the vendor copies live in wfd/web/vendor/maplibre/)
+research/globe/proof/cameras.geojson
+research/globe/proof/maplibre-gl.js
+research/globe/proof/maplibre-gl.css
+research/globe/proof/fonts/
 # Python caches
 __pycache__/
 *.pyc

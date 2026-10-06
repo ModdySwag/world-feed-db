@@ -1,6 +1,6 @@
 /* wfd/web/js/views.js — view renderers for the world-feed-db viewer (v0.3).
  *
- * Views (hash router #/…): overview, map, wall, watch, search, personal, help.
+ * Views (hash router #/…): overview, map, globe, wall, watch, search, personal, help.
  * Each view: { title, render(root), refresh?, destroy? } — live updates are wired
  * through the app bus ('filters', 'prefs', 'stage', 'facets', 'refresh', 'settings').
  *
@@ -15,6 +15,7 @@ import {
   playerHandlers,
 } from './app.js';
 import { posterEl, createPlayer, startLivePreview, isMetadataOnly } from './player.js';
+import { globeView } from './globeview.js';
 
 /* ── local icons ─────────────────────────────────────────────────────── */
 
@@ -1356,6 +1357,7 @@ function fillHelpFacts(root) {
 export const VIEWS = {
   overview: overviewView,
   map: mapView,
+  globe: globeView,
   wall: wallView,
   watch: watchView,
   search: searchView,
@@ -1384,20 +1386,52 @@ export const HELP_SECTIONS = [
     id: 'views',
     title: 'Views & navigation',
     html: `
-      <p>Seven views, reachable from the menu bar, the command palette (Ctrl+K) or the number keys:</p>
+      <p>Eight views, reachable from the menu bar, the command palette (Ctrl+K) or the number keys:</p>
       <table class="help-table">
         <thead><tr><th>#</th><th>View</th><th>What it is for</th></tr></thead>
         <tbody>
           <tr><td>1</td><td>Overview</td><td>hero totals, top families and countries, quick-start cards</td></tr>
           <tr><td>2</td><td>Map</td><td>geographic browsing with clustered status-coloured pins</td></tr>
-          <tr><td>3</td><td>Wall</td><td>poster-first card grid of the current filter set</td></tr>
-          <tr><td>4</td><td>Watch</td><td>the multi-watch stage (1×1 / 2×2 / 3×3)</td></tr>
-          <tr><td>5</td><td>Search</td><td>full-text search with facets, sorting and multi-select</td></tr>
-          <tr><td>6</td><td>Personal</td><td>favourites: labels, reorder, export, send-to-watch</td></tr>
-          <tr><td>7</td><td>Help</td><td>this guide</td></tr>
+          <tr><td>3</td><td>World Map</td><td>lazy 3D globe — clustered pins, fly-to search, imagery layers</td></tr>
+          <tr><td>4</td><td>Wall</td><td>poster-first card grid of the current filter set</td></tr>
+          <tr><td>5</td><td>Watch</td><td>the multi-watch stage (1×1 / 2×2 / 3×3)</td></tr>
+          <tr><td>6</td><td>Search</td><td>full-text search with facets, sorting and multi-select</td></tr>
+          <tr><td>7</td><td>Personal</td><td>favourites: labels, reorder, export, send-to-watch</td></tr>
+          <tr><td>8</td><td>Help</td><td>this guide</td></tr>
         </tbody>
       </table>
       <p>The URL hash tracks the view (<code>#/wall</code>); filter state is captured by <b>Tools → Copy view link</b>.</p>`,
+  },
+  {
+    id: 'world-map',
+    title: 'World Map',
+    html: `
+      <p>The <b>World Map</b> view is a 3D globe (vendored MapLibre GL — still no CDN) over every
+      geocoded row: <b>~14k clustered pins</b>. Rows without coordinates are not on it — they live in Wall/Search.
+      The map library loads only when you open this view, and the view releases the WebGL context when you leave.</p>
+      <ul>
+        <li><b>Navigate</b>: drag to spin·rotate; <b>ctrl+drag</b> (or right-drag) tilts; wheel or <kbd>+</kbd>/<kbd>-</kbd> zooms;
+        <kbd>Shift</kbd>+arrows rotate/tilt and plain arrows pan once the map has focus (click it first).</li>
+        <li><b>Dive in</b>: click a cluster bubble — the globe flies in and expands it. At high zoom the projection
+        becomes a normal flat map automatically.</li>
+        <li><b>Pins</b>: click one for name, status and actions — <b>Watch</b> (player), <b>Details</b> (drawer), <b>★</b> (favourite);
+        double-click opens the player. Exposure rows are metadata-only: unverified-coloured dots with no actions.</li>
+        <li><b>Search</b> (top-left) is a text fly-to: pick a result and the globe flies there and highlights it.
+        <b>Random live cam</b> (toolbar, or press <kbd>r</kbd> while the globe has focus) teleports to a random live row.</li>
+        <li><b>Filters</b> apply to the pins instantly: status / protocol / family / country from the sidebar, plus the
+        ★-only toggle in the toolbar. Text search (<code>q</code>) is <em>not</em> applied on the globe — a chip says so.</li>
+        <li><b>What's here</b>: after the map settles, a chip shows how many cameras are in view; click it for a compact
+        list, click an item to fly to it. It hides when zoomed out past world level.</li>
+        <li><b>Copy link</b> (toolbar) stores centre / zoom / bearing / pitch in the URL as
+        <code>#/globe?lat=..&lng=..&z=..&b=..&p=..</code> — reopening the link restores exactly that view.</li>
+        <li><b>Imagery</b> (layers button, top-right): Esri World Imagery is the base; NASA GIBS Blue Marble adds the
+        low-zoom “from orbit” look (z0–8). Optional toggles: GIBS labels, night lights (Black Marble, dimmed),
+        today's Earth (VIIRS true colour, pinned to the current UTC day) and EOX Sentinel-2 cloudless
+        (<b>CC BY-NC-SA — non-commercial</b>). The exact attribution for every visible source sits at the bottom-right
+        (forced visible); Blue Marble/labels/night/today are public-domain NASA EOSDIS GIBS.</li>
+        <li><b>Auto-rotate</b> (toolbar): idle spin, off by default; pauses on any input and resumes after 20 s idle.
+        It is a persisted setting, like every layer toggle.</li>
+      </ul>`,
   },
   {
     id: 'finding',
@@ -1476,7 +1510,7 @@ export const HELP_SECTIONS = [
         <tbody>
           <tr><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td><td>command palette (commands + “search cameras for …”)</td></tr>
           <tr><td><kbd>/</kbd></td><td>focus search</td></tr>
-          <tr><td><kbd>1</kbd>…<kbd>7</kbd></td><td>jump to view</td></tr>
+          <tr><td><kbd>1</kbd>…<kbd>8</kbd></td><td>jump to view</td></tr>
           <tr><td><kbd>Esc</kbd></td><td>close palette / modal / drawer / menu, or leave the input</td></tr>
           <tr><td><kbd>f</kbd></td><td>favourite the selected camera</td></tr>
           <tr><td><kbd>m</kbd></td><td>mute / unmute sounds</td></tr>

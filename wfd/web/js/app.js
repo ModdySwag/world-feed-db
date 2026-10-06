@@ -27,7 +27,7 @@ const STATUS_HINT = {
   unverified: 'listed in an aggregator snapshot — never verified',
 };
 
-export const VIEW_ORDER = ['overview', 'map', 'wall', 'watch', 'search', 'personal', 'help'];
+export const VIEW_ORDER = ['overview', 'map', 'globe', 'wall', 'watch', 'search', 'personal', 'help'];
 
 const PROV_LABEL = { public: 'Public', directory: 'Directory', exposure: 'Exposure', all: 'All' };
 
@@ -41,6 +41,12 @@ export const DEFAULT_SETTINGS = {
   live_previews: false,
   max_live_tiles: 4,
   map_tiles: true,
+  globe_labels: false,             // World Map: GIBS Reference_Labels overlay
+  globe_night: false,              // World Map: VIIRS Black Marble (night lights)
+  globe_today: false,              // World Map: VIIRS true colour (today, UTC)
+  globe_eox: false,                // World Map: EOX Sentinel-2 cloudless (CC BY-NC-SA)
+  globe_autorotate: false,         // World Map: idle auto-rotate
+  globe_favonly: false,            // World Map: pins limited to favourites
   results_per_page: 60,
   accent: 'teal',                  // teal | violet | amber
   sidebar_open: true,
@@ -1727,7 +1733,7 @@ function wireKeyboard() {
     if (ev.key === 'f') { favouriteSelected(); return; }
     if (ev.key === '[') { changeTileSize(-1); return; }
     if (ev.key === ']') { changeTileSize(1); return; }
-    if (/^[1-7]$/.test(ev.key)) { go(VIEW_ORDER[Number(ev.key) - 1]); return; }
+    if (/^[1-8]$/.test(ev.key)) { go(VIEW_ORDER[Number(ev.key) - 1]); return; }
   });
 }
 
