@@ -1426,9 +1426,26 @@ export const HELP_SECTIONS = [
         <code>#/globe?lat=..&lng=..&z=..&b=..&p=..</code> — reopening the link restores exactly that view.</li>
         <li><b>Imagery</b> (layers button, top-right): Esri World Imagery is the base; NASA GIBS Blue Marble adds the
         low-zoom “from orbit” look (z0–8). Optional toggles: GIBS labels, night lights (Black Marble, dimmed),
-        today's Earth (VIIRS true colour, pinned to the current UTC day) and EOX Sentinel-2 cloudless
+        today's Earth (VIIRS true colour — with a <b>date picker</b>, max today; the day is pinned in the tile path
+        and the imagery lags ~1–2 days) and EOX Sentinel-2 cloudless
         (<b>CC BY-NC-SA — non-commercial</b>). The exact attribution for every visible source sits at the bottom-right
         (forced visible); Blue Marble/labels/night/today are public-domain NASA EOSDIS GIBS.</li>
+        <li><b>Day/night terminator</b> (toolbar toggle): shades the night hemisphere and draws a soft glow along the
+        terminator, computed client-side from the current UTC time and refreshed every minute. It is a
+        <b>visual cue only</b> — no imagery is swapped.</li>
+        <li><b>Tour</b> (toolbar): a cinematic loop over your favourites in saved order (or the Watch stage when there
+        are none). Each stop shows a bottom bar with name · family · status · <b>k/n</b> and <b>Next</b>/<b>Stop</b>
+        buttons; stops loop with the counter still counting up. <kbd>Esc</kbd> stops a running tour. Auto-rotate is
+        held for the duration.</li>
+        <li><b>Measure</b> (toolbar): eases the camera top-down and turns clicks into vertices; a floating readout shows
+        the running total and last segment — <b>great-circle distances</b>, km + miles. <b>Clear</b> wipes the points,
+        double-click or <b>Done</b> finishes and restores your camera, <kbd>Esc</kbd> exits too. While measuring,
+        clicks never open pins/clusters.</li>
+        <li><b>Minimap</b> (bottom-left, on by default): a small Leaflet inset on the same Esri imagery. Its marker
+        tracks the globe — a rectangle for wide views, a centre dot + halo when zoomed in (z≥7). Click it to fly the
+        globe there; the × hides it and the layers list re-enables it.</li>
+        <li><b>Heatmap</b> (layers list): every geocoded row as a density heatmap; the clustered pins dim while it is
+        on. The header line states coverage exactly — “N geocoded of T rows”.</li>
         <li><b>Auto-rotate</b> (toolbar): idle spin, off by default; pauses on any input and resumes after 20 s idle.
         It is a persisted setting, like every layer toggle.</li>
       </ul>`,

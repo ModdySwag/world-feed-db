@@ -44,7 +44,11 @@ export const DEFAULT_SETTINGS = {
   globe_labels: false,             // World Map: GIBS Reference_Labels overlay
   globe_night: false,              // World Map: VIIRS Black Marble (night lights)
   globe_today: false,              // World Map: VIIRS true colour (today, UTC)
+  globe_today_date: '',            // World Map: date for the VIIRS layer ('' -> today, UTC)
   globe_eox: false,                // World Map: EOX Sentinel-2 cloudless (CC BY-NC-SA)
+  globe_terminator: false,         // World Map: day/night terminator (visual cue only)
+  globe_heat: false,               // World Map: density heatmap of the geocoded rows
+  globe_minimap: true,             // World Map: minimap inset (bottom-left)
   globe_autorotate: false,         // World Map: idle auto-rotate
   globe_favonly: false,            // World Map: pins limited to favourites
   results_per_page: 60,

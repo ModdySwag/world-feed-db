@@ -868,3 +868,69 @@ html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-
 .gpop-warn { font-size: 10.5px; color: var(--unverified); background: rgba(167, 139, 250, .08); border: 1px solid rgba(167, 139, 250, .35); border-radius: 6px; padding: 4px 7px; }
 .gpop-actions { display: flex; gap: 6px; align-items: center; }
 .btn.icon-only.on { border-color: var(--accent); color: var(--accent); }
+
+/* ── globe: stretch features (terminator · date · tour · measure · minimap) ── */
+.globe-date { display: flex; align-items: center; gap: 6px; padding: 3px 10px 7px 30px; }
+.globe-date[hidden] { display: none; }
+.globe-date input[type="date"] {
+  background: rgba(255, 255, 255, .05); border: 1px solid var(--border-strong); border-radius: 6px;
+  color: var(--txt); font-size: 11.5px; padding: 2px 6px; color-scheme: dark; outline: none;
+}
+.globe-date input[type="date"]:focus { border-color: var(--accent); }
+.globe-date-reset, #globe-date-reset {
+  border: 0; background: transparent; color: var(--accent); font-size: 11px; cursor: pointer; padding: 2px 4px;
+}
+#globe-date-reset:hover { text-decoration: underline; }
+
+.globe-tourbar {
+  position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 8;
+  background: rgba(13, 17, 24, .93); backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong); border-radius: 9px; box-shadow: var(--shadow);
+  padding: 6px 11px; max-width: min(600px, 88%); min-width: 0;
+}
+.globe-tourbar[hidden] { display: none; }
+.globe-tourbar:not([hidden]) { display: flex; align-items: center; gap: 10px; }
+.gt-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+.gt-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
+.gt-count { font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; }
+
+.globe-mpanel {
+  position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 8;
+  background: rgba(13, 17, 24, .93); backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong); border-radius: 9px; box-shadow: var(--shadow);
+  padding: 5px 10px;
+}
+.globe-mpanel[hidden] { display: none; }
+.globe-mpanel:not([hidden]) { display: flex; align-items: center; gap: 8px; }
+.gm-note { font-size: 10px; color: var(--faint); }
+
+.globe-mread {
+  position: absolute; z-index: 8; pointer-events: none; transform: translate(14px, 14px);
+  background: rgba(13, 17, 24, .92); border: 1px solid var(--border-strong); border-radius: 7px;
+  padding: 4px 9px; min-width: 118px; box-shadow: var(--shadow);
+}
+.globe-mread[hidden] { display: none; }
+.gm-line { font-size: 12px; color: var(--txt); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gm-line b { color: var(--accent); }
+.gm-seg { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.globe-mini {
+  position: absolute; left: 10px; bottom: 10px; z-index: 6; width: 260px; height: 130px;
+  border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden;
+  background: #05070d; box-shadow: var(--shadow);
+}
+.globe-mini[hidden] { display: none; }
+.globe-mini-host { position: absolute; inset: 0; }
+.globe-mini .leaflet-container { background: #05070d; font-family: inherit; }
+/* the flat-map dark filter inverts OSM greys — imagery needs a plain dim instead */
+.globe-mini .leaflet-tile-pane { filter: brightness(.82) saturate(.72) contrast(.92); }
+.globe-mini-x {
+  position: absolute; top: 3px; right: 3px; z-index: 500; width: 19px; height: 19px;
+  border-radius: 5px; border: 1px solid var(--border-strong); background: rgba(8, 10, 14, .82);
+  color: var(--muted); cursor: pointer; font-size: 12px; line-height: 1; padding: 0;
+}
+.globe-mini-x:hover { color: #fff; border-color: var(--border-strong); }
+/* minimap on: keep the scale bar and the “what’s here” chip clear of the inset */
+#globe-wrap.gmini .globe-here { bottom: 150px; }
+#globe-wrap.gmini .globe-here-list { bottom: 182px; }
+#globe-wrap.gmini .maplibregl-ctrl-bottom-left { left: 276px; }
