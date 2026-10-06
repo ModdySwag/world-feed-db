@@ -380,6 +380,82 @@ def test_youtube_negative_stores_reason_offline():
         resolve.reset_caches()
 
 
+def test_youtube_extractor_retry_offline():
+    """First probe fails with the anti-bot gate ('extractor' class): ONE retry
+    adds the verified player-client args and its rc=0 + id is the normal ytid."""
+    url = YT_CHANNEL_URL
+    orig_tool, orig_run = resolve._tool, resolve._run
+    calls = []
+
+    def fake_run(cmd, timeout):
+        calls.append(list(cmd))
+        assert timeout == 60, timeout          # 60 s per attempt, both attempts
+        if len(calls) == 1:
+            assert "--extractor-args" not in cmd, cmd   # first probe stays plain
+            return (1, "", "ERROR: [youtube] G91ja1rWV3I: Sign in to confirm "
+                           "you\u2019re not a bot. Use --cookies-from-browser "
+                           "or --cookies for the authentication.")
+        return (0, "M1n2O3p4Q5r\n", "")
+
+    resolve._tool = lambda name: "yt-dlp" if name == "yt-dlp" else None
+    resolve._run = fake_run
+    try:
+        resolve.reset_caches()
+        res = resolve.resolve_live_youtube(url)
+        assert res and res["kind"] == "ytid" and res["id"] == "M1n2O3p4Q5r", res
+        assert res["poster"] == "https://i.ytimg.com/vi/M1n2O3p4Q5r/hqdefault.jpg"
+        assert res["ttl_s"] == 1800
+        assert len(calls) == 2, calls          # exactly one retry — never more
+        retry = calls[1]
+        assert retry[retry.index("--extractor-args") + 1] == \
+            "youtube:player_client=default,-tv,-web_embedded", retry
+        assert retry == ["yt-dlp", "--simulate", "--print", "id", "--no-warnings",
+                         "--extractor-args",
+                         "youtube:player_client=default,-tv,-web_embedded", url], retry
+        assert resolve.yt_failure_reason(url) == ""    # success cleared the failure
+        print("  retry argv:", " ".join(calls[1]))
+    finally:
+        resolve._tool, resolve._run = orig_tool, orig_run
+        resolve.reset_caches()
+
+
+def test_youtube_extractor_retry_failure_keeps_reason_offline():
+    """Both attempts fail: the ORIGINAL 'extractor' class is what gets recorded —
+    the retry's own (would-be-different-class) stderr never overwrites it."""
+    url = YT_CHANNEL_URL
+    orig_tool, orig_run = resolve._tool, resolve._run
+    calls = []
+
+    def fake_run(cmd, timeout):
+        calls.append(list(cmd))
+        assert timeout == 60, timeout
+        if len(calls) == 1:
+            return (1, "", "ERROR: [youtube] G91ja1rWV3I: Sign in to confirm "
+                           "you\u2019re not a bot.")
+        # would classify 'gone' if (wrongly) re-classified after the retry
+        return (1, "", "ERROR: [youtube:tab] @WebCamNL/live: Unable to download "
+                       "API page: HTTP Error 404: Not Found")
+
+    resolve._tool = lambda name: "yt-dlp" if name == "yt-dlp" else None
+    resolve._run = fake_run
+    try:
+        resolve.reset_caches()
+        cid = "c0ffee0000000003"
+        assert resolve.get_live(cid, url) is None
+        assert len(calls) == 2, calls              # exactly one retry, then stop
+        retry = calls[1]
+        assert retry[retry.index("--extractor-args") + 1] == \
+            "youtube:player_client=default,-tv,-web_embedded", retry
+        assert resolve.yt_failure_reason(url) == "extractor"    # original class kept
+        data = json.loads((CACHE_ROOT / "resolve" / "live.json").read_text(encoding="utf-8"))
+        assert data[cid]["ok"] is False, data[cid]
+        assert data[cid]["reason"] == "extractor", data[cid]
+        assert data[cid]["error"] == "youtube-live resolve failed"   # legacy field kept
+    finally:
+        resolve._tool, resolve._run = orig_tool, orig_run
+        resolve.reset_caches()
+
+
 def test_fixture_skaping_og():
     """skaping player pages resolve to their newest 10-minute S3 JPEG (kind image)."""
     html = _read_fixture("skaping_page.html")

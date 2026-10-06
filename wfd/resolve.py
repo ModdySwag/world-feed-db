@@ -530,21 +530,41 @@ def classify_youtube_failure(rc, err) -> str:
     return "error"
 
 
+# Owner-approved anti-bot-gate fallback lever (verified working while the gate
+# was up, 2026-10-06): the *default* player client with tv/web_embedded dropped.
+# Used for exactly ONE retry when the first probe fails with the 'extractor'
+# class. (--remote-components ejs:github also worked but stays unused — owner
+# decision deferred.)
+YT_EXTRACTOR_FALLBACK_ARGS = ("--extractor-args",
+                              "youtube:player_client=default,-tv,-web_embedded")
+
+
 def resolve_live_youtube(url: str) -> Optional[dict]:
     """Resolve a YouTube (live) url to its video id via yt-dlp.
 
     On failure the classified reason is recorded first — read it back with
-    :func:`yt_failure_reason` so the negative verdict can carry it.
+    :func:`yt_failure_reason` so the negative verdict can carry it. When the
+    FIRST probe fails with the 'extractor' class (the anti-bot gate class,
+    often transient) ONE retry runs with :data:`YT_EXTRACTOR_FALLBACK_ARGS`.
+    If the retry also fails the ORIGINAL classification is what gets recorded —
+    the failure reason is written exactly once, never per attempt.
     """
     ytdlp = _tool("yt-dlp")
     if not ytdlp:
         _record_yt_failure(url, "error")
         return None
-    rc, out, err = _run([ytdlp, "--simulate", "--print", "id", "--no-warnings", url],
-                        timeout=60)
+    cmd = [ytdlp, "--simulate", "--print", "id", "--no-warnings", url]
+    rc, out, err = _run(cmd, timeout=60)
     if rc != 0:
-        _record_yt_failure(url, classify_youtube_failure(rc, err))
-        return None
+        reason = classify_youtube_failure(rc, err)
+        if reason == "extractor":
+            # anti-bot gating: retry once with the verified player-client
+            # selection (same 60 s bound; no output — callers stay silent).
+            rc, out, err = _run(
+                cmd[:-1] + list(YT_EXTRACTOR_FALLBACK_ARGS) + [url], timeout=60)
+        if rc != 0:
+            _record_yt_failure(url, reason)   # original class — never reclassified
+            return None
     vid = ""
     for line in (out or "").splitlines():
         line = line.strip()
