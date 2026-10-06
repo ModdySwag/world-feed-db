@@ -2,6 +2,8 @@
 profiles/moddy/
 # Active-profile pointer (personal convenience; a fresh clone has none -> "clean")
 profiles/ACTIVE
+# Local key files inside any profile — never committed (only .env.example ships)
+profiles/*/.env
 # Working data: registry DB + ingest outputs (never committed)
 data/
 # Raw third-party dataset downloads (unlicensed; re-downloadable via documented URLs)
