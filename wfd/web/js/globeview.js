@@ -155,7 +155,7 @@ const SINGLE_MINZOOM = 3.5;                // below this the singles regress (cl
 const PULSE_LAYER = 'globe-live-pulse';    // live-dot glow, rAF-animated
 const PULSE_MINZOOM = 4; const PULSE_MAXZOOM = 13;
 const CITY_MIN_ROWS = 8;                   // fewest rows a city ever needs to be labelled
-const CITY_CAP = 200;                      // …and only the top-N cities are built
+const CITY_CAP = 600;                      // …and only the top-N cities are built (z9 band needs ~350)
 const CITY_MAXZOOM = 9.5;                  // the city tier regresses past z9.5
 const CITY_BANDS = [[9, 8], [7, 15], [5, 40]];    // zoom >= z -> min cams for a label
 const COUNTRY_TOP = 12;                    // ranks 1-12 keep the full name; the rest "CC · N"

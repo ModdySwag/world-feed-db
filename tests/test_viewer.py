@@ -463,11 +463,20 @@ def test_globe_points_shape_and_count():
             sorted(f["properties"])
         assert isinstance(f["properties"]["t"], str), f
 
-    # the city key (t) mirrors the db: every trimmed non-empty city on a
-    # geocoded row must appear, and nothing may be invented
+    # the city key (t) mirrors the DISPLAY-EFFECTIVE city: the source city
+    # unless it is empty/placeholder, else the wfd.geo fallback
+    # (wfd.schema.CITY_JUNK — e.g. a literal '-' is not a city name).
+    from wfd.schema import CITY_JUNK
+    junk = ", ".join("'%s'" % j.replace("'", "''") for j in sorted(CITY_JUNK))
+    try:                                   # city_geo arrives with the geocode columns
+        _db_rows("SELECT city_geo FROM cameras LIMIT 1")
+        fb = "COALESCE(city_geo, '')"
+    except sqlite3.OperationalError:
+        fb = "''"
+    eff = "CASE WHEN lower(trim(city)) IN (%s) THEN %s ELSE trim(city) END" % (junk, fb)
     expected_city = _db_rows(
         "SELECT COUNT(*) AS n FROM cameras WHERE lat IS NOT NULL AND lon IS NOT NULL "
-        "AND NOT (lat = 0 AND lon = 0) AND TRIM(city) != ''" + gate)[0]["n"]
+        "AND NOT (lat = 0 AND lon = 0) AND " + eff + " != ''" + gate)[0]["n"]
     city_n = sum(1 for f in feats if f["properties"]["t"])
     assert city_n == expected_city, (city_n, expected_city)
     assert expected_city > 0, "no geocoded rows carry a city — city tier would be empty"

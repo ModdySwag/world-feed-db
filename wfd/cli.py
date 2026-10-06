@@ -52,7 +52,7 @@ def main(argv=None) -> int:
         "status": ("profile, key statuses, and db summary", cmd_status),
     }
     for modname in ("wfd.creds", "wfd.onboarding", "wfd.registry", "wfd.health",
-                    "wfd.viewer", "wfd.resolve"):
+                    "wfd.viewer", "wfd.resolve", "wfd.geo"):
         try:
             mod = importlib.import_module(modname)
         except ImportError:

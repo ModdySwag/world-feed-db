@@ -19,7 +19,7 @@ API (the wfd/web/ frontend is built to exactly this contract):
     GET  /api/cameras            -> GeoJSON FeatureCollection (list/search)
     GET  /api/globe-points       -> compact GeoJSON FeatureCollection of every
                                     geocoded row for the globe view: short keys
-                                    {c,n,s,p,f,y,v} + Point [lon,lat]. Rows with
+                                    {c,n,s,p,f,y,v,t} + Point [lon,lat]. Rows with
                                     no coordinates and the (0,0) null-island rows
                                     are skipped; exposure rows are included only
                                     while the surface is on (they render
@@ -107,6 +107,7 @@ from . import db as dbmod
 from . import prefs as prefsmod
 from . import profile
 from . import resolve as resolvemod
+from . import schema as schemamod
 
 WEB_DIR = pathlib.Path(__file__).resolve().parent / "web"
 DEFAULT_PORT = 8773
@@ -138,6 +139,33 @@ _SORT_COLUMNS = frozenset({
 })
 
 _CAMERA_ID_RE = re.compile(r"[0-9a-f]{16}")
+
+# Effective-city plumbing (wfd.geo enrichment): every display path shows the
+# source city when it is real, else the geocoded fallback. The SQL twin keeps
+# ORDER BY sort=city consistent with the Python-side sort.
+_EFFECTIVE_CITY_SQL = (
+    "NULLIF(CASE WHEN lower(trim(city)) IN ("
+    + ", ".join("'" + j.replace("'", "''") + "'" for j in sorted(schemamod.CITY_JUNK))
+    + ") THEN COALESCE(city_geo, '') ELSE city END, '')"
+)
+
+
+def _has_city_geo(conn) -> bool:
+    """True when the DB carries the geocode columns (pre-geocode DBs don't)."""
+    try:
+        return any(r[1] == "city_geo" for r in conn.execute("PRAGMA table_info(cameras)"))
+    except sqlite3.Error:
+        return False
+
+
+def _eff_city(row) -> str:
+    """Display city for a sqlite3.Row: source city unless empty/placeholder,
+    else the wfd.geo fallback (missing columns on pre-geocode DBs are ignored)."""
+    try:
+        geo = row["city_geo"]
+    except (IndexError, KeyError):
+        geo = ""
+    return schemamod.effective_city(row["city"], geo)
 
 
 # ---------------------------------------------------------------------------
@@ -269,18 +297,30 @@ def _clause_chunks(clause: str, args: list, candidates):
 
 
 def _sort_rows(rows, sort: str, order: str):
-    """Python-side sort matching the SQL path (NULLs last; case-insensitive)."""
-    valued = [r for r in rows if r[sort] is not None]
-    nulls = [r for r in rows if r[sort] is None]
-    valued.sort(key=lambda r: (str(r[sort]).lower(), r["camera_id"]),
+    """Python-side sort matching the SQL path (NULLs last; case-insensitive).
+
+    ``city`` sorts on the EFFECTIVE city (source, else city_geo) so enriched
+    rows group with the rest instead of falling to the empty tail.
+    """
+    if sort == "city":
+        def key_of(r):
+            return _eff_city(r) or None
+    else:
+        def key_of(r):
+            return r[sort]
+    valued = [r for r in rows if key_of(r) is not None]
+    nulls = [r for r in rows if key_of(r) is None]
+    valued.sort(key=lambda r: (str(key_of(r)).lower(), r["camera_id"]),
                 reverse=(order == "desc"))
     return valued + nulls
 
 
 def _fetch_rows(conn, clause, args, *, candidates, sort, order, limit, offset):
+    sort_expr = (_EFFECTIVE_CITY_SQL if sort == "city" and _has_city_geo(conn)
+                 else sort)
     if candidates is None:
         sql = (f"SELECT * FROM cameras WHERE {clause} "
-               f"ORDER BY ({sort} IS NULL), {sort} COLLATE NOCASE {order.upper()}, camera_id "
+               f"ORDER BY ({sort_expr} IS NULL), {sort_expr} COLLATE NOCASE {order.upper()}, camera_id "
                f"LIMIT ? OFFSET ?")
         return conn.execute(sql, (*args, limit, offset)).fetchall()
     rows = []
@@ -327,7 +367,7 @@ def _display_props(row: sqlite3.Row, resolve_on: bool = True) -> dict:
     props = {
         "camera_id": row["camera_id"],
         "name": row["name"],
-        "city": row["city"],
+        "city": _eff_city(row),
         "country": row["country"],
         "source_family": row["source_family"],
         "provenance": provenance,
@@ -758,10 +798,15 @@ class ViewerHandler(SimpleHTTPRequestHandler):
         where = ["lat IS NOT NULL", "lon IS NOT NULL", "NOT (lat = 0 AND lon = 0)"]
         if not self._exposure_enabled():
             where.append("provenance != 'exposure_aggregator'")
+        cols = ("camera_id, name, status, protocol, source_family, country, "
+                "city, lon, lat, provenance")
         try:
             rows = conn.execute(
-                "SELECT camera_id, name, status, protocol, source_family, country, "
-                "city, lon, lat, provenance FROM cameras WHERE " + " AND ".join(where)
+                f"SELECT {cols}, city_geo FROM cameras WHERE " + " AND ".join(where)
+            ).fetchall()
+        except sqlite3.OperationalError:      # DB predates the geocode columns
+            rows = conn.execute(
+                f"SELECT {cols} FROM cameras WHERE " + " AND ".join(where)
             ).fetchall()
         finally:
             conn.close()
@@ -776,7 +821,7 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                 "f": row["source_family"] or "",
                 "y": (row["country"] or "").strip(),
                 "v": row["provenance"],
-                "t": (row["city"] or "").strip()[:48],
+                "t": _eff_city(row)[:48],
             },
         } for row in rows]
         self._send_json(200, {"type": "FeatureCollection", "features": features})

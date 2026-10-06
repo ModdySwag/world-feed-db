@@ -181,3 +181,5 @@ Modules: `wfd/ingest/newsrc/<family>.py` · runner: `py -3.11 -m wfd.ingest.news
 | youtube-live-cams | public_by_design | 13 | Steamboat + South Padre channels | oembed verified; source-registry module |
 | skaping | public_by_design | 877 | `sitemap.players.xml` | player-page urls; timestamped captures in meta only |
 | webcamtaxi | aggregator_directory | 2,016 | `webcamtaxi.com/en/webcams.html` all-cams list | 2,219 pages; 195 no-embed skipped |
+
+**Reference data (not a feed):** GeoNames **cities1000** (CC BY 4.0) — offline city enrichment for `wfd geo city`; manifest + sha256 in `data/geo/manifest.json` (PLAN A29).

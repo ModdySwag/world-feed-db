@@ -15,7 +15,7 @@ import pathlib
 import sqlite3
 from typing import Iterable, Optional, Union
 
-from .schema import CameraRow
+from .schema import CameraRow, effective_city
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 DEFAULT_DB = REPO_ROOT / "data" / "worldfeed.db"
@@ -82,6 +82,7 @@ def connect(path: Optional[Union[pathlib.Path, str]] = None,
 def init_db(conn: sqlite3.Connection) -> None:
     conn.executescript(_DDL)
     ensure_health_columns(conn)
+    ensure_city_columns(conn)
     conn.commit()
 
 
@@ -101,6 +102,24 @@ def ensure_health_columns(conn: sqlite3.Connection) -> bool:
     conn.execute(
         "ALTER TABLE cameras ADD COLUMN fail_count INTEGER NOT NULL DEFAULT 0"
     )
+    return True
+
+
+def ensure_city_columns(conn: sqlite3.Connection) -> bool:
+    """Idempotent migration: city-geocoding columns (owned by ``wfd.geo``).
+
+    ``city_geo``/``city_geo_km``/``city_geo_src``/``city_geo_at`` are written by
+    the geocoding pass, never by ingest, so — like ``fail_count`` — they stay
+    out of ``_DDL``/``_COLUMNS``: a re-ingest leaves them untouched and fresh
+    inserts take their defaults. Returns True when this call added the columns.
+    """
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(cameras)")}
+    if "city_geo" in cols:
+        return False
+    conn.execute("ALTER TABLE cameras ADD COLUMN city_geo TEXT NOT NULL DEFAULT ''")
+    conn.execute("ALTER TABLE cameras ADD COLUMN city_geo_km REAL")
+    conn.execute("ALTER TABLE cameras ADD COLUMN city_geo_src TEXT NOT NULL DEFAULT ''")
+    conn.execute("ALTER TABLE cameras ADD COLUMN city_geo_at TEXT NOT NULL DEFAULT ''")
     return True
 
 
@@ -138,11 +157,40 @@ def upsert(conn: sqlite3.Connection, row: CameraRow) -> None:
     rid = conn.execute(
         "SELECT rowid FROM cameras WHERE camera_id = ?", (row.camera_id,)
     ).fetchone()[0]
-    conn.execute("DELETE FROM cameras_fts WHERE rowid = ?", (rid,))
+    refresh_fts(conn, rid)
+
+
+def refresh_fts(conn: sqlite3.Connection, rowid: int) -> None:
+    """(Re)build the FTS row for one ``cameras.rowid`` from current table state.
+
+    FTS carries the EFFECTIVE city (source ``city``, else the ``city_geo``
+    fallback — ``wfd.schema.effective_city``) so search results match what the
+    viewer displays. Falls back to source-only on pre-geocode DBs.
+    """
+    try:
+        r = conn.execute(
+            "SELECT camera_id, name, city, city_geo, country, source_family, tags "
+            "FROM cameras WHERE rowid = ?", (rowid,)
+        ).fetchone()
+        city = effective_city(r["city"], r["city_geo"])
+    except sqlite3.OperationalError:          # DB predates the geocode columns
+        r = conn.execute(
+            "SELECT camera_id, name, city, country, source_family, tags "
+            "FROM cameras WHERE rowid = ?", (rowid,)
+        ).fetchone()
+        city = effective_city(r["city"], "")
+    try:
+        tags = json.loads(r["tags"] or "[]")
+    except (TypeError, ValueError):
+        tags = []
+    if not isinstance(tags, list):
+        tags = []
+    conn.execute("DELETE FROM cameras_fts WHERE rowid = ?", (rowid,))
     conn.execute(
         "INSERT INTO cameras_fts (rowid, camera_id, name, city, country, source_family, tags) "
         "VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (rid, row.camera_id, row.name, row.city, row.country, row.source_family, " ".join(row.tags)),
+        (rowid, r["camera_id"], r["name"], city, r["country"], r["source_family"],
+         " ".join(str(t) for t in tags)),
     )
 
 
@@ -172,9 +220,13 @@ def get(conn: sqlite3.Connection, camera_id: str) -> Optional[CameraRow]:
 
 
 def _row_from_sql(r: sqlite3.Row) -> CameraRow:
+    # city is display-effective (source city, else the wfd.geo fallback) so the
+    # detail payload matches the rest of the viewer surface.
+    keys = r.keys()
     return CameraRow(
         camera_id=r["camera_id"], url=r["url"], source_family=r["source_family"],
-        provenance=r["provenance"], name=r["name"], country=r["country"], city=r["city"],
+        provenance=r["provenance"], name=r["name"], country=r["country"],
+        city=effective_city(r["city"], r["city_geo"] if "city_geo" in keys else ""),
         lat=r["lat"], lon=r["lon"], protocol=r["protocol"], status=r["status"],
         snapshot_date=r["snapshot_date"], fetch_date=r["fetch_date"],
         last_verified=r["last_verified"], geo_confidence=r["geo_confidence"],

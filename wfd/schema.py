@@ -155,3 +155,20 @@ def redact_and_flag(url: str) -> tuple[str, bool, bool]:
     """Returns ``(url, was_redacted, credential_present)`` for ingest callers."""
     red, was = redact_url(url)
     return red, was, was
+
+
+# --- city display semantics (wfd.geo enrichment) ---------------------------------------
+
+# Placeholder "cities" seen in source data that carry no information; treated as
+# empty by the display and geocoding paths (never shown as a city name).
+CITY_JUNK = frozenset({"", "-", "--", "n/a", "na", "none", "null", "unknown", "?", "??"})
+
+
+def effective_city(city: str, city_geo: str = "") -> str:
+    """The city to display: the source value when it is real, else the geocoded
+    fallback (``wfd.geo``). Returns "" when neither carries a usable name."""
+    for candidate in (city, city_geo):
+        c = (candidate or "").strip()
+        if c and c.lower() not in CITY_JUNK:
+            return c
+    return ""

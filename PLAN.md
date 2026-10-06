@@ -399,3 +399,15 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - **Verification (real Chromium on scratch :8791, CDP-driven)**: backdrop-release drag → modal open + clamp (8,8) · move +250/+180 exact · SE grow 780→940 (height capped vh−16) · shrink → exact min 360×280 · drag beyond bottom-right → edges vw−8/vh−8 · plain backdrop click still closes · reopen restores geometry exactly · dblclick 1246×552 ↔ restore. Shots `research/player/01–04`; prefs byte-restored (sha1 fe7a54c3). Viewer 19/19.
 - **Live**: static files — owner Ctrl+F5.
 
+### A29 · City geocoding — wfd.geo (GeoNames cities1000) + effective-city display everywhere
+
+> Trigger: continuation shelf pick — owner ("whichever of the four you choose"); chosen: richer World Map mid-zoom city labels.
+
+- **New `wfd/geo.py`**: `wfd geo fetch` → cities1000.zip (GeoNames, CC BY 4.0; manifest w/ sha256 + dump date) · `wfd geo city [--family --limit --refresh --dry-run --gate-km]` — resumable, evidence `data/geo/city-<ts>.jsonl`, full pass ≈ 2–3 s over 14,210 geo rows. Writes `city_geo`/`city_geo_km`/`city_geo_src`/`city_geo_at` — columns owned by the pass (`db.ensure_city_columns()`), never clobbered by ingest; re-run after `wfd db load --reset`.
+- **Matching laws (calibrated live)**: 25 km gate · PPLX sub-city sections are a fallback only — real cities win; a section is used when nothing else is near (some whole towns are PPLX-coded, e.g. Wagga Wagga) · metro preference (≥8× pop, ≥250k people, within +5 km outranks the micro-locality — Rome over the Trevi rione; Seoul over Yongsan-dong).
+- **Effective city everywhere**: `wfd.schema.effective_city` (source city unless empty/placeholder — a literal "-" is not a city) coalesced by the viewer (globe `t`, /api/cameras, detail payload, `sort=city`) and maintained in FTS (`db.refresh_fts`; re-loads preserve it).
+- **Results**: geo rows with a city **1,895 → 14,065 / 14,210 (99.0%)** (12,170 matched · 145 honestly beyond gate). Top city groups read like a world atlas: Rome 436 · Seoul 216 · Tokyo 169 · New York City 116 · Sydney 110 · Los Angeles 106 · …; district artefacts eliminated (Trevi / Financial District / Madrid Centro / Yongsan-dong → 0). City tier cap 200 → 600 so the whole z9 band builds (353 cities with ≥8 cams). Screenshots `research/geo/`.
+- **Suites**: geo 9/9 (new) · viewer 19/19 (the globe test now mirrors the effective-city semantics) · full regression 24 suites / 341 checks green. Viewer restarted (:8773).
+- **Companion**: QLD poster warm completed 137/137 (0 fail); recurring QLD health sweep still running at fold time (~120 s cadence, conditional GET) — registry verdicts land as it finishes.
+
+
