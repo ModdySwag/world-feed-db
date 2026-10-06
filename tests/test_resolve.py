@@ -2,8 +2,9 @@
 
 Unit tests run fully offline against the fixture page/playlist and a TEMP
 WFD_DATA_DIR cache root (nothing under data/ is touched by this file). The
-final test is a real-network end-to-end proof for one skyline cam; when the
-network is unavailable it fails loudly rather than pretending.
+final tests are real-network end-to-end proofs (the skyline cam chain and the
+skaping still); when the network is unavailable they fail loudly rather than
+pretending.
 
 Test functions are named test_* so they also work under pytest.
 """
@@ -37,6 +38,21 @@ DB_PATH = dbmod.DEFAULT_DB
 SKYLINE_CID = "507b64f69e709039"
 SKYLINE_URL = ("https://www.skylinewebcams.com/en/webcam/ellada/crete/"
                "heraklion/viannos.html")
+# Candidate cams for the live e2e proof. A single skyline cam can be OFFLINE
+# for days (the site then serves a page with NO player/token — e.g. viannos on
+# 2026-10-06); that is a valid cam state, not a resolver failure. The e2e walks
+# candidates until one resolves to HLS and proves the full chain on it.
+SKYLINE_CANDIDATES = [
+    (SKYLINE_CID, SKYLINE_URL),                       # viannos (fixture cam)
+    ("e2e0000000000trevi",
+     "https://www.skylinewebcams.com/en/webcam/italia/lazio/roma/fontana-di-trevi.html"),
+    ("e2e00000000000etna",
+     "https://www.skylinewebcams.com/en/webcam/italia/sicilia/catania/vulcano-etna-sud.html"),
+    ("e2e000000sancassiano",
+     "https://www.skylinewebcams.com/en/webcam/italia/trentino-alto-adige/bolzano/san-cassiano-dolomiti.html"),
+    ("e2e000000000000tropea",
+     "https://www.skylinewebcams.com/en/webcam/italia/calabria/vibo-valentia/tropea.html"),
+]
 SKAPING_CID = "eedcbc5b9badeb3f"
 SKAPING_URL = "https://www.skaping.com/millau/pouncho/panoramique-droite"
 SKAPING_STILL_URL = resolve.parse_social_image(
@@ -87,6 +103,99 @@ def test_fixture_token_regex():
     assert len(m.group(1)) >= 10, m.group(1)
     inline = resolve.SKYLINE_TOKEN_RE.search("x source:'livee.m3u8?a=abc123' y")
     assert inline and inline.group(1) == "abc123"
+
+
+def test_skyline_page_variants():
+    """Three live page shapes: HLS token | YouTube embed | OFFLINE (no stream).
+
+    The OFFLINE capture is the real viannos page (the fixture cam went down on
+    2026-10-06): it carries NO 'livee.m3u8' token at all — which is what
+    "the token moved" reports actually saw. The resolver must classify it as
+    'offline' (a dead cam), never treat it as an extraction change, and never
+    lose the classic HLS path for cams that do carry a token.
+    """
+    hls_html = _read_fixture("skyline_page.html")
+    off_html = _read_fixture("skyline_page2.html")
+    yt_html = _read_fixture("skyline_page_yt.html")
+    assert resolve.skyline_variant(hls_html) == "hls"
+    assert resolve.skyline_variant(off_html) == "offline"
+    assert resolve.skyline_variant(yt_html) == "youtube"
+    assert resolve.skyline_variant("<html>nothing here</html>") == "no-stream"
+    assert resolve.skyline_variant("") == "no-stream"
+    # the offline capture: no token, no youtube id — the OFFLINE marker says why
+    assert resolve.SKYLINE_TOKEN_RE.search(off_html) is None
+    assert resolve.SKYLINE_YT_ID_RE.search(off_html) is None
+    assert 'class="request off"' in off_html and "OFFLINE" in off_html
+    # the youtube capture: a valid 11-char video id and no HLS token
+    m = resolve.SKYLINE_YT_ID_RE.search(yt_html)
+    assert m and resolve._YOUTUBE_ID_RE.fullmatch(m.group(1)), m and m.group(0)
+    assert resolve.SKYLINE_TOKEN_RE.search(yt_html) is None
+
+
+def test_skyline_resolver_page_variants_offline():
+    """resolve_live_skyline handles every page variant; reasons are recorded."""
+    hls_html = _read_fixture("skyline_page.html")
+    off_html = _read_fixture("skyline_page2.html")
+    yt_html = _read_fixture("skyline_page_yt.html")
+    orig = resolve.fetch_page
+    try:
+        # 1) the classic HLS path still wins when the token is present
+        resolve.fetch_page = lambda url, **kw: {
+            "html": hls_html, "cookie": "PHPSESSID=x", "final_url": url}
+        out = resolve.resolve_live_skyline(SKYLINE_URL)
+        assert out and out["kind"] == "hls" and "live.m3u8?a=" in out["url"], out
+        assert out["headers"].get("Cookie") == "PHPSESSID=x"
+        assert out["headers"].get("Referer") == "https://www.skylinewebcams.com/"
+        assert resolve.skyline_failure_reason(SKYLINE_URL) == ""
+        # 2) YouTube-hosted cam -> kind ytid (the viewer embeds the YT player)
+        resolve.fetch_page = lambda url, **kw: {
+            "html": yt_html, "cookie": "", "final_url": url}
+        out = resolve.resolve_live_skyline(SKYLINE_URL)
+        assert out and out["kind"] == "ytid", out
+        assert resolve._YOUTUBE_ID_RE.fullmatch(out["id"])
+        assert out["poster"] == f"https://i.ytimg.com/vi/{out['id']}/hqdefault.jpg"
+        assert out["ttl_s"] == resolve.SKYLINE_YTID_TTL_S
+        assert resolve.skyline_failure_reason(SKYLINE_URL) == ""
+        # 3) OFFLINE variant -> None, reason 'offline' (never a generic failure)
+        resolve.fetch_page = lambda url, **kw: {
+            "html": off_html, "cookie": "", "final_url": url}
+        assert resolve.resolve_live_skyline(SKYLINE_URL) is None
+        assert resolve.skyline_failure_reason(SKYLINE_URL) == "offline"
+        # 4) no stream config at all -> 'no-stream'
+        resolve.fetch_page = lambda url, **kw: {
+            "html": "<html>nope</html>", "cookie": "", "final_url": url}
+        assert resolve.resolve_live_skyline(SKYLINE_URL) is None
+        assert resolve.skyline_failure_reason(SKYLINE_URL) == "no-stream"
+        # 5) page fetch failed -> 'fetch-failed'
+        resolve.fetch_page = lambda url, **kw: None
+        assert resolve.resolve_live_skyline(SKYLINE_URL) is None
+        assert resolve.skyline_failure_reason(SKYLINE_URL) == "fetch-failed"
+        # a later success clears the recorded reason
+        resolve.fetch_page = lambda url, **kw: {
+            "html": hls_html, "cookie": "", "final_url": url}
+        assert resolve.resolve_live_skyline(SKYLINE_URL)
+        assert resolve.skyline_failure_reason(SKYLINE_URL) == ""
+    finally:
+        resolve.fetch_page = orig
+
+
+def test_skyline_offline_negative_reason_via_get_live():
+    """The OFFLINE variant lands as a cached negative verdict with reason 'offline'."""
+    off_html = _read_fixture("skyline_page2.html")
+    orig = resolve.fetch_page
+    cid = "5" * 16
+    resolve.fetch_page = lambda url, **kw: {
+        "html": off_html, "cookie": "", "final_url": url}
+    try:
+        resolve.reset_caches()
+        assert resolve.get_live(cid, SKYLINE_URL) is None
+        data = json.loads((CACHE_ROOT / "resolve" / "live.json").read_text(encoding="utf-8"))
+        assert data[cid]["ok"] is False, data[cid]
+        assert data[cid]["reason"] == "offline", data[cid]
+        assert resolve.cached_negative_reason(cid) == "offline"
+    finally:
+        resolve.fetch_page = orig
+        resolve.reset_caches()
 
 
 def test_fixture_og_image():
@@ -1146,34 +1255,57 @@ def test_live_end_to_end_skaping():
 
 
 def test_live_end_to_end_skyline():
+    """Real-network proof of the skyline recipe, walking a candidate list.
+
+    A single skyline cam can legitimately be OFFLINE for days — the site then
+    serves a page with no player and no token ('request off' + OFFLINE badge),
+    e.g. viannos on 2026-10-06. That is a valid cam state, not a resolver
+    failure, so this test walks SKYLINE_CANDIDATES until one resolves to HLS
+    and proves the full chain on it: page -> token -> upstream playlist ->
+    rewritten local playlist -> segment -> poster. It fails only when NO
+    candidate yields an HLS stream (a real outage/site change).
+    """
     resolve.reset_caches()
-    entry = resolve.get_live(SKYLINE_CID, SKYLINE_URL, force=True)
-    assert entry, "no live resolution for the skyline cam (network?)"
-    assert entry.get("kind") == "hls", entry.get("kind")
-    marker = resolve.redact(entry.get("url", ""))
+    entry = cid = url = None
+    attempts = []
+    for cand_cid, cand_url in SKYLINE_CANDIDATES:
+        got = resolve.get_live(cand_cid, cand_url, force=True)
+        if got and got.get("kind") == "hls":
+            cid, url, entry = cand_cid, cand_url, got
+            break
+        attempts.append((cand_url.rsplit("/", 1)[-1],
+                         f"kind={got.get('kind')}" if got
+                         else (resolve.cached_negative_reason(cand_cid) or "resolve failed")))
+    assert entry, f"no skyline cam resolved to HLS (candidate outcomes: {attempts})"
     text = resolve.fetch_playlist(entry)
-    if text is None or resolve.is_filler(text):
-        entry = resolve.get_live(SKYLINE_CID, SKYLINE_URL, force=True)
+    if text is None or resolve.is_filler(text) or resolve.is_dead_playlist(text):
+        entry = resolve.get_live(cid, url, force=True)      # one forced re-resolve
+        assert entry and entry.get("kind") == "hls", "re-resolve failed after stale playlist"
         text = resolve.fetch_playlist(entry)
     assert text, "upstream playlist unavailable after refresh"
     assert not resolve.is_filler(text), "filler playlist twice (token/cookies stale)"
-    rewritten = resolve.resolve_playlist(SKYLINE_CID, text, marker)
+    assert not resolve.is_dead_playlist(text), "empty ENDLIST playlist twice (stale token)"
+    marker = resolve.redact(entry.get("url", ""))
+    rewritten = resolve.resolve_playlist(cid, text, marker)
     seg_lines = [l.strip() for l in rewritten.splitlines()
                  if l.strip().startswith("/api/live/")]
     assert seg_lines, rewritten[:200]
     name = seg_lines[0].rsplit("/", 1)[-1]
     assert resolve.SEG_NAME_RE.fullmatch(name), name
-    upstream = resolve.seg_upstream(SKYLINE_CID, name)
+    upstream = resolve.seg_upstream(cid, name)
     assert upstream and upstream.startswith("http"), upstream
     blob, ctype = resolve.fetch_segment(upstream, entry.get("headers"))
     assert blob is not None, "segment fetch failed"
     assert len(blob) > 20 * 1024, f"segment too small: {len(blob)}"
-    poster = resolve.get_poster(SKYLINE_CID, SKYLINE_URL, force=True)
+    poster = resolve.get_poster(cid, url, force=True)
     assert poster is not None and poster.exists(), "poster fetch failed"
     data = poster.read_bytes()
     assert len(data) > 1024, len(data)
     assert data[:2] == b"\xff\xd8" or data[:8] == b"\x89PNG\r\n\x1a\n", data[:8]
-    print(f"  live: token=sha1:{marker} playlist={len(text)}B segments={len(seg_lines)} "
+    if attempts:
+        print(f"  live: skipped {len(attempts)} cam(s): {attempts}")
+    print(f"  live: cam={url.rsplit('/', 1)[-1]} token=sha1:{marker} "
+          f"playlist={len(text)}B segments={len(seg_lines)} "
           f"seg[{name}]={len(blob)}B ctype={ctype or 'video/mp2t'}")
     print(f"  poster: {poster} ({len(data)}B, {resolve.image_content_type(data)})")
 

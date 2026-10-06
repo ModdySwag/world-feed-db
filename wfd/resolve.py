@@ -1,10 +1,11 @@
 """wfd.resolve — live-stream resolution + local HLS relay + poster cache.
 
 Fixes the viewer's blank-tile classes:
-- directory/iframe rows (www.skylinewebcams.com and similar) whose player page
-  exposes a tokenised HLS stream: resolve the page (browser UA + cookie jar),
-  build the streaming URL, and let the viewer relay playlist + segments
-  locally so the tile actually plays.
+- skylinewebcams family rows: a player page resolves to (a) a tokenised HLS
+  stream (inline Clappr config -> hd-auth m3u8, browser UA + cookie jar,
+  relayed locally), (b) a YouTube-hosted cam (inline ``YT.Player`` videoId ->
+  the viewer's YouTube embed), or (c) the site's OFFLINE variant (no stream;
+  negative verdict keeps reason 'offline').
 - rows with no poster image: posters are harvested from the page's og:image
   (or a YouTube video's i.ytimg.com thumbnail) and cached on disk.
 - skaping.com rows (url = an HTML player page): the page's og:image meta
@@ -70,6 +71,7 @@ BROWSER_UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
               "(KHTML, like Gecko) Chrome/128.0 Safari/537.36")
 SKYLINE_REFERER = "https://www.skylinewebcams.com/"
 SKYLINE_LIVE_BASE = "https://hd-auth.skylinewebcams.com/live.m3u8?a="
+SKYLINE_YTID_TTL_S = 1800      # YouTube-hosted skyline cam — youtube-row window
 
 PAGE_TIMEOUT_S = 20.0          # page fetches (resolver + poster)
 RELAY_TIMEOUT_S = 15.0         # playlist / segment relay fetches
@@ -89,6 +91,16 @@ SNAPSHOT_TIMEOUT_S = 25        # one ffmpeg single-frame attempt
 SEG_NAME_RE = re.compile(r"[A-Za-z0-9._-]{1,180}")
 _YOUTUBE_ID_RE = re.compile(r"[A-Za-z0-9_-]{11}")
 SKYLINE_TOKEN_RE = re.compile(r"source:'livee\.m3u8\?a=([^']+)'")
+# Skyline player-page variants (all three verified live 2026-10-06; the viannos
+# fixture cam was found serving the OFFLINE variant — no token — which is what
+# "the token moved" reports actually saw):
+#   hls     — inline Clappr config carries source:'livee.m3u8?a=TOKEN'
+#   youtube — inline ``new YT.Player(..., videoId:'<11-char id>')``; the cam is
+#             hosted on YouTube (~1/5 of sampled skyline rows resolve this way)
+#   offline — <div class="request off"> + OFFLINE badge, no player at all
+#             (the site's own state for a down camera; no stream exists)
+SKYLINE_YT_ID_RE = re.compile(r"videoId:\s*['\"]([A-Za-z0-9_-]{11})['\"]")
+SKYLINE_OFFLINE_RE = re.compile(r'class="request\s+off"')
 _URI_ATTR_RE = re.compile(r"""URI\s*=\s*(?:"([^"]*)"|'([^']*)')""")
 _META_TAG_RE = re.compile(r"<meta\b[^>]*>", re.I)
 _META_ATTR_RE = re.compile(
@@ -450,28 +462,90 @@ def is_dead_playlist(text) -> bool:
 # live resolvers
 # ---------------------------------------------------------------------------
 
-def resolve_live_skyline(page_url: str) -> Optional[dict]:
-    """Resolve one skylinewebcams.com player page to its HLS stream.
+# Skyline negative-verdict reasons (the _YT_FAILURES flow, for skyline pages):
+#   offline      — the site's own OFFLINE page variant (no player; no stream)
+#   no-stream    — page fetched but carries no recognisable stream config
+#   fetch-failed — the page fetch itself failed (network / HTTP status)
+_SKYLINE_FAILURES: dict = {}          # page_url -> last classified failure reason
+_SKYLINE_FAILURES_MAX = 512
 
-    Returns {'kind':'hls', 'url': m3u8, 'headers': {UA, Referer, Cookie},
-    'ttl_s', 'poster'?} or None on failure. The og:image poster URL is captured
-    from the SAME fetch whenever present (no second page request).
+
+def _record_skyline_failure(url, reason: str) -> None:
+    if reason:
+        if len(_SKYLINE_FAILURES) >= _SKYLINE_FAILURES_MAX:
+            _SKYLINE_FAILURES.clear()
+        _SKYLINE_FAILURES[url] = reason
+    else:
+        _SKYLINE_FAILURES.pop(url, None)
+
+
+def skyline_failure_reason(url) -> str:
+    """Last classified failure reason for a skyline page url ('' when none)."""
+    return _SKYLINE_FAILURES.get(url, "")
+
+
+def skyline_variant(html: str) -> str:
+    """Classify a skylinewebcams player page: hls | youtube | offline | no-stream.
+
+    Pure (no network). Order matters: an HLS token wins, then a YouTube
+    embed, then the site's OFFLINE variant, else 'no-stream'.
+    """
+    html = html or ""
+    if SKYLINE_TOKEN_RE.search(html):
+        return "hls"
+    if SKYLINE_YT_ID_RE.search(html):
+        return "youtube"
+    if SKYLINE_OFFLINE_RE.search(html):
+        return "offline"
+    return "no-stream"
+
+
+def resolve_live_skyline(page_url: str) -> Optional[dict]:
+    """Resolve one skylinewebcams.com player page to what it actually plays.
+
+    The site serves (at least) three page shapes — each verified live
+    2026-10-06, so all three must be handled:
+
+    * **hls** — inline Clappr config ``source:'livee.m3u8?a=TOKEN'``
+      (browser-UA + cookie-jar fetch); -> {'kind':'hls', hd-auth m3u8}.
+    * **youtube** — the cam is hosted on YouTube and the page embeds
+      ``new YT.Player(..., videoId:'<11-char id>')``; -> {'kind':'ytid'}
+      (the viewer embeds the YouTube player exactly as for youtube.com rows).
+    * **offline** — ``<div class="request off">`` + OFFLINE badge and no
+      player at all (the site's own state for a down camera); -> None with
+      the reason recorded as 'offline' (never a generic failure).
+
+    Returns {'kind', 'url'|'id', 'headers'?,'ttl_s','poster'?} or None on
+    failure. The og:image poster URL is captured from the SAME fetch whenever
+    present (no second page request).
     """
     fetched = fetch_page(page_url)
     if fetched is None:
+        _record_skyline_failure(page_url, "fetch-failed")
         return None
-    m = SKYLINE_TOKEN_RE.search(fetched["html"])
-    if not m:
-        return None
-    headers = {"User-Agent": BROWSER_UA, "Referer": SKYLINE_REFERER}
-    if fetched["cookie"]:
-        headers["Cookie"] = fetched["cookie"]
-    out = {"kind": "hls", "url": SKYLINE_LIVE_BASE + m.group(1),
-           "headers": headers, "ttl_s": LIVE_TTL_S}
-    poster = parse_social_image(fetched["html"], fetched.get("final_url") or page_url)
-    if poster:
-        out["poster"] = poster
-    return out
+    html = fetched["html"]
+    m = SKYLINE_TOKEN_RE.search(html)
+    if m:
+        headers = {"User-Agent": BROWSER_UA, "Referer": SKYLINE_REFERER}
+        if fetched["cookie"]:
+            headers["Cookie"] = fetched["cookie"]
+        out = {"kind": "hls", "url": SKYLINE_LIVE_BASE + m.group(1),
+               "headers": headers, "ttl_s": LIVE_TTL_S}
+        poster = parse_social_image(html, fetched.get("final_url") or page_url)
+        if poster:
+            out["poster"] = poster
+        _record_skyline_failure(page_url, "")
+        return out
+    yt = SKYLINE_YT_ID_RE.search(html)
+    if yt:
+        vid = yt.group(1)
+        _record_skyline_failure(page_url, "")
+        return {"kind": "ytid", "id": vid,
+                "poster": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
+                "ttl_s": SKYLINE_YTID_TTL_S}
+    _record_skyline_failure(
+        page_url, "offline" if skyline_variant(html) == "offline" else "no-stream")
+    return None
 
 
 # Failure classes stored on negative youtube verdicts (the viewer renders them):
@@ -692,7 +766,10 @@ def get_live(camera_id: str, page_url: str, *, force: bool = False) -> Optional[
         fail_reason = ""
         try:
             if resolver == "skylinewebcams":
+                _SKYLINE_FAILURES.pop(page_url, None)   # never read a stale reason
                 result = resolve_live_skyline(page_url)
+                if not result:
+                    fail_reason = skyline_failure_reason(page_url)
             elif resolver == "youtube-live":
                 _YT_FAILURES.pop(page_url, None)   # never read a stale reason
                 result = resolve_live_youtube(page_url)
