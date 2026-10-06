@@ -389,3 +389,13 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - **Skyline resolver variants**: three page shapes classified — HLS-token (classic, unchanged), YouTube-hosted (~20 % of a sampled spread → plays as a YouTube embed), OFFLINE (~17 % → honest 'offline' reason). The token extraction was never broken (the probed cam was offline; rule recorded in the ops skill: sample several cams before touching the extractor). Live e2e now walks candidate cams; first HLS hit proves the full chain.
 - **Verification/commits**: resolve 36/36 · viewer 19/19 · gov 15/15; commits e6e1fb1, fdfc450, 0b5ea0a, 5e1… (globe polish), 5f69e71 (hide-dead), bdee878 (facets), 9a5f404 (autorotate), cf1ba5e + 4e6f422 (YouTube), 01a9c98 (skyline); screenshots research/globe/05–09 + research/hide-dead.png; :8773 restarted each wave.
 - **Still open (small)**: QLD poster warm + recurring qld health sweep (cadence measured); optional city-geocoding pass; `--remote-components ejs:github` decision (deferred by owner); hide-offline treatment for the globe (mirrors hide-dead); skyline self-heal periodic probe idea.
+
+### A28 · Player window — the player modal becomes a standard popout window
+
+> Trigger: owner live report — "when i try and click and drag to move the player it disappears … make the player resizable within the viewports limits … click and hold draggable … standard popout/player standard".
+
+- **Root cause (reproduced)**: the modal never had drag code — pressing on the card and releasing over the backdrop synthesises a `click` whose target is the nearest common ancestor (the `.overlay` backdrop) → the backdrop-close handler fired → the player "disappeared" on any drag gesture.
+- **Delivered** (static `app.js` + `app.css`): head-bar drag (pointer capture, 3 px slop, grab cursors); 8 edge/corner resize grips (min 360×280; SE carries a teal grip); the card floats on first touch and clamps fully inside the viewport (measured: edges land exactly at margin 8); viewport-resize re-clamps; double-click the head = maximise ↔ restore; geometry persists via `settings.player_geom` (debounced 450 ms, clamped on restore); a finished drag/resize suppresses the backdrop click for 400 ms so releasing over the backdrop can never close.
+- **Verification (real Chromium on scratch :8791, CDP-driven)**: backdrop-release drag → modal open + clamp (8,8) · move +250/+180 exact · SE grow 780→940 (height capped vh−16) · shrink → exact min 360×280 · drag beyond bottom-right → edges vw−8/vh−8 · plain backdrop click still closes · reopen restores geometry exactly · dblclick 1246×552 ↔ restore. Shots `research/player/01–04`; prefs byte-restored (sha1 fe7a54c3). Viewer 19/19.
+- **Live**: static files — owner Ctrl+F5.
+

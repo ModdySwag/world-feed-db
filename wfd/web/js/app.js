@@ -1567,6 +1567,7 @@ export function openPlayerModal(camera) {
   modalPlayer = p;
   host.appendChild(p.el);
   $('#modal-player').hidden = false;
+  preparePlayerWindow();
   const closeBtn = $('#modal-player [data-close="modal-player"]');
   if (closeBtn) closeBtn.focus();
 }
@@ -1575,6 +1576,197 @@ export function closePlayerModal() {
   if (modalPlayer) { try { modalPlayer.api.destroy(); } catch (err) { /* noop */ } modalPlayer = null; }
   $('#player-host').innerHTML = '';
   $('#modal-player').hidden = true;
+}
+
+/* player window — drag / resize / clamp: standard popout behaviour.
+ * The card floats once you drag its head (or a resize grip); it is clamped
+ * inside the viewport at all times, remembers w/h/x/y via settings.player_geom,
+ * and a finished drag must never fall through to the backdrop-close handler. */
+const PM_MIN_W = 360;
+const PM_MIN_H = 280;
+const PM_M = 8;                       // viewport margin
+const pmSuppress = { until: 0 };      // ignore a backdrop click right after a drag
+let pmGeom = null;                    // {x, y, w, h} while floating
+let pmSaveTimer = null;
+
+function pmCard() { return $('#modal-player .player-card'); }
+
+function pmFloatNow() {
+  const card = pmCard();
+  if (!card) return null;
+  if (!card.classList.contains('pm-float') || !pmGeom) {
+    const r = card.getBoundingClientRect();
+    pmGeom = { x: r.left, y: r.top, w: r.width, h: r.height };
+    card.classList.add('pm-float');
+  }
+  return card;
+}
+
+function pmClampGeom() {
+  if (!pmGeom) return;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  pmGeom.w = Math.min(Math.max(pmGeom.w, PM_MIN_W), Math.max(PM_MIN_W, vw - 2 * PM_M));
+  pmGeom.h = Math.min(Math.max(pmGeom.h, PM_MIN_H), Math.max(PM_MIN_H, vh - 2 * PM_M));
+  pmGeom.x = Math.min(Math.max(pmGeom.x, PM_M), Math.max(PM_M, vw - pmGeom.w - PM_M));
+  pmGeom.y = Math.min(Math.max(pmGeom.y, PM_M), Math.max(PM_M, vh - pmGeom.h - PM_M));
+}
+
+function pmApplyGeom() {
+  const card = pmCard();
+  if (!card || !pmGeom) return;
+  pmClampGeom();
+  card.style.left = Math.round(pmGeom.x) + 'px';
+  card.style.top = Math.round(pmGeom.y) + 'px';
+  card.style.width = Math.round(pmGeom.w) + 'px';
+  card.style.height = Math.round(pmGeom.h) + 'px';
+}
+
+function pmSaveGeom() {
+  clearTimeout(pmSaveTimer);
+  pmSaveTimer = setTimeout(() => {
+    const card = pmCard();
+    if (!pmGeom || !card || !card.classList.contains('pm-float')) return;
+    saveSettings({
+      player_geom: {
+        x: Math.round(pmGeom.x), y: Math.round(pmGeom.y),
+        w: Math.round(pmGeom.w), h: Math.round(pmGeom.h),
+      },
+    });
+  }, 450);
+}
+
+/* Run on every modal open: restore saved geometry (clamped) or the centred default. */
+export function preparePlayerWindow() {
+  const card = pmCard();
+  if (!card) return;
+  card.classList.remove('pm-max');
+  const g = store.settings && store.settings.player_geom;
+  if (g && typeof g === 'object' && Number(g.w) > 0 && Number(g.h) > 0) {
+    card.classList.add('pm-float');
+    pmGeom = { x: Number(g.x) || PM_M, y: Number(g.y) || PM_M, w: Number(g.w), h: Number(g.h) };
+    pmApplyGeom();
+  } else {
+    card.classList.remove('pm-float');
+    pmGeom = null;
+    card.style.left = card.style.top = card.style.width = card.style.height = '';
+  }
+}
+
+export function playerWindowSuppressed() {
+  return performance.now() < pmSuppress.until;
+}
+
+export function wirePlayerWindow() {
+  const card = pmCard();
+  if (!card || card.dataset.pmWired) return;
+  card.dataset.pmWired = '1';
+  const head = card.querySelector('.overlay-head');
+
+  // 8 resize strips (kept inside the card edges — the card clips overflow)
+  ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].forEach((dir) => {
+    const h = document.createElement('div');
+    h.className = 'pmr pmr-' + dir;
+    h.dataset.pmr = dir;
+    card.appendChild(h);
+  });
+
+  let drag = null;
+  head.addEventListener('pointerdown', (ev) => {
+    if (ev.button !== 0 || ev.target.closest('button, a, input, select, textarea')) return;
+    pmFloatNow();
+    drag = { id: ev.pointerId, sx: ev.clientX, sy: ev.clientY,
+             ox: ev.clientX - pmGeom.x, oy: ev.clientY - pmGeom.y, moved: false };
+    card.classList.add('pm-drag');
+    try { head.setPointerCapture(ev.pointerId); } catch (err) { /* noop */ }
+    ev.preventDefault();
+  });
+  head.addEventListener('pointermove', (ev) => {
+    if (!drag || ev.pointerId !== drag.id) return;
+    if (!drag.moved && Math.abs(ev.clientX - drag.sx) + Math.abs(ev.clientY - drag.sy) < 3) return;
+    drag.moved = true;
+    pmGeom.x = ev.clientX - drag.ox;
+    pmGeom.y = ev.clientY - drag.oy;
+    pmApplyGeom();
+  });
+  const dragEnd = (ev) => {
+    if (!drag || ev.pointerId !== drag.id) return;
+    const moved = drag.moved;
+    drag = null;
+    try { head.releasePointerCapture(ev.pointerId); } catch (err) { /* noop */ }
+    card.classList.remove('pm-drag');
+    if (moved) { pmSuppress.until = performance.now() + 400; pmSaveGeom(); }
+  };
+  head.addEventListener('pointerup', dragEnd);
+  head.addEventListener('pointercancel', dragEnd);
+
+  // double-click the head: maximise <-> restore
+  let pmPreMax = null;
+  head.addEventListener('dblclick', (ev) => {
+    if (ev.target.closest('button, a')) return;
+    pmFloatNow();
+    if (card.classList.contains('pm-max')) {
+      card.classList.remove('pm-max');
+      if (pmPreMax) pmGeom = pmPreMax;
+      pmPreMax = null;
+    } else {
+      pmPreMax = { x: pmGeom.x, y: pmGeom.y, w: pmGeom.w, h: pmGeom.h };
+      pmGeom = { x: PM_M, y: PM_M, w: window.innerWidth - 2 * PM_M, h: window.innerHeight - 2 * PM_M };
+      card.classList.add('pm-max');
+    }
+    pmApplyGeom();
+    pmSaveGeom();
+  });
+
+  // resize via the 8 grips
+  let rs = null;
+  card.querySelectorAll('.pmr').forEach((h) => {
+    const dir = h.dataset.pmr;
+    h.addEventListener('pointerdown', (ev) => {
+      if (ev.button !== 0) return;
+      pmFloatNow();
+      rs = { id: ev.pointerId, dir, sx: ev.clientX, sy: ev.clientY,
+             g0: { x: pmGeom.x, y: pmGeom.y, w: pmGeom.w, h: pmGeom.h }, moved: false };
+      card.classList.add('pm-resize');
+      try { h.setPointerCapture(ev.pointerId); } catch (err) { /* noop */ }
+      ev.preventDefault();
+      ev.stopPropagation();
+    });
+    h.addEventListener('pointermove', (ev) => {
+      if (!rs || ev.pointerId !== rs.id) return;
+      const dx = ev.clientX - rs.sx;
+      const dy = ev.clientY - rs.sy;
+      if (!rs.moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+      rs.moved = true;
+      let x = rs.g0.x;
+      let y = rs.g0.y;
+      let w = rs.g0.w;
+      let hh = rs.g0.h;
+      if (rs.dir.indexOf('e') >= 0) w = rs.g0.w + dx;
+      if (rs.dir.indexOf('s') >= 0) hh = rs.g0.h + dy;
+      if (rs.dir.indexOf('w') >= 0) { w = rs.g0.w - dx; x = rs.g0.x + dx; }
+      if (rs.dir.indexOf('n') >= 0) { hh = rs.g0.h - dy; y = rs.g0.y + dy; }
+      if (w < PM_MIN_W) { if (rs.dir.indexOf('w') >= 0) x -= (PM_MIN_W - w); w = PM_MIN_W; }
+      if (hh < PM_MIN_H) { if (rs.dir.indexOf('n') >= 0) y -= (PM_MIN_H - hh); hh = PM_MIN_H; }
+      pmGeom = { x, y, w, h: hh };
+      pmApplyGeom();
+    });
+    const rEnd = (ev) => {
+      if (!rs || ev.pointerId !== rs.id) return;
+      const moved = rs.moved;
+      rs = null;
+      try { h.releasePointerCapture(ev.pointerId); } catch (err) { /* noop */ }
+      card.classList.remove('pm-resize');
+      if (moved) { pmSuppress.until = performance.now() + 400; pmSaveGeom(); }
+    };
+    h.addEventListener('pointerup', rEnd);
+    h.addEventListener('pointercancel', rEnd);
+  });
+
+  // keep a floating window inside a resized viewport
+  window.addEventListener('resize', () => {
+    if (pmGeom && card.classList.contains('pm-float')) pmApplyGeom();
+  });
 }
 
 function wireOverlayClose() {
@@ -1588,8 +1780,10 @@ function wireOverlayClose() {
   for (const id of ['modal-settings', 'modal-help', 'modal-player']) {
     $('#' + id).addEventListener('click', (ev) => {
       if (ev.target.id === id) {
-        if (id === 'modal-player') closePlayerModal();
-        else $('#' + id).hidden = true;
+        if (id === 'modal-player') {
+          if (playerWindowSuppressed()) return;   // a drag/resize just ended over the backdrop
+          closePlayerModal();
+        } else $('#' + id).hidden = true;
       }
     });
   }
@@ -1884,6 +2078,7 @@ async function boot() {
   wireWarn();
   wireOverlayClose();
   wireDrawer();
+  wirePlayerWindow();
   wireKeyboard();
   soundGestureHook();
   try { window.__wfdDiag = diag; } catch (err) { /* noop */ }
