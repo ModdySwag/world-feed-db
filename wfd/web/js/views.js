@@ -271,7 +271,10 @@ const overviewView = (() => {
     const body = $('#ov-body', root);
     if (!body) return;
     if (!ov) {
-      body.innerHTML = '<div class="empty err">overview data unavailable — is the viewer server running?</div>';
+      const noReg = /registry database not found/i.test(store.overviewError || store.statsError || '');
+      body.innerHTML = '<div class="empty err">' + (noReg
+        ? 'no registry built yet — ingest a source, run <code>py -3.11 -m wfd db load</code> (README quick start), then refresh'
+        : 'overview data unavailable — is the viewer server running?') + '</div>';
       return;
     }
     const statuses = ov.by_status || {};
@@ -358,10 +361,12 @@ const overviewView = (() => {
       const load = async () => {
         try {
           store.overview = await apiGet('/api/overview');
+          store.overviewError = '';
           const sub = $('#ov-sub', root);
           if (sub) sub.textContent = `as of ${store.overview.generated_at || ''}`;
         } catch (err) {
           store.overview = null;
+          store.overviewError = (err && err.message) || 'overview unavailable';
         }
         paint(root);
       };

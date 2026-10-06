@@ -99,7 +99,9 @@ export const ICONS = {
 
 export const store = {
   stats: null,
+  statsError: '',
   overview: null,
+  overviewError: '',
   facets: null,
   prefs: { favourites: [], favourite_ids: [], settings: {}, updated_at: '' },
   favIds: new Set(),
@@ -604,15 +606,23 @@ export async function fetchFacets() {
 
 /* ══ stats ═════════════════════════════════════════════════════════════ */
 
+let noRegistryToast = false;    // one shot per page load — see the catch below
+
 export async function fetchStats() {
   try {
     const s = await apiGet('/api/stats');
     store.stats = s;
+    store.statsError = '';
     store.exposureEnabled = !!s.exposure_enabled;
     updateTopbar();
     updateStatusbar();
     bus.emit('stats');
   } catch (err) {
+    store.statsError = (err && err.message) || 'stats unavailable';
+    if (!noRegistryToast && /registry database not found/i.test(store.statsError)) {
+      noRegistryToast = true;
+      toast('No registry built yet — ingest a source and run "py -3.11 -m wfd db load" (README quick start), then refresh.', { type: 'err', timeout: 12000 });
+    }
     updateTopbar();
     updateStatusbar();
   }
@@ -622,8 +632,11 @@ function updateTopbar() {
   const elx = $('#topbar-total');
   if (!elx) return;
   const s = store.stats;
-  elx.textContent = s ? fmt(s.total) + ' rows' : '—';
-  elx.title = s ? `registry rows (as of ${s.generated_at})` : 'stats unavailable';
+  const noReg = !s && /registry database not found/i.test(store.statsError || '');
+  elx.textContent = s ? fmt(s.total) + ' rows' : (noReg ? 'no registry yet' : '—');
+  elx.title = s ? `registry rows (as of ${s.generated_at})`
+    : (noReg ? 'registry database not found — ingest a source and run: py -3.11 -m wfd db load, then refresh (README quick start)'
+             : 'stats unavailable');
 }
 
 /* ══ status bar ════════════════════════════════════════════════════════ */
@@ -639,8 +652,11 @@ export function updateStatusbar() {
       tot.textContent = `${fmt(s.total)} rows${shown != null && shown !== s.total ? ` · ${fmt(shown)} in filter` : ''}`;
       tot.title = `registry total ${fmt(s.total)} · as of ${s.generated_at}`;
     } else {
-      tot.textContent = '— rows';
-      tot.title = 'stats unavailable';
+      const noReg = /registry database not found/i.test(store.statsError || '');
+      tot.textContent = noReg ? 'no registry yet' : '— rows';
+      tot.title = noReg
+        ? 'registry database not found — ingest a source and run: py -3.11 -m wfd db load (README quick start)'
+        : 'stats unavailable';
     }
   }
 

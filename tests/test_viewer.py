@@ -22,6 +22,14 @@ from wfd import db as dbmod
 from wfd import profile, viewer
 
 DB_PATH = dbmod.DEFAULT_DB
+
+# A fresh clone has no registry (data/ is gitignored). This suite exercises the
+# JSON API against the real registry DB, so stand down loudly instead of failing.
+if not pathlib.Path(DB_PATH).exists():
+    print("SKIP test_viewer: registry not built at %s" % DB_PATH)
+    print("      ingest a source and run `py -3.11 -m wfd db load`, then re-run.")
+    sys.exit(0)
+
 _state = {"server": None, "base": None}
 
 

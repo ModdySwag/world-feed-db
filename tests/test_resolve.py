@@ -33,6 +33,15 @@ from wfd import profile              # noqa: E402
 from wfd import resolve              # noqa: E402
 from wfd import viewer               # noqa: E402
 
+# The server/e2e section drives the REAL registry (data/ is gitignored, absent
+# in a fresh clone). Stand down loudly instead of failing — the full suite comes
+# back once the registry is built (README quick start).
+_REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+if not (_REPO_ROOT / "data" / "worldfeed.db").exists():
+    print("SKIP test_resolve: registry not built at data/worldfeed.db")
+    print("      ingest a source and run `py -3.11 -m wfd db load`, then re-run.")
+    sys.exit(0)
+
 FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures" / "resolve"
 DB_PATH = dbmod.DEFAULT_DB
 SKYLINE_CID = "507b64f69e709039"
