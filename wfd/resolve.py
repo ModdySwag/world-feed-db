@@ -82,7 +82,7 @@ POSTER_TTL_S = 12 * 3600       # positive poster verdict
 POSTER_NEG_TTL_S = 3600        # negative poster verdict (no og:image, etc.)
 LIVE_TTL_S = 300               # fresh token+cookies; skyline sessions die in ~5-10 min
 LIVE_NEG_TTL_S = 120           # negative live verdict — don't hammer the site
-OFFLINE_TTL_S = 4 * 3600       # operator-declared OFFLINE page — long-lived; the self-heal sweep re-checks
+OFFLINE_TTL_S = 24 * 3600      # operator-declared OFFLINE page — refreshed by the daily self-heal loop
 SEG_TTL_S = 20 * 60            # per-cid segment-map entry lifetime
 SKAPING_TTL_S = 900            # skaping og:image = a 10-minute slot file, refresh sooner
 STILL_TTL_S = 90               # in-process still-bytes memo (viewer /api/still)
