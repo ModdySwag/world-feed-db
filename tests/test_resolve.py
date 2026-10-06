@@ -317,6 +317,69 @@ def test_youtube_resolver_offline():
         resolve._tool, resolve._run = orig_tool, orig_run
 
 
+YT_CHANNEL_URL = "https://www.youtube.com/channel/UC0aRRZkVrO_0nqfuXYaL_Cg/live"
+
+
+def test_youtube_failure_reason_classification_offline():
+    """classify_youtube_failure maps the real yt-dlp stderr classes (2026-10-06)."""
+    cases = [
+        # not live: channel up, no broadcast
+        (1, "ERROR: [youtube:tab] UChoL_UbFagRA6Fhf7K0qk5w: The channel is not currently live",
+         "not-live"),
+        # gone: dead handle / channel -> API 404 (the les @handle case in the scan)
+        (1, "ERROR: [youtube:tab] @WebCamNL/live: Unable to download API page: "
+            "HTTP Error 404: Not Found (caused by <HTTPError 404: Not Found>)", "gone"),
+        (1, "ERROR: [youtube] UCzzz: This channel does not exist", "gone"),
+        # extractor: the anti-bot gate and its surface messages (all observed live)
+        (1, "ERROR: [youtube] G91ja1rWV3I: This video is not available", "extractor"),
+        (1, "ERROR: [youtube] G91ja1rWV3I: Sign in to confirm you\u2019re not a bot. "
+            "Use --cookies-from-browser or --cookies for the authentication.", "extractor"),
+        (1, "ERROR: [youtube] x: No video formats found!; please report this issue", "extractor"),
+        (1, "ERROR: [youtube] x: Unable to extract nsig function code", "extractor"),
+        # timeout: the host-level probe bound (wfd.health._run returns rc -9)
+        (-9, "timeout", "timeout"),
+        # unrecognised -> 'error', never a wrong verdict
+        (1, "ERROR: something entirely new", "error"),
+    ]
+    for rc, err, want in cases:
+        got = resolve.classify_youtube_failure(rc, err)
+        assert got == want, (rc, err, got, want)
+
+
+def test_youtube_negative_stores_reason_offline():
+    """get_live carries the classified reason on the negative verdict; success clears it."""
+    url = YT_CHANNEL_URL
+    orig_tool, orig_run = resolve._tool, resolve._run
+    try:
+        resolve._tool = lambda name: "yt-dlp" if name == "yt-dlp" else None
+        resolve._run = lambda cmd, timeout: (1, "", "ERROR: [youtube:tab] UC0aRR: "
+                                             "The channel is not currently live")
+        resolve.reset_caches()
+        cid = "c0ffee0000000001"
+        assert resolve.get_live(cid, url) is None
+        data = json.loads((CACHE_ROOT / "resolve" / "live.json").read_text(encoding="utf-8"))
+        assert data[cid]["ok"] is False and data[cid]["reason"] == "not-live", data[cid]
+        assert data[cid]["error"] == "youtube-live resolve failed"    # legacy field kept
+        assert resolve.cached_negative_reason(cid) == "not-live"
+        assert resolve.yt_failure_reason(url) == "not-live"
+        # a later success resolves + clears the recorded failure
+        resolve._run = lambda cmd, timeout: (0, "M1n2O3p4Q5r\n", "")
+        entry = resolve.get_live(cid, url, force=True)
+        assert entry and entry["kind"] == "ytid" and entry["id"] == "M1n2O3p4Q5r"
+        assert resolve.cached_negative_reason(cid) == ""             # positive now
+        assert resolve.yt_failure_reason(url) == ""
+        # a stale negative loses its reason (freshness gate)
+        data = json.loads((CACHE_ROOT / "resolve" / "live.json").read_text(encoding="utf-8"))
+        data[cid] = {"ok": False, "error": "youtube-live resolve failed",
+                     "reason": "extractor", "resolved_at": _iso_ago(200),
+                     "host": "www.youtube.com", "ttl_s": resolve.LIVE_NEG_TTL_S}
+        _write_cache_json("resolve/live.json", data)
+        assert resolve.cached_negative_reason(cid) == ""
+    finally:
+        resolve._tool, resolve._run = orig_tool, orig_run
+        resolve.reset_caches()
+
+
 def test_fixture_skaping_og():
     """skaping player pages resolve to their newest 10-minute S3 JPEG (kind image)."""
     html = _read_fixture("skaping_page.html")
@@ -868,6 +931,31 @@ def test_server_resolve_route():
     assert status == 404, status
     blob = json.dumps([d, d2, d3, d4, d5]).lower()
     assert "token" not in blob and "cookie" not in blob
+
+
+def test_server_resolve_route_negative_reason():
+    """A fresh classified-negative verdict surfaces its reason via /api/resolve."""
+    _base()
+    yt = _db_one("SELECT camera_id FROM cameras WHERE provenance IN "
+                 "('public_by_design','aggregator_directory') "
+                 "AND lower(url) LIKE '%youtube.com%' LIMIT 1")
+    assert yt, "no youtube rows in registry"
+    cid = yt["camera_id"]
+    _seed_live_entry(cid, {
+        "ok": False, "error": "youtube-live resolve failed", "reason": "not-live",
+        "resolved_at": _now_iso(), "host": "www.youtube.com",
+        "ttl_s": resolve.LIVE_NEG_TTL_S})
+    status, ctype, d = _get_json(f"/api/resolve/{cid}")
+    assert status == 200 and ctype.startswith("application/json")
+    assert d["ok"] is False and d["reason"] == "not-live", d
+    assert "kind" not in d and "yt_id" not in d
+    # an unclassified negative (no reason field) keeps the legacy text
+    _seed_live_entry(cid, {
+        "ok": False, "error": "skylinewebcams resolve failed",
+        "resolved_at": _now_iso(), "host": "www.skylinewebcams.com",
+        "ttl_s": resolve.LIVE_NEG_TTL_S})
+    _, _, d2 = _get_json(f"/api/resolve/{cid}")
+    assert d2["ok"] is False and d2["reason"] == "resolve failed", d2
 
 
 def test_server_resolver_disabled():

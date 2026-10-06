@@ -235,6 +235,25 @@ export const LiveBudget = (() => {
 
 let uid = 0;
 
+/* Per-camera: the last /api/resolve attempt failed. The server caches a
+ * negative verdict for 120 s, so the next attempt (the fallback panel's
+ * Retry) must force a fresh resolve — it fetches '?refresh=1' instead of
+ * no-oping against the negative cache. Cleared when a resolve succeeds. */
+const ytResolveFailed = new Set();
+
+/* Server-classified youtube failure reasons (wfd.resolve.classify_youtube_failure)
+ * -> honest, actionable panel text. Unknown tokens fall through to the raw reason. */
+const YT_REASON_TEXT = {
+  'not-live': 'The channel is not currently live — no broadcast to play right now. Retry once it goes live.',
+  'gone': 'This channel or handle no longer exists on YouTube (moved, renamed or deleted).',
+  'extractor': 'YouTube is gating this broadcast against extraction right now (anti-bot check / extractor error) — the stream itself may still be up. Retry forces a fresh attempt.',
+  'timeout': 'The resolve request timed out — try again shortly.',
+};
+
+function ytReasonText(reason) {
+  return YT_REASON_TEXT[String(reason || '').toLowerCase()] || '';
+}
+
 /**
  * createPlayer(camera, opts) -> { el, play, pause, toggle, destroy, refreshStill,
  *                                isPlaying, setCamera, state }
@@ -501,6 +520,7 @@ export function createPlayer(camera, opts = {}) {
     const stale = () => destroyed || !cam || cam.camera_id !== cid;
     const fail = (why) => {
       if (stale()) return;
+      ytResolveFailed.add(cid);         // next attempt must force a fresh resolve
       if (!want) { setState('idle'); return; }        // the user paused while resolving
       fallbackPanel('Channel stream not resolved', why);
       setState('error');
@@ -510,13 +530,23 @@ export function createPlayer(camera, opts = {}) {
     const done = (fn) => { if (settled) return; settled = true; clearTimeout(guard); fn(); };
     // a cold youtube resolve can take ~60s server-side; cut a hung request off at 75s
     guard = setTimeout(() => done(() => fail('resolve request failed')), 75000);
-    fetch('/api/resolve/' + encodeURIComponent(cid), { headers: { Accept: 'application/json' } })
+    // a previous attempt failed -> the server holds a 120 s negative verdict for this
+    // camera, so Retry must bypass it with '?refresh=1' or it just repeats the failure
+    const refresh = ytResolveFailed.has(cid) ? '?refresh=1' : '';
+    fetch('/api/resolve/' + encodeURIComponent(cid) + refresh, { headers: { Accept: 'application/json' } })
       .then((res) => res.json().catch(() => null).then((r) => {
         done(() => {
           if (stale()) return;
           if (!want) { setState('idle'); return; }    // the user paused during resolution
-          if (res.ok && r && r.ok && r.yt_id) { cam.yt_id = r.yt_id; embedYT(r.yt_id); return; }
-          fail((r && r.reason) || 'The channel could not be resolved to a live video (not live, moved, or gone).');
+          if (res.ok && r && r.ok && r.yt_id) {
+            ytResolveFailed.delete(cid);
+            cam.yt_id = r.yt_id;
+            embedYT(r.yt_id);
+            return;
+          }
+          fail(ytReasonText(r && r.reason)
+            || (r && r.reason)
+            || 'The channel could not be resolved to a live video (not live, moved, or gone).');
         });
       }))
       .catch(() => done(() => fail('resolve request failed')));

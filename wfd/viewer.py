@@ -947,8 +947,13 @@ class ViewerHandler(SimpleHTTPRequestHandler):
         except Exception:  # noqa: BLE001 — resolution failure is an answer
             entry = None
         if not entry:
+            reason = ""
+            try:
+                reason = resolvemod.cached_negative_reason(camera_id)
+            except Exception:  # noqa: BLE001 — a reason lookup never breaks the answer
+                reason = ""
             return self._send_json(200, {"camera_id": camera_id, "ok": False,
-                                         "reason": "resolve failed"})
+                                         "reason": reason or "resolve failed"})
         kind = entry.get("kind")
         payload = {"camera_id": camera_id, "ok": True, "kind": kind}
         if kind == "ytid":

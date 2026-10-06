@@ -474,14 +474,76 @@ def resolve_live_skyline(page_url: str) -> Optional[dict]:
     return out
 
 
+# Failure classes stored on negative youtube verdicts (the viewer renders them):
+#   not-live  — the channel is up but not broadcasting right now
+#   gone      — channel/handle no longer exists (404 / does not exist)
+#   extractor — yt-dlp could not extract (anti-bot gate, JS challenge, format
+#               loss); the stream itself may still be live. Verified TRANSIENT
+#               2026-10-06: the same command failed with 'This video is not
+#               available'/'Sign in to confirm you're not a bot' and minutes
+#               later resolved — so this class must never read as 'dead'.
+#   timeout   — the yt-dlp probe hit the 60 s host timeout
+#   error     — anything else (e.g. yt-dlp not found)
+_YT_FAILURES: dict = {}          # url -> last classified failure reason
+_YT_FAILURES_MAX = 512
+
+
+def _record_yt_failure(url, reason: str) -> None:
+    if reason:
+        if len(_YT_FAILURES) >= _YT_FAILURES_MAX:
+            _YT_FAILURES.clear()
+        _YT_FAILURES[url] = reason
+    else:
+        _YT_FAILURES.pop(url, None)
+
+
+def yt_failure_reason(url) -> str:
+    """Last classified yt-dlp failure reason for a youtube url ('' when none)."""
+    return _YT_FAILURES.get(url, "")
+
+
+def classify_youtube_failure(rc, err) -> str:
+    """Map a failed yt-dlp probe to its viewer-visible failure class.
+
+    Keyword mapping calibrated against real yt-dlp stderr (2026-10-06):
+      'The channel is not currently live'                       -> 'not-live'
+      'HTTP Error 404: Not Found' / 'does not exist'            -> 'gone'
+      \"Sign in to confirm you're not a bot\" / 'This video is
+       not available' / 'No video formats found' / n-challenge  -> 'extractor'
+      rc -9 / 'timeout'                                         -> 'timeout'
+      anything else                                             -> 'error'
+    """
+    e = str(err or "").lower()
+    if rc == -9 or "timeout" in e:
+        return "timeout"
+    if ("not currently live" in e or "no longer live" in e
+            or "premieres in" in e or "channel is not live" in e):
+        return "not-live"
+    if ("http error 404" in e or "does not exist" in e
+            or "could not be found" in e or "not found" in e):
+        return "gone"
+    if ("sign in to confirm" in e or "not a bot" in e or "not available" in e
+            or "no video formats" in e or "n challenge" in e
+            or "unable to extract" in e or "nsig" in e or "challenge" in e
+            or "failed to extract" in e or "unplayable" in e):
+        return "extractor"
+    return "error"
+
+
 def resolve_live_youtube(url: str) -> Optional[dict]:
-    """Resolve a YouTube (live) url to its video id via yt-dlp."""
+    """Resolve a YouTube (live) url to its video id via yt-dlp.
+
+    On failure the classified reason is recorded first — read it back with
+    :func:`yt_failure_reason` so the negative verdict can carry it.
+    """
     ytdlp = _tool("yt-dlp")
     if not ytdlp:
+        _record_yt_failure(url, "error")
         return None
-    rc, out, _err = _run([ytdlp, "--simulate", "--print", "id", "--no-warnings", url],
-                         timeout=60)
+    rc, out, err = _run([ytdlp, "--simulate", "--print", "id", "--no-warnings", url],
+                        timeout=60)
     if rc != 0:
+        _record_yt_failure(url, classify_youtube_failure(rc, err))
         return None
     vid = ""
     for line in (out or "").splitlines():
@@ -490,7 +552,9 @@ def resolve_live_youtube(url: str) -> Optional[dict]:
             vid = line
             break
     if not _YOUTUBE_ID_RE.fullmatch(vid):
+        _record_yt_failure(url, "extractor")
         return None
+    _record_yt_failure(url, "")
     return {"kind": "ytid", "id": vid,
             "poster": f"https://i.ytimg.com/vi/{vid}/hqdefault.jpg",
             "ttl_s": 1800}
@@ -566,6 +630,14 @@ def cached_live_entry(camera_id: str) -> Optional[dict]:
     return entry if entry and entry.get("ok") else None
 
 
+def cached_negative_reason(camera_id: str) -> str:
+    """Failure reason of a fresh negative live verdict ('' when none/positive). No network."""
+    entry = _live_cache_entry(camera_id)
+    if entry is None or entry.get("ok"):
+        return ""
+    return str(entry.get("reason") or "")
+
+
 def live_needs_refresh(camera_id: str) -> bool:
     """No network: True when the live cache holds no fresh verdict for this camera."""
     return _live_cache_entry(camera_id) is None
@@ -597,11 +669,15 @@ def get_live(camera_id: str, page_url: str, *, force: bool = False) -> Optional[
         except ValueError:
             host = ""
         result = None
+        fail_reason = ""
         try:
             if resolver == "skylinewebcams":
                 result = resolve_live_skyline(page_url)
             elif resolver == "youtube-live":
+                _YT_FAILURES.pop(page_url, None)   # never read a stale reason
                 result = resolve_live_youtube(page_url)
+                if not result:
+                    fail_reason = yt_failure_reason(page_url)
             elif resolver == "skaping":
                 result = resolve_live_skaping(page_url)
         except Exception:  # noqa: BLE001 — resolution failure is a normal outcome
@@ -613,6 +689,8 @@ def get_live(camera_id: str, page_url: str, *, force: bool = False) -> Optional[
             new = {"ok": False, "error": f"{resolver} resolve failed",
                    "resolved_at": _now_iso(), "host": host or resolver,
                    "ttl_s": LIVE_NEG_TTL_S}
+            if fail_reason:
+                new["reason"] = fail_reason
         data = _load_json_direct(_live_path())
         data[camera_id] = new
         _save_json_cached(_live_path(), _LIVE_MEMO, data)
