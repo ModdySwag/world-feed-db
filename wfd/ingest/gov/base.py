@@ -117,6 +117,8 @@ def format_result(result: IngestResult) -> str:
         lines.append(f"  cameraCount field: {stats['camera_count_field']}")
     if "features" in stats:
         lines.append(f"  features: {stats['features']}")
+    if "published" in stats:
+        lines.append(f"  published: {stats['published']}")
     by_country = stats.get("by_country") or {}
     if by_country:
         top = list(by_country.items())[:10]

@@ -1,0 +1,591 @@
+{
+ "type": "FeatureCollection",
+ "published": "2026-10-01T09:03:03.8196642+10:00",
+ "rights": {
+  "owner": "As per the respective provided_by details contained in the feed: Department of Transport and Main Roads, Transport for NSW, or the respective Local Government Authority.",
+  "disclaimer": "The State of Queensland makes no statements, representations or warranties about the accuracy, currency, reliability or completeness of the information contained in this feed.",
+  "copyright": "Copyright in material within this feed is owned by the State of Queensland or other entities which provide material for the website by arrangement. Please consult the respective provided_by_url for each data owner or the QLDTraffic website for further information https://qldtraffic.qld.gov.au/More/Data.html."
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.0086975,
+     -27.5551796
+    ]
+   },
+   "properties": {
+    "id": 1,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/1",
+    "description": "Archerfield - Ipswich Motorway & Granard Rd - North",
+    "direction": "NorthEast",
+    "district": "Metropolitan",
+    "locality": "Archerfield",
+    "postcode": "4108",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Metropolitan/Archerfield_Ipswich_Mwy_sth.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.4118042,
+     -28.0112896
+    ]
+   },
+   "properties": {
+    "id": 3,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/3",
+    "description": "Bundall - Bundall Road & Ashmore Road - South",
+    "direction": "South",
+    "district": "South Coast",
+    "locality": "Bundall",
+    "postcode": "4217",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/bundall-ashmore-south.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     151.9763031,
+     -27.56567955
+    ]
+   },
+   "properties": {
+    "id": 5,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/5",
+    "description": "Toowoomba - Down the Range - East",
+    "direction": "East",
+    "district": "Darling Downs",
+    "locality": "Toowoomba City",
+    "postcode": "4350",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Darling_Downs/toowoomba_range-east.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     152.9627075,
+     -27.50071907
+    ]
+   },
+   "properties": {
+    "id": 6,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/6",
+    "description": "Indooroopilly - Western Freeway & Moggill Road - South",
+    "direction": "South",
+    "district": "Metropolitan",
+    "locality": "Indooroopilly",
+    "postcode": "4068",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Metropolitan/Indooroopilly_Western_Fwy_Sth.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     152.6669006,
+     -26.19936943
+    ]
+   },
+   "properties": {
+    "id": 8,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/8",
+    "description": "Gympie - Bruce Highway & Excelsior Road - North",
+    "direction": "NorthWest",
+    "district": "Wide Bay/Burnett",
+    "locality": "Gympie",
+    "postcode": "4570",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Wide_Bay/bruce_hwy-excelsior.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     148.786499,
+     -26.57383919
+    ]
+   },
+   "properties": {
+    "id": 9,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/9",
+    "description": "Roma - Carnarvon Highway - South",
+    "direction": "SouthWest",
+    "district": "South West",
+    "locality": "Roma",
+    "postcode": "4455",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/South_West/carnarvon-south.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     148.7869415,
+     -26.57304192
+    ]
+   },
+   "properties": {
+    "id": 12,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/12",
+    "description": "Roma - Carnarvon Highway - North",
+    "direction": "NorthEast",
+    "district": "South West",
+    "locality": "Roma",
+    "postcode": "4455",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/South_West/carnarvon-north.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     151.9756012,
+     -27.56650925
+    ]
+   },
+   "properties": {
+    "id": 13,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/13",
+    "description": "Toowoomba - Top of Range - South",
+    "direction": "South",
+    "district": "Darling Downs",
+    "locality": "Toowoomba City",
+    "postcode": "4350",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Darling_Downs/toowoomba_range-cohoe-south.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     152.0048065,
+     -27.56195068
+    ]
+   },
+   "properties": {
+    "id": 14,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/14",
+    "description": "Toowoomba - Bottom of Range - East ",
+    "direction": "NorthEast",
+    "district": "Darling Downs",
+    "locality": "Toowoomba City",
+    "postcode": "4350",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Darling_Downs/toowoomba-range-bottom-helidon.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     152.0030823,
+     -27.5632
+    ]
+   },
+   "properties": {
+    "id": 15,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/15",
+    "description": "Toowoomba - Bottom of Range - West",
+    "direction": "SouthWest",
+    "district": "Darling Downs",
+    "locality": "Toowoomba City",
+    "postcode": "4350",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Darling_Downs/toowoomba-range-bottom-west.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     151.9951019,
+     -27.56817055
+    ]
+   },
+   "properties": {
+    "id": 16,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/16",
+    "description": "Toowoomba - Range Saddle - East",
+    "direction": "NorthEast",
+    "district": "Darling Downs",
+    "locality": "Toowoomba City",
+    "postcode": "4350",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Darling_Downs/toowoomba-saddle-east.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     151.9929962,
+     -27.5690403
+    ]
+   },
+   "properties": {
+    "id": 17,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/17",
+    "description": "Toowoomba - Range Saddle - West",
+    "direction": "SouthWest",
+    "district": "Darling Downs",
+    "locality": "Toowoomba City",
+    "postcode": "4350",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Darling_Downs/toowoomba-saddle-west.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     145.747406,
+     -16.95384979
+    ]
+   },
+   "properties": {
+    "id": 19,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/19",
+    "description": "Woree - Ray Jones Drive & Rigg Street",
+    "direction": "South",
+    "district": "Far North",
+    "locality": "Woree",
+    "postcode": "4868",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Far_North/bruce-ray_jones-south.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.3809967,
+     -27.97662926
+    ]
+   },
+   "properties": {
+    "id": 20,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/20",
+    "description": "Ashmore - Currumburra Road & Nerang-Southport Road - East",
+    "direction": "East",
+    "district": "South Coast",
+    "locality": "Ashmore",
+    "postcode": "4214",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/currumburra-nerang_southport-east.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.3433075,
+     -27.9509201
+    ]
+   },
+   "properties": {
+    "id": 22,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/22",
+    "description": "Gaven - Pacific Motorway & Smith Street - Exit 66 - South",
+    "direction": "South",
+    "district": "South Coast",
+    "locality": "Gaven",
+    "postcode": "4211",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/m1-smithstreet.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.3863983,
+     -28.03236008
+    ]
+   },
+   "properties": {
+    "id": 24,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/24",
+    "description": "Carrara - Gooding Drive & Nerang-Broadbeach Road - East",
+    "direction": "East",
+    "district": "South Coast",
+    "locality": "Carrara",
+    "postcode": "4211",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/nerang-gooding-east.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.3486023,
+     -28.0156002
+    ]
+   },
+   "properties": {
+    "id": 25,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/25",
+    "description": "Carrara - Pacific Motorway & Nielsens Road - Exit 73 - South",
+    "direction": "SouthEast",
+    "district": "South Coast",
+    "locality": "Carrara",
+    "postcode": "4211",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/nielsens_pacific-south.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.3641052,
+     -28.07220078
+    ]
+   },
+   "properties": {
+    "id": 26,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/26",
+    "description": "Mudgeeraba - Pacific Motorway & Mudgeeraba Road - Exit 79 - North",
+    "direction": "NorthWest",
+    "district": "South Coast",
+    "locality": "Mudgeeraba",
+    "postcode": "4213",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/pacific_mwy-mudgeeraba-north.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.3952942,
+     -27.96170044
+    ]
+   },
+   "properties": {
+    "id": 27,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/27",
+    "description": "Southport - Smith St & Kumbari St - East",
+    "direction": "SouthEast",
+    "district": "South Coast",
+    "locality": "Southport",
+    "postcode": "4215",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/smith-kumbari-east.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "crs": {
+     "type": "name",
+     "properties": {
+      "name": "EPSG:7844"
+     }
+    },
+    "coordinates": [
+     153.3556061,
+     -28.04948044
+    ]
+   },
+   "properties": {
+    "id": 28,
+    "url": "https://api.qldtraffic.qld.gov.au/v1/webcams/28",
+    "description": "Merrimac - Pacific Motorway & Gooding Drive - Exit 77 - North",
+    "direction": "NorthWest",
+    "district": "South Coast",
+    "locality": "Merrimac",
+    "postcode": "4226",
+    "image_url": "https://cameras.qldtraffic.qld.gov.au/Gold_Coast/springbrook_pacific-north.jpg",
+    "image_sourced_from": null,
+    "isCustom": false,
+    "extra_info": null
+   }
+  }
+ ]
+}

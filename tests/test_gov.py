@@ -18,7 +18,7 @@ import urllib.error
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 
 from wfd.ingest.base import IngestResult
-from wfd.ingest.gov import ENUMERATORS, caltrans, deldot, nsw
+from wfd.ingest.gov import ENUMERATORS, caltrans, deldot, nsw, qld
 from wfd.ingest.gov.base import Enumerator, check_no_liveness, registry, run_one
 from wfd.schema import CameraRow
 
@@ -32,8 +32,8 @@ def load(name: str):
 # --- registry -----------------------------------------------------------------
 
 def test_registry():
-    assert set(ENUMERATORS) == {"caltrans", "deldot", "nsw"}, set(ENUMERATORS)
-    assert set(registry()) == {"caltrans", "deldot", "nsw"}
+    assert set(ENUMERATORS) == {"caltrans", "deldot", "nsw", "qld"}, set(ENUMERATORS)
+    assert set(registry()) == {"caltrans", "deldot", "nsw", "qld"}
     for name, enum in ENUMERATORS.items():
         assert isinstance(enum, Enumerator)
         assert enum.name == name
@@ -176,6 +176,99 @@ def test_nsw_first_header_success():
     assert len(calls) == 1 and calls[0] == {"Authorization": "apikey TEST-TOKEN"}
     assert res.stats["auth_header"] == "Authorization: apikey"
     assert len(res.rows) == 20
+
+
+# --- qld ----------------------------------------------------------------------
+
+def test_qld_fixture_parse():
+    payload = load("qld-webcams-sample.json")
+    rows = qld.parse_payload(payload)
+    assert len(rows) == 20, len(rows)
+    assert all(r.protocol == "jpeg" and r.status == "unknown" and r.country == "AU" for r in rows)
+    assert all(r.provenance == "public_by_design" and r.source_family == "qld" for r in rows)
+    assert all(not r.was_redacted and not r.credential_present for r in rows)
+
+    r0 = rows[0]
+    assert r0.name == "Archerfield - Ipswich Motorway & Granard Rd - North", r0.name
+    assert r0.url == "https://cameras.qldtraffic.qld.gov.au/Metropolitan/Archerfield_Ipswich_Mwy_sth.jpg"
+    assert r0.city == "Archerfield"
+    assert abs(r0.lat - (-27.5551796)) < 1e-9 and abs(r0.lon - 153.0086975) < 1e-9
+    assert r0.meta["qld_id"] == "1"
+    assert r0.meta["qld_district"] == "Metropolitan"
+    assert r0.meta["qld_direction"] == "NorthEast"
+    assert r0.meta["qld_postcode"] == "4108"
+    assert r0.meta["qld_url"] == "https://api.qldtraffic.qld.gov.au/v1/webcams/1"
+    assert r0.meta["qld_is_custom"] is False
+    assert "qldtraffic" in r0.attribution.lower()
+    assert "traffic" in r0.tags
+
+
+def test_qld_row_without_image_skipped():
+    payload = {"features": [{"type": "Feature", "properties": {"id": 99, "description": "x"}}]}
+    assert qld.parse_payload(payload) == []
+
+
+def test_qld_key_required_result():
+    original_secret = qld.profile.secret
+    original_status = qld.profile.secret_status
+    qld.profile.secret = lambda name: None
+    qld.profile.secret_status = lambda name: {"name": name, "set": False, "source": "none"}
+    try:
+        res = qld.QldEnumerator().enumerate()
+    finally:
+        qld.profile.secret = original_secret
+        qld.profile.secret_status = original_status
+    assert res.stats["key_required"] is True
+    assert res.rows == []
+    assert res.stats["secret"]["set"] is False
+    assert "KEY REQUIRED" in res.notes and "QLD" in res.notes, res.notes
+
+
+def test_qld_fetch_uses_url_key():
+    fixture_bytes = (FIXTURES / "qld-webcams-sample.json").read_bytes()
+    captured = {}
+
+    def fake_get(url, **kw):
+        captured["url"] = url
+        captured["headers"] = kw.get("headers")
+        return fixture_bytes
+
+    orig_get, orig_secret = qld.polite_get, qld.profile.secret
+    qld.polite_get = fake_get
+    qld.profile.secret = lambda name: "TEST-TOKEN" if name == "QLDTRAFFIC_API_KEY" else None
+    try:
+        res = qld.QldEnumerator().enumerate()
+    finally:
+        qld.polite_get, qld.profile.secret = orig_get, orig_secret
+
+    # key travels in the URL per spec v1.10 — and a test-local token only
+    assert captured["url"] == qld.URL + "?apikey=TEST-TOKEN"
+    assert not captured["headers"] or "apikey" not in {
+        k.lower() for k in captured["headers"]}
+    assert len(res.rows) == 20
+    assert res.stats["features"] == 20
+    assert res.stats["bytes"] == len(fixture_bytes)
+    assert res.stats["published"] == "2026-10-01T09:03:03.8196642+10:00"
+    assert res.stats["by_district"]["Metropolitan"] == 2
+    assert res.stats["by_district"]["South Coast"] == 8
+    assert all(r.status == "unknown" for r in res.rows)
+
+
+def test_qld_fetch_error_token_scrubbed():
+    orig_get, orig_secret = qld.polite_get, qld.profile.secret
+
+    def fake_get(url, **kw):
+        raise OSError(f"connection reset for {url}")
+
+    qld.polite_get = fake_get
+    qld.profile.secret = lambda name: "TEST-TOKEN" if name == "QLDTRAFFIC_API_KEY" else None
+    try:
+        res = qld.QldEnumerator().enumerate()
+    finally:
+        qld.polite_get, qld.profile.secret = orig_get, orig_secret
+    assert res.rows == []
+    assert "TEST-TOKEN" not in res.notes, res.notes
+    assert "<redacted>" in res.notes, res.notes
 
 
 # --- runner + liveness guard --------------------------------------------------

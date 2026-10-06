@@ -2,7 +2,7 @@
 
 Usage::
 
-    py -3.11 -m wfd.ingest.gov <caltrans|deldot|nsw|all>
+    py -3.11 -m wfd.ingest.gov <caltrans|deldot|nsw|qld|all>
 
 Runs the named enumerator(s), writes ``data/ingest/gov-<name>.jsonl``
 (gitignored) and prints a report. Enumeration never claims liveness — see
@@ -18,9 +18,11 @@ from .base import Enumerator, format_result, get, register, registry, run_one
 from .caltrans import CaltransEnumerator
 from .deldot import DeldotEnumerator
 from .nsw import NswEnumerator
+from .qld import QldEnumerator
 
 ENUMERATORS: dict = {}
-for _enumerator in (CaltransEnumerator(), DeldotEnumerator(), NswEnumerator()):
+for _enumerator in (CaltransEnumerator(), DeldotEnumerator(), NswEnumerator(),
+                    QldEnumerator()):
     register(_enumerator)
     ENUMERATORS[_enumerator.name] = _enumerator
 

@@ -99,7 +99,8 @@ PLAN.md holds the program decisions; this file holds the engineering contracts.
 - `gov/base.py` — `Enumerator` interface (`name`, `provenance`, `enumerate() -> IngestResult`)
   + registry of implemented enumerators. Exemplars: `caltrans.py`, `deldot.py` (keyless
   JSON), `nsw.py` (key-gated: key from `profile.secret("NSW_API_KEY")`; missing ⇒ honest
-  `key_required_state` result, no crash).
+  `key_required_state` result, no crash), `qld.py` (key-gated, key **in the URL**
+  query per QLDTraffic spec v1.10; token scrubbed from any error text).
 
 ### wfd.ingest.newsrc (build unit NS — new-source families)
 - One module per family under `wfd/ingest/newsrc/`, each exposing a module-level
