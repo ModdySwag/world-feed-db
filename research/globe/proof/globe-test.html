@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>MapLibre globe proof — world-feed-db</title>
+<link rel="stylesheet" href="maplibre-gl.css">
+<style>html,body,#map{margin:0;height:100%;width:100%;background:#000}</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="maplibre-gl.js"></script>
+<script>
+window.__status = { stage: 'boot', errors: [] };
+const t0 = performance.now();
+const style = {
+  version: 8,
+  glyphs: 'fonts/{fontstack}/{range}.pbf',
+  sources: {
+    esri: {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      tileSize: 256, maxzoom: 19,
+      attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community'
+    },
+    gibs: {
+      type: 'raster',
+      tiles: ['https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg'],
+      tileSize: 256, maxzoom: 8, attribution: 'NASA EOSDIS GIBS — Blue Marble (public domain)'
+    },
+    labels: {
+      type: 'raster',
+      tiles: ['https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/Reference_Labels_15m/default/GoogleMapsCompatible_Level13/{z}/{y}/{x}.png'],
+      tileSize: 256, maxzoom: 13, attribution: 'NASA EOSDIS GIBS — Reference Labels'
+    },
+    cameras: {
+      type: 'geojson', data: 'cameras.geojson',
+      cluster: true, clusterRadius: 55, clusterMaxZoom: 12, clusterMinPoints: 2
+    }
+  },
+  sky: { 'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 3, 0.5, 7, 0] },
+  layers: [
+    { id: 'bg', type: 'background', paint: { 'background-color': '#05070d' } },
+    { id: 'esri', type: 'raster', source: 'esri', paint: { 'raster-opacity': 1 } },
+    { id: 'gibs', type: 'raster', source: 'gibs', layout: { visibility: 'none' }, paint: { 'raster-opacity': 1 } },
+    { id: 'labels', type: 'raster', source: 'labels', paint: { 'raster-opacity': 0.9 } },
+    { id: 'clusters', type: 'circle', source: 'cameras', filter: ['has', 'point_count'],
+      paint: { 'circle-color': ['step', ['get', 'point_count'], '#22d3ee', 100, '#facc15', 750, '#f472b6'],
+               'circle-radius': ['step', ['get', 'point_count'], 12, 100, 17, 750, 23],
+               'circle-opacity': 0.85, 'circle-stroke-width': 1.5, 'circle-stroke-color': '#ffffff' } },
+    { id: 'cluster-count', type: 'symbol', source: 'cameras', filter: ['has', 'point_count'],
+      layout: { 'text-field': '{point_count_abbreviated}', 'text-font': ['Noto Sans Regular'], 'text-size': 11 } },
+    { id: 'points', type: 'circle', source: 'cameras', filter: ['!', ['has', 'point_count']],
+      paint: { 'circle-color': ['match', ['get', 'status'], 'live', '#34d399', 'dead', '#f87171', 'stale', '#fbbf24', '#93a3b8'],
+               'circle-radius': 4, 'circle-stroke-width': 1, 'circle-stroke-color': '#0b1220' } }
+  ]
+};
+const map = new maplibregl.Map({ container: 'map', style, center: [140, -22], zoom: 1.4, attributionControl: { compact: false } });
+map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+map.addControl(new maplibregl.GlobeControl(), 'top-right');
+map.on('error', (e) => { window.__status.errors.push(String(e && e.error && e.error.message || e)); });
+map.on('style.load', () => {
+  map.setProjection({ type: 'globe' });
+  window.__status.projection = map.getProjection().type;
+  window.__status.stage = 'globe-set';
+});
+map.on('idle', () => { if (window.__status.stage !== 'idle') { window.__status.stage = 'idle'; window.__status.idle_ms = Math.round(performance.now() - t0); } });
+map.on('sourcedata', (e) => {
+  if (e.sourceId === 'cameras' && e.isSourceLoaded) {
+    if (!window.__status.cameras_loaded_ms) {
+      window.__status.cameras_loaded_ms = Math.round(performance.now() - t0);
+      let feats = [], fs = [];
+      try { feats = map.querySourceFeatures('cameras', { filter: ['has', 'point_count'] }); } catch (err) {}
+      try { fs = map.querySourceFeatures('cameras', { filter: ['!', ['has', 'point_count']] }); } catch (err) {}
+      window.__status.clusters_in_view = feats.length;
+      window.__status.singles_in_view = fs.length;
+      window.__status.stage = 'cameras-loaded';
+    }
+  }
+});
+map.on('click', 'clusters', (e) => {
+  const f = e.features[0];
+  const src = map.getSource('cameras');
+  src.getClusterExpansionZoom(f.properties.cluster_id).then((z) => {
+    window.__status.last_expand_zoom = z;
+    map.flyTo({ center: f.geometry.coordinates, zoom: z, speed: 1.7, essential: true });
+  }).catch((err) => window.__status.errors.push('expand: ' + err));
+});
+map.on('click', 'points', (e) => { window.__status.last_clicked = e.features[0].properties; });
+// auto-rotate + fps probe
+let lng = 140, frames = 0, fp0 = null;
+map.on('idle', () => { if (!window.__rot) { window.__rot = true; requestAnimationFrame(step); } });
+function step(ts) {
+  if (fp0 === null) fp0 = ts;
+  frames++;
+  lng = (lng + 0.12) % 360;
+  map.setCenter([lng, -18]);
+  if (ts - fp0 < 3000) { requestAnimationFrame(step); }
+  else { window.__status.fps_autrotate = +(frames / ((ts - fp0) / 1000)).toFixed(1); window.__status.stage = 'fps-done'; }
+}
+window.__api = { expand: (n) => { const src = map.getSource('cameras'); const f = map.querySourceFeatures('cameras', { filter: ['has','point_count'] }); if (f[n]) return src.getClusterExpansionZoom(f[n].properties.cluster_id); }, setProjection: (t) => map.setProjection({ type: t }), };
+</script>
+</body>
+</html>
