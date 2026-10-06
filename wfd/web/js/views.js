@@ -1430,7 +1430,7 @@ export const HELP_SECTIONS = [
         and the imagery lags ~1–2 days) and EOX Sentinel-2 cloudless
         (<b>CC BY-NC-SA — non-commercial</b>). The exact attribution for every visible source sits at the bottom-right
         (forced visible); Blue Marble/labels/night/today are public-domain NASA EOSDIS GIBS.</li>
-        <li><b>Day/night terminator</b> (toolbar toggle): shades the night hemisphere and draws a soft glow along the
+        <li><b>Day/night terminator</b> (toolbar toggle, <b>on by default</b>): shades the night hemisphere and draws a soft glow along the
         terminator, computed client-side from the current UTC time and refreshed every minute. It is a
         <b>visual cue only</b> — no imagery is swapped.</li>
         <li><b>Tour</b> (toolbar): a cinematic loop over your favourites in saved order (or the Watch stage when there
@@ -1446,8 +1446,19 @@ export const HELP_SECTIONS = [
         globe there; the × hides it and the layers list re-enables it.</li>
         <li><b>Heatmap</b> (layers list): every geocoded row as a density heatmap; the clustered pins dim while it is
         on. The header line states coverage exactly — “N geocoded of T rows”.</li>
-        <li><b>Auto-rotate</b> (toolbar): idle spin, off by default; pauses on any input and resumes after 20 s idle.
+        <li><b>Auto-rotate</b> (toolbar): idle spin — <b>on by default</b>; pauses on any input and resumes after 20 s idle.
         It is a persisted setting, like every layer toggle.</li>
+        <li><b>Country labels</b>: at world and continental zooms (z ≤ 6) the top ~28 countries (≥ 40 geocoded rows) carry a
+        “Country · count” label built from the cached points — the counts cover <em>every</em> status. <b>Click a label</b> to set the
+        country filter (the same chips the sidebar uses) and fly to that country's bounding box; click it again to clear.</li>
+        <li><b>Hover cards</b>: dwell on a cluster bubble or a pin for ~250 ms — a card breaks a cluster down by status
+        (live · stale · dead · unknown+unverified) or previews a camera with its cached <code>/api/poster</code> frame
+        (“no poster yet” when there is none; exposure rows stay metadata-only).</li>
+        <li><b>World pulse</b>: the bottom-centre strip counts what the current viewport holds — “in view: N cams · live M”,
+        the top countries (click one to filter, click again to clear) and how many families are present.</li>
+        <li><b>Legend</b> (bottom, next to the minimap): status dot colours plus a cluster colour ramp —
+        <b>cluster colour = live share</b> (grey-violet = none/few live, amber = some, teal/green = mostly live).
+        The header folds the box away; the state persists.</li>
       </ul>`,
   },
   {

@@ -934,3 +934,81 @@ html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-
 #globe-wrap.gmini .globe-here { bottom: 150px; }
 #globe-wrap.gmini .globe-here-list { bottom: 182px; }
 #globe-wrap.gmini .maplibregl-ctrl-bottom-left { left: 276px; }
+
+/* ── globe: population layer (hover card · pulse · legend) ───────────── */
+.globe-legend {
+  position: absolute; left: 10px; bottom: 10px; z-index: 7;
+  min-width: 188px; max-width: 240px; border-radius: var(--radius-sm);
+  background: rgba(13, 17, 24, .92); backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong); box-shadow: var(--shadow);
+}
+.globe-legend[hidden] { display: none; }
+#globe-wrap.gmini .globe-legend { left: 280px; }
+.gl-hed {
+  display: flex; align-items: center; gap: 7px; width: 100%; border: 0; background: transparent;
+  color: var(--muted); cursor: pointer; padding: 5px 9px; font-size: 10.5px;
+  letter-spacing: .9px; text-transform: uppercase; font-weight: 600;
+}
+.gl-hed:hover { color: var(--txt); }
+.gl-chev { display: inline-flex; margin-left: auto; transition: transform .15s ease; }
+.globe-legend.collapsed .gl-chev { transform: rotate(-90deg); }
+.gl-body { padding: 0 9px 8px; display: flex; flex-direction: column; gap: 3px; }
+.globe-legend.collapsed .gl-body { display: none; }
+.gl-row { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--txt); }
+.gl-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.gl-sep { height: 1px; background: var(--border); margin: 4px 0 2px; }
+.gl-share { display: flex; align-items: center; gap: 7px; }
+.gl-grad { display: inline-flex; flex: none; border-radius: 4px; overflow: hidden; }
+.gl-sw { display: inline-block; width: 14px; height: 8px; }
+.gl-sw.sw0 { background: #a09cc0; }
+.gl-sw.sw1 { background: #f5a524; }
+.gl-sw.sw2 { background: #3ddc84; }
+.gl-note { font-size: 10.5px; color: var(--muted); line-height: 1.35; }
+
+.globe-pulse {
+  position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 7;
+  display: flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px;
+  max-width: min(78%, 780px); overflow: hidden;
+  background: rgba(13, 17, 24, .92); backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong); border-radius: 20px; box-shadow: var(--shadow);
+  font-size: 11.5px; color: var(--txt); white-space: nowrap;
+}
+.globe-pulse[hidden] { display: none; }
+.gp-main b { color: var(--accent); font-variant-numeric: tabular-nums; }
+.gp-cc {
+  border: 1px solid var(--border); background: rgba(255, 255, 255, .04); color: var(--txt);
+  border-radius: 12px; padding: 1px 8px; font-size: 11px; cursor: pointer; max-width: 150px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.gp-cc:hover { border-color: var(--accent); color: #fff; }
+.gp-fam { color: var(--faint); }
+.gp-hint { color: var(--stale); }
+#globe-wrap .globe-tourbar:not([hidden]) ~ .globe-pulse,
+#globe-wrap .globe-mpanel:not([hidden]) ~ .globe-pulse { bottom: 52px; }
+
+.globe-hcard {
+  position: absolute; z-index: 9; width: 230px; pointer-events: none;
+  background: rgba(13, 17, 24, .95); backdrop-filter: blur(10px);
+  border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
+  box-shadow: var(--shadow); padding: 9px 10px 8px;
+}
+.globe-hcard[hidden] { display: none; }
+.ghc-title { display: flex; align-items: baseline; gap: 6px; font-size: 12.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ghc-share { margin-left: auto; font-size: 10.5px; font-weight: 400; color: var(--muted); }
+.ghc-sub { font-size: 11px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ghc-meta { display: flex; gap: 6px; align-items: center; margin-top: 5px; flex-wrap: wrap; }
+.ghc-proto { font-size: 10.5px; color: var(--faint); border: 1px solid var(--border); border-radius: 6px; padding: 0 6px; line-height: 16px; }
+.ghc-rows { display: flex; flex-direction: column; gap: 2px; margin-top: 6px; }
+.ghc-row { display: flex; align-items: center; gap: 7px; font-size: 11.5px; }
+.ghc-row b { margin-left: auto; font-variant-numeric: tabular-nums; }
+.ghc-dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.ghc-lab { color: var(--muted); }
+.ghc-hint { margin-top: 6px; font-size: 10.5px; color: var(--faint); }
+.ghc-note { margin-top: 6px; font-size: 10.5px; color: var(--unverified); }
+.ghc-poster { margin-top: 7px; border-radius: 6px; overflow: hidden; background: #05070a; height: 140px; display: flex; align-items: center; justify-content: center; }
+.ghc-poster img { width: 100%; height: 140px; object-fit: cover; display: block; }
+.ghc-post-ph, .ghc-post-none { font-size: 10.5px; color: var(--faint); }
+.gtip-sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+/* legend expanded: keep the “what's here” chip clear of it when the minimap is off */
+#globe-wrap.glegend:not(.gmini) .globe-here { bottom: 178px; }
+#globe-wrap.glegend:not(.gmini) .globe-here-list { bottom: 210px; }

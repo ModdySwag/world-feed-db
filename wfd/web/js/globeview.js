@@ -20,14 +20,27 @@
  * density heatmap — plus an honest coverage line in the header ("N geocoded of
  * T rows"). Tours and the ruler are transient; every *setting* persists.
  *
+ * Population layer (info density at the default world view):
+ * [1] clusters carry live/stale/dead/unk counts (clusterProperties) — the circle
+ *     colour is the live SHARE and hover tooltips break the mix down;
+ * [2] a country-label layer (z<=6) shows "Country · count" for the top ~28
+ *     countries (>=40 geocoded rows) — click to apply the country filter and fly
+ *     to its bbox, click again to clear (counts always cover ALL statuses);
+ * [3] a fixed-position hover card (250 ms dwell) details a cluster breakdown or a
+ *     pin (lazy /api/poster/<cid> preview; exposure rows stay metadata-only);
+ * [4] an always-on 'world pulse' strip counts what the viewport holds
+ *     (cams · live · top countries — click to filter · families present);
+ * [5] a collapsible legend decodes the status dots and the cluster live-share ramp.
+ *
  * Settings keys (all via saveSettings, all prefs-persisted):
  *   globe_labels · globe_night · globe_today · globe_today_date · globe_eox ·
- *   globe_terminator · globe_heat · globe_minimap · globe_autorotate · globe_favonly
+ *   globe_terminator · globe_heat · globe_minimap · globe_autorotate ·
+ *   globe_favonly · globe_legend
  */
 import {
   store, bus, apiGet, esc, fmt, toast, saveSettings, openDrawer, openPlayerModal,
   toggleFavourite, isFav, copyText, go, viewLink, statusChipHTML,
-  rememberCamera, clamp, stagedIds,
+  rememberCamera, clamp, stagedIds, setFilters,
 } from './app.js';
 import { playSound } from './sound.js';
 
@@ -45,6 +58,7 @@ const I = {
   term: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg>',
   tour: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="m10 8 5 2.5-5 2.5z" fill="currentColor" stroke="none"/><path d="M8 20h8"/></svg>',
   ruler: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 8.7 15.3 2.7a2.4 2.4 0 0 0-3.4 0L2.7 11.9a2.4 2.4 0 0 0 0 3.4l6 6a2.4 2.4 0 0 0 3.4 0l9.2-9.2a2.4 2.4 0 0 0 0-3.4z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/></svg>',
+  chev: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
 };
 
 /* ── constants ───────────────────────────────────────────────────────── */
@@ -67,6 +81,13 @@ const RAD = Math.PI / 180;
 const TERM_REFRESH_MS = 60000;              // terminator recompute cadence
 const TERM_FILL_ID = 'globe-terminator-fill';
 const TERM_GLOW_ID = 'globe-terminator-glow';
+const COUNTRY_MIN_ROWS = 40;              // country labels need this many geocoded rows
+const COUNTRY_CAP = 28;                   // …and only the top-N by count get a label
+const PULSE_MS = 300;                     // world-pulse refresh throttle
+const HCARD_DWELL_MS = 250;               // hover-card dwell before it appears
+/* cluster fill = live share (live / point_count): grey-violet -> amber -> teal/green */
+const CLUSTER_FILL = ['interpolate', ['linear'], ['/', ['get', 'live'], ['get', 'point_count']],
+  0, '#8892a0', 0.08, '#a09cc0', 0.3, '#f5a524', 0.62, '#22d3ee', 0.85, '#3ddc84'];
 
 /* ── module state (survives view switches; reset by cleanup) ─────────── */
 
@@ -95,6 +116,14 @@ let miniMap = null; let miniBox = null; let miniDot = null; let miniHalo = null;
 let miniTimer = null;                 // minimap viewport-sync throttle
 let escHandler = null;                // document-level Esc (tour/measure only)
 let statsTotal;                       // /api/stats rows (undefined = not asked, null = unavailable)
+let countryBox = new Map();           // country -> [w,s,e,n] bbox (country-label clicks)
+let pulseTimer = null;
+let cardTimer = null;                 // hover-card dwell timer
+let cardKey = null;                   // feature currently under the cursor
+let cardFor = null;                   // feature the visible card is showing
+let cardAnchor = null; let cardAnchorPx = null;
+let posterSeq = 0;                    // guards the one-poster-at-a-time fetch
+const posterCache = new Map();        // cid -> 'ok' | 'none'
 
 /* ── lazy library load (the only place MapLibre is fetched) ──────────── */
 
@@ -164,8 +193,17 @@ function buildStyle() {
       cams: {
         type: 'geojson', data: EMPTY_FC,
         cluster: true, clusterRadius: 55, clusterMaxZoom: 12, clusterMinPoints: 2,
+        // cluster intelligence: every cluster carries status counts so colour and
+        // tooltips can speak in live-share terms (reduce over the point properties)
+        clusterProperties: {
+          live: ['+', ['case', ['==', ['get', 's'], 'live'], 1, 0]],
+          stale: ['+', ['case', ['==', ['get', 's'], 'stale'], 1, 0]],
+          dead: ['+', ['case', ['==', ['get', 's'], 'dead'], 1, 0]],
+          unk: ['+', ['case', ['in', ['get', 's'], ['literal', ['unknown', 'unverified', '']]], 1, 0]],
+        },
       },
       'cams-heat': { type: 'geojson', data: EMPTY_FC },       // non-clustered copy for the heatmap
+      countries: { type: 'geojson', data: EMPTY_FC },         // country labels (built from the cached points)
       focus: { type: 'geojson', data: EMPTY_FC },
       'measure-dots': { type: 'geojson', data: EMPTY_FC },
       'measure-line': { type: 'geojson', data: EMPTY_FC },
@@ -203,17 +241,34 @@ function buildStyle() {
         'circle-color': 'rgba(45,212,191,.14)', 'circle-stroke-width': 2.5,
         'circle-stroke-color': '#2dd4bf',
       } },
+      // country labels — "Country · count" for the top countries, built from the
+      // cached points; present at world zoom, faded out by z>6 (layer maxzoom 7)
+      { id: 'globe-country-labels', type: 'symbol', source: 'countries', maxzoom: 7,
+        layout: {
+          'text-field': ['get', 'label'], 'text-font': ['Noto Sans Regular'],
+          'text-size': ['step', ['get', 'cnt'], 11.5, 200, 12.5, 1000, 13.5, 2500, 15],
+          'text-max-width': 9, 'text-padding': 3, 'text-allow-overlap': false,
+        },
+        paint: {
+          'text-color': '#eaf2ff',
+          'text-halo-color': 'rgba(4, 7, 12, 0.9)', 'text-halo-width': 1.3,
+          'text-opacity': ['interpolate', ['linear'], ['zoom'], 3, 1, 5.5, 0.6, 6.6, 0],
+        } },
       { id: 'globe-clusters', type: 'circle', source: 'cams', filter: ['has', 'point_count'],
         paint: {
-          'circle-color': ['step', ['get', 'point_count'], '#22d3ee', 100, '#facc15', 750, '#f472b6'],
-          'circle-radius': ['step', ['get', 'point_count'], 12, 100, 17, 750, 23],
+          'circle-color': CLUSTER_FILL,                     // live share, not raw size
+          'circle-radius': ['interpolate', ['linear'], ['zoom'],
+            0, ['step', ['get', 'point_count'], 15, 100, 20, 750, 28],
+            5, ['step', ['get', 'point_count'], 13, 100, 18, 750, 25],
+            10, ['step', ['get', 'point_count'], 12, 100, 17, 750, 23]],
           'circle-opacity': heatOn ? 0.25 : 0.85,
           'circle-stroke-width': 1.5, 'circle-stroke-color': '#ffffff',
         } },
       { id: 'globe-cluster-count', type: 'symbol', source: 'cams', filter: ['has', 'point_count'],
         layout: { 'text-field': '{point_count_abbreviated}', 'text-font': ['Noto Sans Regular'],
-          'text-size': 11 },
-        paint: { 'text-color': '#04121a', 'text-opacity': heatOn ? 0.25 : 1 } },
+          'text-size': ['interpolate', ['linear'], ['zoom'], 0, 12.5, 4, 11.5, 8, 11] },
+        paint: { 'text-color': '#04121a', 'text-halo-color': 'rgba(255, 255, 255, 0.28)',
+          'text-halo-width': 0.6, 'text-opacity': heatOn ? 0.25 : 1 } },
       { id: 'globe-points', type: 'circle', source: 'cams', filter: ['!', ['has', 'point_count']],
         paint: {
           'circle-color': PIN_COLOR, 'circle-radius': 4,
@@ -249,11 +304,57 @@ function pushPoints(fc) {
   src.setData(fc);
   const heat = map.getSource('cams-heat');       // same rows, one non-clustered copy
   if (heat) heat.setData(fc);
+  pushCountryLabels(fc);
   const n = (fc.features || []).length;
   if (window.__globe) window.__globe.points = n;
   if (ui.loading) ui.loading.hidden = true;
   ensureStatsTotal();
   setSubLine(n);
+  updateDebugCounts();
+  schedulePulse();
+}
+
+/* country aggregation for the label layer — count + wrapped mean centroid + bbox.
+ * Labels reflect the FULL cached set (all statuses) by design: they are a coverage
+ * read of the map, not a filtered result (the tooltip says so when a status filter
+ * is active). Countries with >= COUNTRY_MIN_ROWS rows only, top COUNTRY_CAP. */
+function buildCountryLabels(fc) {
+  const agg = new Map();
+  for (const f of (fc && fc.features) || []) {
+    const p = f.properties || {};
+    const g = f.geometry && f.geometry.coordinates;
+    if (!p.y || !g) continue;
+    const lon = Number(g[0]); const lat = Number(g[1]);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+    let a = agg.get(p.y);
+    if (!a) { a = { n: 0, cx: 0, cy: 0, lat: 0, w: 181, e: -181, s: 91, n2: -91 }; agg.set(p.y, a); }
+    a.n++; a.lat += lat;
+    a.cx += Math.cos(lon * RAD); a.cy += Math.sin(lon * RAD);   // wrapped mean (antimeridian-safe)
+    if (lon < a.w) a.w = lon;
+    if (lon > a.e) a.e = lon;
+    if (lat < a.s) a.s = lat;
+    if (lat > a.n2) a.n2 = lat;
+  }
+  const rows = [...agg.entries()].filter(([, a]) => a.n >= COUNTRY_MIN_ROWS)
+    .sort((x, y) => y[1].n - x[1].n).slice(0, COUNTRY_CAP);
+  countryBox = new Map();
+  const features = rows.map(([y, a]) => {
+    countryBox.set(y, [a.w, a.s, a.e, a.n2]);
+    const mlon = Math.atan2(a.cy / a.n, a.cx / a.n) / RAD;
+    return {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [mlon, a.lat / a.n] },
+      properties: { y, cnt: a.n, label: `${y} · ${fmt(a.n)}` },
+    };
+  });
+  return { type: 'FeatureCollection', features };
+}
+
+function pushCountryLabels(fc) {
+  const src = map && map.getSource('countries');
+  const data = buildCountryLabels(fc);
+  if (src) src.setData(data);
+  if (window.__globe) window.__globe.countryLabels = data.features.length;
 }
 
 /* honest coverage: "N geocoded of T rows" — T from /api/stats, asked once. */
@@ -762,6 +863,7 @@ function stopTour(quiet) {
 async function startTour() {
   if (tourState || destroyed) return;
   if (measureState) finishMeasure(true);
+  hideHoverCard();                               // no hover card while touring
   const favIds = (store.prefs.favourites || []).map((f) => f.camera_id);
   const useFavs = favIds.length > 0;
   const ids = useFavs ? favIds : stagedIds();
@@ -841,6 +943,7 @@ function fmtMi(m) {
 function startMeasure() {
   if (measureState || !map) return;
   if (tourState) stopTour(true);
+  hideHoverCard();                               // no hover card while measuring
   measureState = {
     cam: {
       center: map.getCenter(), zoom: map.getZoom(),
@@ -1119,7 +1222,7 @@ function readHashState() {
 /* ── map build + interaction wiring ──────────────────────────────────── */
 
 function buildMap() {
-  const start = readHashState() || WORLD_VIEW;
+  const start = readHashState() || { ...WORLD_VIEW, pitch: 15 };   // fresh entry: a subtle 3D tilt
   map = new M.Map({
     container: ui.host,
     style: buildStyle(),
@@ -1141,7 +1244,7 @@ function buildMap() {
   map.on('error', onMapError);
   map.on('style.load', onStyleReady);
   map.on('moveend', () => {
-    scheduleHash(); scheduleHere(); updateDebugCounts();
+    scheduleHash(); scheduleHere(); updateDebugCounts(); schedulePulse();
     scheduleMini();                                 // minimap viewport (~150 ms throttle)
     positionMeasureReadout(measureState && measureState.pts[measureState.pts.length - 1]);
   });
@@ -1157,9 +1260,17 @@ function buildMap() {
   map.on('dblclick', 'globe-points', onPointDbl);
   map.on('mousemove', 'globe-points', onPointMove);
   map.on('mouseleave', 'globe-points', onPointLeave);
+  map.on('mousemove', 'globe-clusters', onClusterMove);
+  map.on('mouseleave', 'globe-clusters', onClusterLeave);
+  map.on('click', 'globe-country-labels', onCountryClick);
+  map.on('mousemove', 'globe-country-labels', onCountryMove);
+  map.on('mouseleave', 'globe-country-labels', onCountryLeave);
   map.on('mouseenter', 'globe-points', () => { if (!measureState) setCursor('pointer'); });
   map.on('mouseenter', 'globe-clusters', () => { if (!measureState) setCursor('pointer'); });
-  map.on('mouseleave', 'globe-clusters', () => { if (!measureState) setCursor(''); });
+  map.on('mouseenter', 'globe-country-labels', () => { if (!measureState) setCursor('pointer'); });
+  map.on('move', onCardMapMove);                  // hide the hover card once the anchor drifts
+  map.on('dragstart', hideHoverCard);
+  map.on('zoomstart', hideHoverCard);
 
   // idle rotation pauses on real map input only (toolbar clicks don't count)
   for (const evt of ['mousedown', 'touchstart', 'wheel']) {
@@ -1195,6 +1306,7 @@ function onStyleReady() {
   scheduleMini();
   writeHash();                                  // router's syncHash drops lat/lng — put them back
   updateDebugCounts();
+  schedulePulse();
 }
 
 function onMapError(ev) {
@@ -1241,26 +1353,65 @@ function onPointDbl(ev) {
   openPlayerFor(f.properties.c);
 }
 
-function onPointMove(ev) {
-  const f = ev.features && ev.features[0];
-  if (!f) return;
-  hoverLatLng = f.geometry ? f.geometry.coordinates : ev.lngLat;
-  const id = f.properties.c;
+/* shared 300 ms hover tooltip (points · clusters · country labels) */
+function showTipPopup(html) {
+  if (destroyed || !map || !M) return;
+  if (hoverPopup) hoverPopup.remove();
+  hoverPopup = new M.Popup({ closeButton: false, closeOnClick: false, offset: 10,
+    className: 'wfd-gtip' })
+    .setLngLat(hoverLatLng)
+    .setHTML(html)
+    .addTo(map);
+}
+
+function scheduleTip(id, html, coords) {
+  hoverLatLng = coords || hoverLatLng;
   if (id === hoverId) {
     if (hoverPopup) hoverPopup.setLngLat(hoverLatLng);
     return;
   }
   hoverId = id;
   clearTimeout(hoverTimer);
-  hoverTimer = setTimeout(() => {
-    if (destroyed || !map || !M) return;
-    if (hoverPopup) hoverPopup.remove();
-    hoverPopup = new M.Popup({ closeButton: false, closeOnClick: false, offset: 10,
-      className: 'wfd-gtip' })
-      .setLngLat(hoverLatLng)
-      .setHTML(`<span class="gtip-name">${esc(f.properties.n || hoverId || '')}</span>`)
-      .addTo(map);
-  }, 300);                                       // 300 ms dwell before the name tooltip shows
+  hoverTimer = setTimeout(() => showTipPopup(html), 300);   // 300 ms dwell
+}
+
+function onPointMove(ev) {
+  const f = ev.features && ev.features[0];
+  if (!f) return;
+  const p = f.properties || {};
+  let html = `<span class="gtip-name">${esc(p.n || p.c || '')}</span>`;
+  if (p.s) html += `<div class="gtip-sub">${esc(p.s)}${p.y ? ' · ' + esc(p.y) : ''}</div>`;
+  scheduleTip('p' + (p.c || ''), html, f.geometry ? f.geometry.coordinates : ev.lngLat);
+  hoverCardMove('point', f, ev.point);
+}
+
+/* [1] cluster hover: "12,345 cams · 3,210 live · 1,102 stale" from clusterProperties */
+function clusterTipHTML(p) {
+  const bits = [`${fmt(p.point_count || 0)} cams`, `${fmt(p.live || 0)} live`, `${fmt(p.stale || 0)} stale`];
+  if (p.dead) bits.push(`${fmt(p.dead)} dead`);
+  if (p.unk) bits.push(`${fmt(p.unk)} unknown`);
+  return `<span class="gtip-name">${bits.join(' · ')}</span>`;
+}
+
+function onClusterMove(ev) {
+  const f = ev.features && ev.features[0];
+  if (!f) return;
+  const p = f.properties || {};
+  scheduleTip('k' + p.cluster_id, clusterTipHTML(p), f.geometry ? f.geometry.coordinates : ev.lngLat);
+  hoverCardMove('cluster', f, ev.point);
+}
+
+/* [2] country-label hover: "United States · 3,584 cams" (+ honesty sub-caption) */
+function onCountryMove(ev) {
+  const f = ev.features && ev.features[0];
+  if (!f) return;
+  const p = f.properties || {};
+  let html = `<span class="gtip-name">${esc(p.y)} · ${fmt(p.cnt)} cams</span>`;
+  html += '<div class="gtip-sub">click to filter · click again to clear</div>';
+  if ((store.filters.status || []).length) {
+    html += '<div class="gtip-sub">counts cover all statuses — the status filter is not applied here</div>';
+  }
+  scheduleTip('y' + p.y, html, f.geometry ? f.geometry.coordinates : ev.lngLat);
 }
 
 function onPointLeave() {
@@ -1268,13 +1419,265 @@ function onPointLeave() {
   clearTimeout(hoverTimer);
   hoverTimer = null;
   if (hoverPopup) { hoverPopup.remove(); hoverPopup = null; }
+  hoverCardLeave();
   setCursor(measureState ? 'crosshair' : '');
+}
+
+function onClusterLeave() { onPointLeave(); }
+function onCountryLeave() { onPointLeave(); }
+
+/* ── [3] hover info card — rich browsing without clicking ──────────────
+ * A fixed-position overlay (allowed: not a DOM marker on the map) that follows
+ * a debounced hover (~250 ms dwell) over a cluster or a pin. Single points load
+ * /api/poster/<cid> lazily into a 140 px frame — one poster fetch at a time,
+ * a failure becomes a "no poster yet" note, never a broken image. Exposure rows
+ * stay metadata-only. Hidden while measuring / touring, on mouseleave and when
+ * map input moves the anchor beyond ~48 px. */
+
+function hoverKeyOf(kind, f) {
+  const p = f.properties || {};
+  return kind === 'cluster' ? 'k' + p.cluster_id : 'p' + (p.c || '');
+}
+
+function hcardClusterHTML(p) {
+  const total = p.point_count || 0;
+  const share = total ? Math.round((100 * (p.live || 0)) / total) : 0;
+  const rows = [
+    ['live', p.live || 0, 'var(--live)'],
+    ['stale', p.stale || 0, 'var(--stale)'],
+    ['dead', p.dead || 0, 'var(--dead)'],
+    ['unknown + unverified', p.unk || 0, 'var(--unverified)'],
+  ];
+  return `<div class="ghc-title">${fmt(total)} cameras<span class="ghc-share">${share}% live</span></div>`
+    + '<div class="ghc-rows">' + rows.map(([lab, n, col]) => '<div class="ghc-row">'
+      + `<span class="ghc-dot" style="background:${col}"></span>`
+      + `<span class="ghc-lab">${esc(lab)}</span><b>${fmt(n)}</b></div>`).join('') + '</div>'
+    + '<div class="ghc-hint">click to dive in</div>';
+}
+
+function hcardPointHTML(p) {
+  const bits = [p.y, p.f].filter(Boolean).map(esc);
+  let h = `<div class="ghc-title">${esc(p.n || '(unnamed)')}</div>`;
+  if (bits.length) h += `<div class="ghc-sub">${bits.join(' · ')}</div>`;
+  h += `<div class="ghc-meta">${statusChipHTML({ status: p.s })}`
+    + `${p.p ? `<span class="ghc-proto">${esc(p.p)}</span>` : ''}</div>`;
+  if (isExposure(p)) {
+    h += '<div class="ghc-note">metadata only — listed by an aggregator; never previewed</div>';
+  } else {
+    h += '<div class="ghc-poster"><span class="ghc-post-ph">loading poster…</span></div>';
+  }
+  return h;
+}
+
+function loadPoster(cid) {
+  const host = ui.hcard && ui.hcard.querySelector('.ghc-poster');
+  if (!host || !cid) return;
+  if (posterCache.get(cid) === 'none') {
+    host.innerHTML = '<span class="ghc-post-none">no poster yet</span>';
+    return;
+  }
+  const seq = ++posterSeq;                    // one live poster request at a time
+  const img = document.createElement('img');
+  img.alt = '';
+  img.addEventListener('load', () => { if (seq === posterSeq) posterCache.set(cid, 'ok'); });
+  img.addEventListener('error', () => {
+    if (seq !== posterSeq) return;
+    posterCache.set(cid, 'none');
+    host.innerHTML = '<span class="ghc-post-none">no poster yet</span>';
+  });
+  host.innerHTML = '';
+  host.appendChild(img);
+  img.src = '/api/poster/' + encodeURIComponent(cid);
+}
+
+function positionHoverCard(point) {
+  const card = ui.hcard;
+  if (!card || !point || !ui.wrap) return;
+  const w = card.offsetWidth || 230; const hgt = card.offsetHeight || 180;
+  const pad = 8; const off = 16;
+  let x = point.x + off; let y = point.y + off;
+  if (x + w + pad > ui.wrap.clientWidth) x = point.x - off - w;              // flip at the right edge
+  if (y + hgt + pad > ui.wrap.clientHeight) y = point.y - off - hgt;         // …and at the bottom
+  card.style.left = Math.round(clamp(x, pad, Math.max(pad, ui.wrap.clientWidth - w - pad))) + 'px';
+  card.style.top = Math.round(clamp(y, pad, Math.max(pad, ui.wrap.clientHeight - hgt - pad))) + 'px';
+}
+
+function showHoverCard(kind, f, point) {
+  const card = ui.hcard;
+  if (!card || destroyed || measureState || tourState) return;
+  const p = f.properties || {};
+  card.innerHTML = kind === 'cluster' ? hcardClusterHTML(p) : hcardPointHTML(p);
+  card.hidden = false;
+  cardFor = hoverKeyOf(kind, f);
+  cardAnchor = f.geometry ? f.geometry.coordinates.slice() : null;
+  if (cardAnchor) cardAnchorPx = map.project(cardAnchor);
+  positionHoverCard(point);
+  if (kind === 'point' && !isExposure(p)) loadPoster(p.c);
+}
+
+function hoverCardMove(kind, f, point) {
+  if (destroyed || !ui.hcard || measureState || tourState || !point) return;
+  const key = hoverKeyOf(kind, f);
+  if (key !== cardKey) {
+    cardKey = key;
+    if (cardFor && cardFor !== key) {          // a new feature: drop the old card now
+      ui.hcard.hidden = true; ui.hcard.innerHTML = ''; cardFor = null;
+    }
+    clearTimeout(cardTimer);
+    cardTimer = setTimeout(() => {
+      cardTimer = null;
+      if (cardKey === key) showHoverCard(kind, f, point);
+    }, HCARD_DWELL_MS);
+  } else if (cardFor === key && !ui.hcard.hidden) {
+    positionHoverCard(point);                  // already shown: follow the cursor
+  }
+}
+
+function hoverCardLeave() {
+  cardKey = null;
+  clearTimeout(cardTimer);
+  cardTimer = null;
+  hideHoverCard();
+}
+
+function hideHoverCard() {
+  clearTimeout(cardTimer);
+  cardTimer = null;
+  cardFor = null; cardAnchor = null; cardAnchorPx = null;
+  if (ui.hcard) { ui.hcard.hidden = true; ui.hcard.innerHTML = ''; }
+}
+
+function onCardMapMove() {
+  if (!ui.hcard || ui.hcard.hidden || !cardAnchor || !cardAnchorPx || !map) return;
+  const p = map.project(cardAnchor);
+  if (Math.hypot(p.x - cardAnchorPx.x, p.y - cardAnchorPx.y) > 48) hideHoverCard();
+}
+
+/* [2] click a country label: apply that country through the SAME setFilters the
+ * sidebar uses (a second click clears it, chip-style) and fly to the country bbox. */
+function countryToggle(cc, fly) {
+  const cur = (store.filters.country || []).filter(Boolean);
+  const had = cur.includes(cc);
+  setFilters({ country: had ? cur.filter((v) => v !== cc) : [...cur, cc] });
+  playSound('toggle');
+  if (!had && fly && map && countryBox.has(cc)) {
+    const [w, s, e, n] = countryBox.get(cc);
+    const e2 = w > e ? e + 360 : e;            // bbox crosses the antimeridian
+    try {
+      map.fitBounds([[w, Math.max(-85, s)], [e2, Math.min(85, n)]],
+        { padding: 60, maxZoom: 6, duration: 1400, essential: true });
+    } catch (err) { /* the filter alone still applies */ }
+  }
+  toast(had ? `Country filter cleared — ${cc}`
+    : `Country filter — ${cc} · click the label or the chip again to clear`,
+  { type: 'info', timeout: had ? 1800 : 2600 });
+}
+
+function onCountryClick(ev) {
+  if (measureState) return;                    // measuring: clicks add vertices
+  const f = ev.features && ev.features[0];
+  if (!f || !f.properties || !f.properties.y) return;
+  hideHoverCard();
+  countryToggle(String(f.properties.y), true);
+}
+
+/* ── [4] world pulse — always-on strip: what the current viewport holds ──
+ * Counted client-side from the cached points (same bounds maths as the minimap)
+ * and throttled ~300 ms; country tokens apply the country filter like labels. */
+
+function schedulePulse() {
+  if (pulseTimer) return;
+  pulseTimer = setTimeout(() => { pulseTimer = null; updatePulse(); }, PULSE_MS);
+}
+
+function pointPredicate() {
+  const f = store.filters;
+  const st = f.status || []; const pr = f.protocol || []; const fam = f.family || [];
+  const cc = (f.country || []).filter(Boolean).map((c) => String(c).toUpperCase());
+  const favOnly = !!store.settings.globe_favonly;
+  if (!st.length && !pr.length && !fam.length && !cc.length && !favOnly) return null;
+  const ids = store.favIds;
+  return (p) => (!st.length || st.includes(p.s))
+    && (!pr.length || pr.includes(p.p))
+    && (!fam.length || fam.includes(p.f))
+    && (!cc.length || cc.includes(String(p.y || '').toUpperCase()))
+    && (!favOnly || ids.has(p.c));
+}
+
+function inViewStats() {
+  if (!map || !pointsCache) return null;
+  const b = map.getBounds();
+  const w = b.getWest(); const e = b.getEast();
+  const s = b.getSouth(); const n = b.getNorth();
+  const cross = e < w;
+  const world = !cross && (e - w) >= 359.9;
+  const pred = pointPredicate();
+  const out = { n: 0, live: 0, byCountry: new Map(), fams: new Set() };
+  for (const f of pointsCache.features || []) {
+    const g = f.geometry && f.geometry.coordinates;
+    if (!g) continue;
+    const lon = Number(g[0]); const lat = Number(g[1]);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+    if (lat < s || lat > n) continue;
+    if (!world && (cross ? !(lon >= w || lon <= e) : !(lon >= w && lon <= e))) continue;
+    const p = f.properties || {};
+    if (pred && !pred(p)) continue;
+    out.n++;
+    if (p.s === 'live') out.live++;
+    if (p.y) out.byCountry.set(p.y, (out.byCountry.get(p.y) || 0) + 1);
+    if (p.f) out.fams.add(p.f);
+  }
+  return out;
+}
+
+function updatePulse() {
+  if (!ui.pulse || destroyed) return;
+  const st = inViewStats();
+  if (!st) { ui.pulse.hidden = true; return; }
+  if (!st.n) {
+    ui.pulse.hidden = false;
+    ui.pulse.innerHTML = '<span class="gp-hint">no geocoded cameras in view — pan back</span>';
+    if (window.__globe) window.__globe.pulse = { cams: 0, live: 0, countries: [], families: 0,
+      text: ui.pulse.textContent };
+    return;
+  }
+  const top = [...st.byCountry.entries()].sort((a, b2) => b2[1] - a[1]).slice(0, 3);
+  ui.pulse.innerHTML = `<span class="gp-main">in view: <b>${fmt(st.n)}</b> cams · live <b>${fmt(st.live)}</b></span>`
+    + top.map(([c, k]) => `<button type="button" class="gp-cc" data-c="${esc(c)}" title="filter by country ${esc(c)} — click again to clear">${esc(c)} ${fmt(k)}</button>`).join('')
+    + `<span class="gp-fam">${fmt(st.fams.size)} famil${st.fams.size === 1 ? 'y' : 'ies'} present</span>`;
+  ui.pulse.hidden = false;
+  if (window.__globe) {
+    window.__globe.pulse = { cams: st.n, live: st.live, families: st.fams.size,
+      countries: top.map(([c, k]) => ({ y: c, n: k })), text: ui.pulse.textContent };
+  }
+}
+
+/* ── [5] legend — status dots + the cluster live-share ramp ────────────
+ * Collapsible: the header folds the body; the expanded/collapsed state persists
+ * as globe_legend (default true = expanded). */
+
+function setLegendExpanded(on) {
+  if (!ui.legend) return;
+  ui.legend.classList.toggle('collapsed', !on);
+  if (ui.legendBtn) ui.legendBtn.setAttribute('aria-expanded', String(!!on));
+  if (ui.wrap) ui.wrap.classList.toggle('glegend', !!on);
+  if (window.__globe) window.__globe.legend = !!on;
+}
+
+function toggleLegend() {
+  if (!ui.legend) return;
+  const next = ui.legend.classList.contains('collapsed');   // expand when collapsed
+  setLegendExpanded(next);
+  saveSettings({ globe_legend: next });
+  playSound('toggle');
 }
 
 function updateDebugCounts() {
   if (!map || !styleReady || !window.__globe) return;
   try {
-    window.__globe.clusters = map.queryRenderedFeatures({ layers: ['globe-clusters'] }).length;
+    const feats = map.queryRenderedFeatures({ layers: ['globe-clusters'] });
+    window.__globe.clusters = feats.length;
+    window.__globe.liveClusters = feats.some((f) => ((((f || {}).properties || {}).live) || 0) >= 1);
   } catch (err) { /* style may be mid-swap */ }
 }
 
@@ -1377,6 +1780,10 @@ function toggleFavOnly() {
 
 function wireOverlays() {
   wireSearch();
+  // filters changed anywhere (sidebar, chips, country labels, pulse tokens)
+  // restyle the pins client-side and re-derive the world-pulse counts
+  unsubs.push(bus.on('filters', () => { applyFilters(); schedulePulse(); }));
+  unsubs.push(bus.on('prefs', () => { applyFilters(); schedulePulse(); }));
   // 'r' = random live cam while the globe container has focus (never leaks to the app)
   ui.wrap.addEventListener('keydown', (ev) => {
     if (ev.key !== 'r' || ev.ctrlKey || ev.metaKey || ev.altKey) return;
@@ -1459,6 +1866,13 @@ function wireOverlays() {
       toast('Minimap hidden — re-enable it from the layers list', { type: 'info', timeout: 2200 });
     });
   }
+  if (ui.legendBtn) ui.legendBtn.addEventListener('click', toggleLegend);
+  if (ui.pulse) {
+    ui.pulse.addEventListener('click', (ev) => {
+      const b = ev.target.closest('.gp-cc');
+      if (b) countryToggle(b.dataset.c, true);
+    });
+  }
   // Esc stops a running tour / finishes the ruler — and is NOT swallowed otherwise
   escHandler = (ev) => {
     if (ev.key !== 'Escape') return;
@@ -1493,6 +1907,9 @@ function cleanup() {
   clearTimeout(hereTimer); hereTimer = null;
   clearTimeout(hashTimer); hashTimer = null;
   clearTimeout(hoverTimer); hoverTimer = null;
+  clearTimeout(pulseTimer); pulseTimer = null;
+  clearTimeout(cardTimer); cardTimer = null;
+  cardKey = null; cardFor = null; cardAnchor = null; cardAnchorPx = null;
   clearInterval(termTimer); termTimer = null; termWanted = false;
   clearTimeout(miniTimer); miniTimer = null;
   if (tourState) { clearTimeout(tourState.dwell); tourState = null; }
@@ -1503,6 +1920,7 @@ function cleanup() {
   if (window.__globe) {
     window.__globe.tour = false; window.__globe.measure = false;
     window.__globe.terminator = false; window.__globe.minimap = false;
+    window.__globe.pulse = null;
   }
   if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
   if (ac) { try { ac.abort(); } catch (err) { /* noop */ } ac = null; }
@@ -1523,7 +1941,8 @@ export const globeView = {
     cleanup();
     destroyed = false;
     if (!window.__globe) {
-      window.__globe = { ready: false, points: 0, clusters: 0, fps: 0, projection: '', errors: [] };
+      window.__globe = { ready: false, points: 0, clusters: 0, fps: 0, projection: '', errors: [],
+        liveClusters: false, countryLabels: 0, legend: true, pulse: null };
     }
     window.__globe.ready = false;
     window.__globe.projection = '';
@@ -1533,6 +1952,8 @@ export const globeView = {
       heat: !!store.settings.globe_heat,
       minimap: !!store.settings.globe_minimap,
       today: todayDateVal(),
+      liveClusters: false, countryLabels: 0,
+      legend: store.settings.globe_legend !== false, pulse: null,
     });
     const todayD = todayDateVal();
     root.innerHTML = `<div class="vwrap view-enter">
@@ -1588,6 +2009,22 @@ export const globeView = {
           <div class="globe-mini-host" id="globe-mini-host"></div>
           <button type="button" class="globe-mini-x" id="globe-mini-x" title="Hide the minimap (re-enable it in the layers list)">&times;</button>
         </div>
+        <div class="globe-legend collapsed" id="globe-legend" hidden>
+          <button type="button" class="gl-hed" id="globe-legend-btn" title="Collapse / expand the legend (persisted as globe_legend)">
+            <span>Legend</span><span class="gl-chev">${I.chev}</span>
+          </button>
+          <div class="gl-body" id="globe-legend-body">
+            <div class="gl-row"><span class="gl-dot" style="background:var(--live)"></span>live</div>
+            <div class="gl-row"><span class="gl-dot" style="background:var(--stale)"></span>stale</div>
+            <div class="gl-row"><span class="gl-dot" style="background:var(--dead)"></span>dead</div>
+            <div class="gl-row"><span class="gl-dot" style="background:var(--unknown)"></span>unknown</div>
+            <div class="gl-row"><span class="gl-dot" style="background:var(--unverified)"></span>unverified (aggregator-listed)</div>
+            <div class="gl-sep"></div>
+            <div class="gl-share"><span class="gl-grad"><i class="gl-sw sw0"></i><i class="gl-sw sw1"></i><i class="gl-sw sw2"></i></span><span class="gl-note">cluster colour = live share</span></div>
+          </div>
+        </div>
+        <div class="globe-pulse" id="globe-pulse" hidden></div>
+        <div class="globe-hcard" id="globe-hcard" hidden></div>
         <div class="globe-loading" id="globe-loading">loading globe…</div>
       </div>
     </div>`;
@@ -1621,6 +2058,11 @@ export const globeView = {
       mini: root.querySelector('#globe-mini'),
       miniHost: root.querySelector('#globe-mini-host'),
       miniX: root.querySelector('#globe-mini-x'),
+      legend: root.querySelector('#globe-legend'),
+      legendBtn: root.querySelector('#globe-legend-btn'),
+      legendBody: root.querySelector('#globe-legend-body'),
+      pulse: root.querySelector('#globe-pulse'),
+      hcard: root.querySelector('#globe-hcard'),
     };
 
     // geometry lessons from the Leaflet view: the container must have a real box
@@ -1634,6 +2076,8 @@ export const globeView = {
 
     applyMinimap(!!store.settings.globe_minimap);          // persisted, default ON; lazily created
     if (store.settings.globe_terminator) setTerminator(true);   // re-arm the 60 s refresh
+    ui.legend.hidden = false;                              // the legend box is part of the view
+    setLegendExpanded(store.settings.globe_legend !== false);
 
     loadLib().then((ml) => {
       if (destroyed) return;
@@ -1649,6 +2093,7 @@ export const globeView = {
   refresh() {
     applyFilters();
     scheduleHere();
+    schedulePulse();
     updateQNote();
     syncToolbar();
     if (map && !destroyed) { try { map.resize(); } catch (err) { /* noop */ } }

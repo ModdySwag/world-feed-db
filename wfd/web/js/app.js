@@ -46,11 +46,12 @@ export const DEFAULT_SETTINGS = {
   globe_today: false,              // World Map: VIIRS true colour (today, UTC)
   globe_today_date: '',            // World Map: date for the VIIRS layer ('' -> today, UTC)
   globe_eox: false,                // World Map: EOX Sentinel-2 cloudless (CC BY-NC-SA)
-  globe_terminator: false,         // World Map: day/night terminator (visual cue only)
+  globe_terminator: true,          // World Map: day/night terminator (visual cue only; default ON)
   globe_heat: false,               // World Map: density heatmap of the geocoded rows
   globe_minimap: true,             // World Map: minimap inset (bottom-left)
-  globe_autorotate: false,         // World Map: idle auto-rotate
+  globe_autorotate: true,          // World Map: idle auto-rotate (default ON — livelier world view)
   globe_favonly: false,            // World Map: pins limited to favourites
+  globe_legend: true,              // World Map: legend expanded (status dots + cluster live-share ramp)
   results_per_page: 60,
   accent: 'teal',                  // teal | violet | amber
   sidebar_open: true,
