@@ -1,56 +1,165 @@
 # World Feed DB
 
-Research + build program: a comprehensive, worldwide, updateable, **self-healing** database and viewing system for public "live" video feeds — traffic cameras, webcams, HLS/RTSP/MJPEG streams, refreshing-image cams, and 24/7 YouTube-live channels. End goal: an access point for as many working live video feeds as exist on the internet, with an inbuilt mechanism for searching sources and adding/removing them.
+A worldwide, self-healing database and viewer for public live video feeds — traffic cams, webcams, HLS/MJPEG/JPEG-refresh streams, and YouTube-live channels.
 
-Owner: Moddy. Started: 2026-10-05 (seeded by a Brave tab-gathering session; see `research/seed-tabs/TABS-LIST.md`).
+## What it is
+
+World Feed DB collects public live video feeds, keeps them in one registry, checks whether they actually work, and shows them on a local web page: a map, a 3D globe, a wall of previews, a multi-watch grid, and a search you can filter by country, protocol, source family and status.
+
+Feed lists rot — links die, streams freeze on a single frame, pages move. So the registry treats liveness as something to be earned. Every row records where the feed came from (its provenance) and a health state that only a real check can set: rows enter as `unknown`, and only the health engine may write `live`, `stale` or `dead`. Failures accumulate; a row that fails ten consecutive checks is quarantined automatically, and any later good result restores it. Nothing is ever marked live because it looked plausible.
+
+The sources are public by design: government traffic agencies, institutional and vendor webcams, public directories. Where a source gates its API behind a key, you supply your own — the app runs fine without keys and says so honestly (`UNAVAILABLE · KEY REQUIRED`) instead of failing silently. The registry database and every ingest output live under `data/` and are never committed: code travels, data stays.
+
+There is also a flagged exposure-camera layer (datasets of documented exposed cameras). It is off in the public build, it is dataset-aggregation only, and it never contacts devices — see below.
 
 ## Status
 
-- **2026-10-05 — Research phase: all five waves DONE and folded.** Seed ingest: 19 Brave tabs + session extras (`research/seed-tabs/`). Waves S1–S5 executed by subagents; every evidence file read + spot-checked by the parent and folded into `PLAN.md` as addenda A1–A5, with the catalog updated per wave (all committed to git).
-- The collation of sources + endpoints: `SOURCES-CATALOG.md` — gov/institutional verified menu (§1), aggregator measurements (§2), platforms/fixtures (§3), reference systems (§4), ready-made corpora (§5), flagged exposure category (§6).
-- Decisions + waves log + open questions **Q2–Q11**: `PLAN.md` (living; earlier text never rewritten).
-- Next: owner decisions on Q2–Q11, then build-phase framing — first small artifacts are the dataset ingesters + provenance/redaction gate, and the enumerator set from the S1/S2 endpoint menus.
-- **2026-10-05 (late) — Build phase opened; sprint 1 delivered.** Core `wfd` package + credential layer + exposure ingesters (era chain 2019→2026, 20,881 rows) + L-E-S/gov enumerator scaffolds (10,187 rows). Contracts: `docs/ARCHITECTURE.md`; folds: PLAN A9–A10. Run: `py -3.11 -m wfd status`.
-- **2026-10-06 — Sprints 2–3 delivered; the showpiece viewer is live.** Registry DB + full health sweeps + self-heal (fail_count / quarantine) + viewer **v0.3** (`py -3.11 -m wfd viewer` → http://127.0.0.1:8773): top menu bar, 7 views (Overview / Map / Wall / Watch multi-watch / Search / Personal favourites / Help), multi-format players, command palette, sounds — spec in `docs/VIEWER-SPEC.md`. Twelve new-source ingesters (`py -3.11 -m wfd.ingest.newsrc list`). Folds: PLAN A11–A18.
-- **2026-10-06 (night) — City geocoding + player-window popout.** GeoNames cities1000 enrichment: geocoded rows with a city 1,895 → 14,065 of 14,210 — the World Map city tier now reads like an atlas (Rome · Seoul · Tokyo · New York City · Sydney …). The player modal is a proper draggable/resizable popout (drag no longer closes it; geometry remembered). Folds: PLAN A28–A29.
+Research first, build second. The source survey is done — five survey waves plus a collected browser-tab corpus, collated in `SOURCES-CATALOG.md`. The build side has a working pipeline: ingesters for the bundled L-E-S corpus, four government agency lanes and twelve new-source families, a registry database, health sweeps with self-heal accounting, city geocoding, a resolver for embed-only sources, and the viewer. The author's registry held 35,686 rows at last count, 14,805 of them public/directory feeds. It is beta software: expect rough edges and moving numbers.
 
-## Map
+## Quick start
+
+Needs **Python 3.11+**. Nothing to install for the quickstart.
+
+```bash
+git clone https://github.com/ModdySwag/world-feed-db
+cd world-feed-db
+
+py -3.11 -m wfd status
+```
+
+`status` prints your active profile, the exposure-surface state, an OK/MISSING line per known key, and the db summary. On a fresh clone: profile `clean`, exposure `off`, every key `MISSING`, db not created yet. (On systems without the Windows `py` launcher, the same commands run as `python -m wfd …`.)
+
+Put some rows in. The fastest demo needs no network and no key — it parses the bundled L-E-S corpus (a committed snapshot of public streams):
+
+```bash
+py -3.11 -m wfd.ingest.les      # -> data/ingest/les.jsonl (~6,000 rows)
+py -3.11 -m wfd db load         # -> data/worldfeed.db (idempotent; safe to re-run)
+py -3.11 -m wfd viewer          # -> http://127.0.0.1:8773/
+```
+
+The viewer opens on the Overview; the menu bar and number keys reach the other seven views. Map plots clustered status-coloured pins, World Map is a 3D globe with fly-to search, Wall is a poster-first grid, Watch plays feeds side by side (1×1 up to 3×3), Search is full-text with facets, Personal stores favourites, Help documents the rest. Everything loaded this way is `unknown` — nothing has been checked yet. To get real verdicts:
+
+```bash
+py -3.11 -m wfd health run --family les --limit 50
+```
+
+Sweeps are resumable — stop and re-run any time; rows checked today are skipped unless you pass `--recheck`. Only rows with a probeable protocol (hls/mjpeg/jpeg/youtube) are swept; page-URL rows stay `unknown`.
+
+Want a network demo instead? The new-source families are keyless:
+
+```bash
+py -3.11 -m wfd.ingest.newsrc list                     # twelve families
+py -3.11 -m wfd.ingest.newsrc explore-omega --limit 5  # explore.org's public cam list
+```
+
+Fetches are cached under `data/ingest/cache/`, so a killed run resumes where it stopped (`--refresh` refetches).
+
+Optional, once you have rows — offline city enrichment for geocoded feeds:
+
+```bash
+py -3.11 -m wfd geo fetch       # one-time GeoNames cities1000 download (CC BY 4.0)
+py -3.11 -m wfd geo city        # fills city names; resumable
+```
+
+## Requirements
+
+- Python 3.11+. The core is standard-library only — the quickstart installs nothing. (Developed and tested on Windows with 3.11.)
+- Optional extras; each unlocks a lane, and each degrades honestly when missing rather than guessing:
+  - `ffmpeg` + `ffprobe` on PATH — stream health probes (structure, decode, freeze/black detection). Without them, stream probes report `unknown` with a "not found" note.
+  - `yt-dlp` (plus a JS runtime such as `deno`) — YouTube live checks and channel resolution. Without them, YouTube rows stay `unknown`.
+  - `keyring` — OS keychain backend for the credential store. Without it the store falls back to a DPAPI-encrypted file (Windows) or a loudly-warned plaintext file (last resort).
+  - `Pillow` + `ImageHash` — still-image freshness checks (two-sample perceptual hash). Without them, still-image probes report `unknown`.
+
+## Keys and profiles
+
+The repo ships the **clean** profile: keyless, honest, nothing to configure. Key-gated lanes show `UNAVAILABLE · KEY REQUIRED · <service>` until you supply your own credentials. Three mechanics:
+
+- **Checklist:** `py -3.11 -m wfd keys` prints every service with `OK (source)` or `MISSING — UNAVAILABLE · KEY REQUIRED · <service>`. `wfd status` shows the same for the five known keys.
+- **Credential store:** `py -3.11 -m wfd creds set WINDY_API_KEY` reads the value hidden and stores it in the OS keychain (or the fallback backends). Values are never printed, logged or committed.
+- **Overlay profile:** create `profiles/<name>/` with an optional `settings.json` and `.env`; select it via `profiles/ACTIVE` or the `WFD_PROFILE` environment variable. Keep it out of git. Example `.env` (a placeholder-only file ships at `profiles/clean/.env.example`):
+
+```text
+# profiles/<your-profile>/.env — never commit
+WINDY_API_KEY=YOUR_KEY_HERE
+ROAD511_API_KEY=YOUR_KEY_HERE
+NSW_API_KEY=YOUR_KEY_HERE
+QLDTRAFFIC_API_KEY=YOUR_KEY_HERE
+```
+
+Key-gated lanes today: Windy Webcams API, Road511 (`X-API-Key` header), Transport for NSW (`apikey` header), QLDTraffic (key in the URL query, per its spec), and Shodan for search-only discovery. Signup links are in `ACCOUNTS-AND-KEYS.md`.
+
+## Health and honest states
+
+States are `live`, `stale`, `dead`, `unknown` — plus `unverified` for flagged exposure rows and `quarantined` for rows that failed ten consecutive probes. Enumeration can never claim liveness; only a probe can.
+
+What a check does, by feed type:
+
+- Streams (HLS/MJPEG): `ffprobe` must show a video track, `ffmpeg` must decode one second cleanly, then a motion pass flags frozen or black feeds as `stale`.
+- Still images: two samples a gap apart; a perceptual-hash distance under the threshold reads `stale`. Gaps are calibrated per source — refresh cadence varies a lot.
+- YouTube: a `yt-dlp` live gate.
+
+Every verdict updates the row's consecutive-failure streak: ten consecutive `dead` verdicts quarantine it, any later `live`/`stale` result restores it. Sweeps write an evidence JSONL per run under `data/health/` and are polite by construction — per-host concurrency caps and spacing, and no slice ever touches exposure rows (enforced in SQL, not by convention).
+
+## Exposure category
+
+The project keeps a separately flagged category for exposed-camera datasets (insecam-class listings). It exists because this project is also a research record; the rules the code enforces are:
+
+- **Datasets only.** Rows come from static third-party dataset files. The ingester never fetches device URLs or view pages.
+- **Flagged and honest.** Rows are `status=unverified` with a snapshot date, low geo-confidence, and credentials scrubbed at parse time.
+- **Metadata only in the UI.** No URL, no preview, no autoplay — a click-through warning instead.
+- **Never probed, never relayed.** The health engine excludes them (SQL-enforced); the resolver never serves them.
+
+In the `clean` profile `private_exposure_surface` defaults to `false`, the viewer excludes exposure rows from every endpoint, and the raw datasets are not shipped (they are gitignored, unlicensed, and only ever consumed as local reference files). The switch, the rules and the reasoning are documented in `docs/ARCHITECTURE.md` and `PLAN.md`. In this public build it stays off.
+
+## Repo layout
 
 | Path | What |
 |---|---|
-| `SOURCES-CATALOG.md` | THE collation: source families, endpoints, scale, licenses, status |
-| `PLAN.md` | Living plan: architecture sketch, decisions, open questions, addenda |
-| `research/seed-tabs/` | Brave tab corpus (TABS-LIST.md + per-page evidence: topics JSON, repo READMEs/trees, issues, reddit captures) |
-| `research/seed-tabs/data/LES-streams.geojson` | Live-Environment-Streams corpus (5,997 streams; 4,226 active) — best ready-made dataset found so far |
-| `research/seed-tabs/data/LES-sources.json` | L-E-S source-family index (67 families with counts) |
-| `research/sources/` · `research/gov/` · `research/platforms/` · `research/ingest/` · `research/osint/` | Wave evidence files (S1–S5) |
-| `wfd/` | the build package (clean template; `py -3.11 -m wfd status`) |
-| `docs/ARCHITECTURE.md` | build contracts (module APIs, laws, conventions) |
-| `profiles/clean/` + `profiles/<overlay>/` | profile system — keyless default + private overlay (gitignored) |
-| `tests/` | plain-python test runners (+ fixtures) |
-| `data/` | working DB + ingest outputs (gitignored — code travels, data stays) |
+| `wfd/` | the Python package — schema, profiles, credential store, DB, health engine, viewer, resolver, geocoder |
+| `wfd/ingest/` | ingesters: `les` (bundled corpus), `gov/` (agency enumerators), `newsrc/` (new-source families), `exposure` (flagged datasets) |
+| `wfd/web/` | the viewer UI plus vendored JS (Leaflet, markercluster, hls.js, MapLibre GL) — no runtime CDN |
+| `wfd/web/vendor/` | vendored frontend assets, with licence notes in `README.txt` |
+| `docs/` | build contracts (`ARCHITECTURE.md`) and the viewer spec |
+| `profiles/clean/` | the keyless default profile that ships with the repo (`.env.example` included) |
+| `research/` | source survey evidence, wave dossiers, and the L-E-S corpus the demo ingest reads |
+| `scripts/` | release tooling — the secret-scan gate and the fresh-clone test |
+| `tests/` | plain-python test runners |
+| `data/` | registry DB + ingest outputs — gitignored (code travels, data stays) |
+| top level | `PLAN.md` (living build record), `SOURCES-CATALOG.md` (collated sources), `ACCOUNTS-AND-KEYS.md` (key checklist) |
 
-## Run (2026-10-06)
+## License and credits
 
-- **Viewer (showpiece):** `py -3.11 -m wfd viewer` → http://127.0.0.1:8773/ — favourites/settings persist server-side (`data/viewer-prefs.json`).
-- **Registry:** `py -3.11 -m wfd db load|stats|search`  ·  **Status/keys:** `py -3.11 -m wfd status|keys|creds`.
-- **City geocoding:** `py -3.11 -m wfd geo fetch` (one-time GeoNames dataset) · `py -3.11 -m wfd geo city [--refresh]` — offline city enrichment for geocoded rows; displayed as the effective city across the viewer (PLAN A29).
-- **Ingesters:** `py -3.11 -m wfd.ingest.exposure|les|gov <name>` · `py -3.11 -m wfd.ingest.newsrc <family|all|list>` → `data/ingest/*.jsonl` (gitignored; long fetches are cache-resumable).
-- **Health:** `py -3.11 -m wfd health probe <url>` · `py -3.11 -m wfd health run --family <fam> [--limit N]` (resumable; never probes exposure rows).
-- **Tests:** `py -3.11 tests/test_*.py` (plain runners — no pytest on this host).
+MIT License. Copyright (c) 2026 Moddy.
 
-## Related prior art (local)
+Vendored frontend libraries, served locally (the viewer has no runtime CDN):
 
-- `C:\Users\user\zero-hud\reference\world\WV1-live-video-sources.md` — verified ingestion methods M1–M7 + 25-source catalog (2026-10-03).
-- `C:\Users\user\zero-hud\server\world_feed.py` — live world-feed sidecar (:8772): 5 curated channels, lazy ffmpeg → MJPEG proxy, honest health states.
-- `C:\pinokio\api\gods-eye-view.git` — God's Eye View reference app (:42011): georeferenced CCTV schema, proxy+cache+serve-stale pattern, per-source licensing discipline.
+- Leaflet 1.9.4 — BSD-2-Clause
+- Leaflet.markercluster 1.5.3 — MIT
+- hls.js 1.5.17 — Apache-2.0
+- MapLibre GL JS 5.24.0 — BSD-3-Clause
 
-## Policy line (default — owner decision pending, inputs in S5)
+Geocoding data: GeoNames cities1000, CC BY 4.0. Map tiles: © OpenStreetMap contributors. Globe imagery: Esri World Imagery and NASA EOSDIS GIBS (public domain); the optional Sentinel-2 cloudless layer is EOX, CC BY-NC-SA 4.0, off by default.
 
-Owner decision 2026-10-05: scope **includes insecam-class exposed cameras** as an explicitly-flagged category (`provenance: exposed` + warning badge + own filter). Everything else stays public-by-design. Handling rules for the flagged layer: consume existing public datasets where they exist instead of re-scraping; stay rate-polite against hosters; keep the provenance flag intact so any future public release can diverge.
+Feed URLs and metadata belong to their operators. The registry stores references, and playback points your player at the source. The ingesters rate-limit themselves (≥1 s per host by default); respect each source's terms and robots when you add sources.
 
-## Build principles (locked 2026-10-05)
+## Development
 
-- **Personal-first, open-source-ready.** The initial build is for Moddy alone, but the repo must be publishable at any time: no secrets ever in code or git; everything config-driven; setup docs kept current.
-- **Credentials in, keys out.** The app ships a credential/settings layer (per-user secure store + config file) for website logins, API keys and tokens — every key-gated source shows an honest `KEY REQUIRED` state until its credential is supplied, and the app ships an onboarding checklist. The live list of accounts to create: `ACCOUNTS-AND-KEYS.md` (the owner is prompted as the build proceeds).
-- **Two artifacts, one codebase (D7.1).** ① *Clean template* — public/open-source-ready: no secrets, keyless, runs degraded with honest `KEY REQUIRED` states; anyone can clone + configure. ② *Moddy build* — template + a **private profile overlay** (keys, curation, preferences; never committed) that is ready to go on Moddy's machine.
+Run everything from the repo root as modules: `py -3.11 -m wfd <command>`.
+
+Tests are plain Python runners — no pytest required. Each file runs standalone and prints `PASS`/`FAIL` lines, exiting non-zero on failure:
+
+```bash
+py -3.11 tests/test_core.py
+```
+
+Every `tests/test_*.py` follows the same pattern, so run them one by one or in a shell loop. Two of them (`test_viewer`, `test_resolve`) exercise the API against a built registry and skip loudly when `data/worldfeed.db` is absent — run the quick start first if you want them full.
+
+Release tooling lives in `scripts/`:
+
+```bash
+py -3.11 scripts/secret_scan.py [--history]   # secret gate before any push
+py -3.11 scripts/cold_clone_test.py           # fresh-clone proof (clone -> status -> suites -> viewer boot)
+```
+
+`docs/ARCHITECTURE.md` holds the module contracts; new ingest families follow the pattern in `wfd/ingest/newsrc/`.
+
