@@ -1022,3 +1022,70 @@ html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-
 /* legend expanded: keep the “what's here” chip clear of it when the minimap is off */
 #globe-wrap.glegend:not(.gmini) .globe-here { bottom: 178px; }
 #globe-wrap.glegend:not(.gmini) .globe-here-list { bottom: 210px; }
+
+/* ── globe: photo pins + area panel (v0.4.5) ─────────────────────────── */
+.globe-photo-row {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px;
+  border-top: 1px solid var(--border); margin-top: 4px;
+}
+.globe-photo-row .gpr-name { flex: 1; min-width: 0; font-size: 12px; color: var(--txt); }
+.globe-photo-row .gpr-name em { display: block; font-style: normal; font-size: 10.5px; color: var(--faint); }
+
+.globe-area {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 320px; max-width: 92%;
+  z-index: 12; display: flex; flex-direction: column; min-height: 0;
+  background: rgba(13, 17, 24, .96); backdrop-filter: blur(10px);
+  border-left: 1px solid var(--border-strong); box-shadow: -16px 0 44px rgba(0, 0, 0, .5);
+  transform: translateX(103%); transition: transform .18s ease;
+}
+.globe-area.open { transform: none; }
+.globe-area[hidden] { display: none; }
+.ga-head { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px 8px; border-bottom: 1px solid var(--border); }
+.ga-head-main { flex: 1; min-width: 0; }
+.ga-title { display: block; font-size: 13.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ga-sub { display: block; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.ga-chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 12px 4px; }
+.ga-chip {
+  display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--border-strong);
+  border-radius: 20px; padding: 1px 8px; font-size: 10.5px; color: var(--muted); white-space: nowrap;
+}
+.ga-chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--unknown); flex: none; }
+.ga-chip b { color: var(--txt); font-variant-numeric: tabular-nums; }
+.ga-chip.ga-live i { background: var(--live); }
+.ga-chip.ga-live b { color: var(--live); }
+.ga-chip.ga-stale i { background: var(--stale); }
+.ga-chip.ga-stale b { color: var(--stale); }
+.ga-chip.ga-dead i { background: var(--dead); }
+.ga-chip.ga-dead b { color: var(--dead); }
+.ga-acts { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.ga-tools { padding: 8px 12px 6px; display: flex; flex-direction: column; gap: 6px; }
+.ga-tools input[type="search"] {
+  width: 100%; background: rgba(255, 255, 255, .04); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 8px; color: var(--txt); font-size: 12px; outline: none;
+}
+.ga-tools input[type="search"]:focus { border-color: var(--accent); }
+.ga-tools-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.ga-count { margin-left: auto; font-size: 10.5px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.ga-list { flex: 1; overflow-y: auto; min-height: 0; padding: 2px 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+.ga-row {
+  display: flex; align-items: center; gap: 8px; padding: 5px 6px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--panel-2);
+}
+.ga-row:hover { border-color: var(--border-strong); }
+.ga-row-meta { border-style: dashed; }
+.ga-thumb {
+  position: relative; width: 54px; height: 36px; flex: none; border-radius: 5px; overflow: hidden;
+  background: #05070a; display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--faint); text-align: center;
+}
+.ga-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ga-thumb.ga-thumb-none { border: 1px dashed var(--border-strong); background: transparent; }
+.ga-main { flex: 1; min-width: 0; display: block; }
+.ga-name { display: block; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ga-rowsub { display: block; font-size: 10.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ga-rowmeta { display: flex; align-items: center; gap: 5px; margin-top: 2px; flex-wrap: wrap; }
+.ga-metaonly { font-size: 9.5px; color: var(--unverified); }
+.ga-row-acts { display: flex; gap: 3px; flex: none; flex-wrap: wrap; justify-content: flex-end; max-width: 100px; }
+.ga-row-acts .btn { padding: 1.5px 6px; }
+.ga-more { align-self: center; margin: 4px auto 0; }
+.ga-empty { padding: 14px 8px; font-size: 11.5px; color: var(--faint); text-align: center; }

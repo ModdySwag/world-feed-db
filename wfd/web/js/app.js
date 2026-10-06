@@ -52,6 +52,7 @@ export const DEFAULT_SETTINGS = {
   globe_autorotate: true,          // World Map: idle auto-rotate (default ON — livelier world view)
   globe_favonly: false,            // World Map: pins limited to favourites
   globe_legend: true,              // World Map: legend expanded (status dots + cluster live-share ramp)
+  globe_photo_pins: 'auto',        // World Map: poster photo pins ('auto' = from z9.5; 'on' = from z6; 'off')
   results_per_page: 60,
   accent: 'teal',                  // teal | violet | amber
   sidebar_open: true,

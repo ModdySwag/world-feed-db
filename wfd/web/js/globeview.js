@@ -42,15 +42,32 @@
  * [7] a collapsible legend decodes the status dots and the cluster live-share ramp;
  * [8] a World/Region/City viewpoint-preset group — transient easeTo jumps.
  *
+ * v0.4.5 — photo pins + the area panel (still WebGL-only on the globe):
+ * [9] photo pins: as the user zooms in (z9.5+, setting globe_photo_pins) real
+ *     camera posters materialise as pin thumbnails above their dots. A viewport-
+ *     debounced pass takes the first ~70 rendered singles (queryRenderedFeatures,
+ *     topped up by bbox over the cached collection) through a 5-wide queue,
+ *     downscales each poster to a 44×30 thumb and registers it with
+ *     map.addImage('pp-<cid>'). A missing/404/blocked poster is skipped — the
+ *     dot stays, never a broken marker. The registry is capped (~300, LRU) and
+ *     images that drift far out of view are released (map.removeImage);
+ * [10] the area panel: clicking a cluster total, a country label or a city label
+ *     opens a right-hand menu for that area — status-breakdown chips, the area's
+ *     cameras as rows (thumbnail, Watch / Details / ★ / ＋Stage), search-in-area,
+ *     sort (name/status) and All/Live/Stale chips, plus contextual actions:
+ *     Zoom to fit · Show photos (pane-only poster pins) · Filter (country panes,
+ *     the same setFilters the label click uses). Content re-derives from the
+ *     cached points + the active filters; the panel state is never persisted.
+ *
  * Settings keys (all via saveSettings, all prefs-persisted):
  *   globe_labels · globe_night · globe_today · globe_today_date · globe_eox ·
  *   globe_terminator · globe_heat · globe_minimap · globe_autorotate ·
- *   globe_favonly · globe_legend
+ *   globe_favonly · globe_legend · globe_photo_pins
  */
 import {
   store, bus, apiGet, esc, fmt, toast, saveSettings, openDrawer, openPlayerModal,
   toggleFavourite, isFav, copyText, go, viewLink, statusChipHTML,
-  rememberCamera, clamp, stagedIds, setFilters, reduced,
+  rememberCamera, clamp, stagedIds, setFilters, reduced, addToStage,
 } from './app.js';
 import { playSound } from './sound.js';
 
@@ -69,6 +86,10 @@ const I = {
   tour: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="m10 8 5 2.5-5 2.5z" fill="currentColor" stroke="none"/><path d="M8 20h8"/></svg>',
   ruler: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 8.7 15.3 2.7a2.4 2.4 0 0 0-3.4 0L2.7 11.9a2.4 2.4 0 0 0 0 3.4l6 6a2.4 2.4 0 0 0 3.4 0l9.2-9.2a2.4 2.4 0 0 0 0-3.4z"/><path d="m7.5 10.5 2 2"/><path d="m10.5 7.5 2 2"/><path d="m13.5 4.5 2 2"/></svg>',
   chev: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
+  frame: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>',
+  filt: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>',
+  cam: '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>',
 };
 
 /* ── constants ───────────────────────────────────────────────────────── */
@@ -124,6 +145,24 @@ const CITY_MAXZOOM = 9.5;                  // the city tier regresses past z9.5
 const CITY_BANDS = [[9, 8], [7, 15], [5, 40]];    // zoom >= z -> min cams for a label
 const COUNTRY_TOP = 12;                    // ranks 1-12 keep the full name; the rest "CC · N"
 
+/* photo pins + area panel (v0.4.5) ──────────────────────────────────── */
+const PHOTO_LAYER = 'globe-photo-pins';    // poster thumbnails above the single dots
+const PHOTO_MARK = 'pp-';                  // registered-image id prefix ('pp-<cid>')
+const PHOTO_AUTO_MINZOOM = 9.5;            // 'auto': posters appear as you zoom in
+const PHOTO_ON_MINZOOM = 6;                // 'on': forced from z6
+const PHOTO_BATCH = 70;                    // posters queued per viewport pass
+const PHOTO_CONC = 5;                      // concurrent poster fetches
+const PHOTO_MAX = 300;                     // registered-image cap (LRU eviction)
+const PHOTO_THUMB_W = 44, PHOTO_THUMB_H = 30;   // thumb size (fit-cover crop)
+const PHOTO_DEBOUNCE_MS = 350;             // viewport settle before queueing posters
+const PHOTO_SIZE = ['interpolate', ['linear'], ['zoom'],
+  6, 0.62, 9.5, 0.9, 10, 1, 13, 1.12, 16, 1.2];
+const PANE_SOURCE = 'pane-members';        // the area panel's 'Show photos' source
+const PANE_LAYER = 'pane-photo-pins';      // …and its symbol layer
+const PANE_PHOTO_BATCH = 40;               // posters 'Show photos' registers
+const PANE_PAGE = 120;                     // rows rendered per page
+const PANE_STATUS_RANK = { live: 0, stale: 1, dead: 2, unknown: 3, unverified: 4, '': 3 };
+
 /* ── module state (survives view switches; reset by cleanup) ─────────── */
 
 let M = null;                 // window.maplibregl, resolved by loadLib()
@@ -162,6 +201,16 @@ const posterCache = new Map();        // cid -> 'ok' | 'none'
 let pulseLast = 0;                    // live-pulse paint throttle (~10 fps)
 let pulsePhase = 0;                   // oscillation phase (rad)
 let pulseStatic = false;              // reduced motion: one static glow, set once
+let photoMode = 'auto';               // globe_photo_pins: 'auto' | 'on' | 'off'
+let photoTimer = null;                // viewport-debounce for the poster pass
+let photoAbort = null;                // aborts the in-flight poster batch
+let photoSeq = 0;                     // stale-batch guard
+const photoReg = new Map();           // cid -> true (image on the current style; insertion = LRU)
+const photoMiss = new Set();          // cid -> poster 404'd this session (never retried)
+const photoPinned = new Set();        // cids the area panel's 'Show photos' owns (LRU-exempt)
+let camCoords = null;                 // cid -> [lon, lat], built lazily from the cached points
+let pane = null;                      // open area panel: {kind, key, all, members, q, sort, filt, …}
+let paneHideTimer = null;             // slide-out → hidden
 
 /* ── lazy library load (the only place MapLibre is fetched) ──────────── */
 
@@ -349,6 +398,26 @@ function buildStyle() {
           'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 3.5, 0, 6, 0.5, 12, 0.9],
           'circle-stroke-color': '#ffffff',
         } },
+      // photo pins (v0.4.5) — poster thumbnails registered at runtime by the
+      // viewport pass as map.addImage('pp-<cid>'). A camera without a cached
+      // poster simply never renders here (MapLibre skips a missing icon-image),
+      // so its dot underneath stays the honest fallback. 'auto' fades in from
+      // z9.5; 'on' forces from z6; 'off' hides the layer (setting toggle).
+      { id: PHOTO_LAYER, type: 'symbol', source: 'cams',
+        minzoom: photoMode === 'on' ? PHOTO_ON_MINZOOM : PHOTO_AUTO_MINZOOM,
+        maxzoom: 20,
+        // starts empty: only cams with a REGISTERED poster pass (applyPhotoFilters
+        // composes the dots' rule with the live image registry — MapLibre then
+        // never asks for an image that does not exist)
+        filter: ['boolean', false],
+        layout: {
+          'icon-image': ['concat', PHOTO_MARK, ['get', 'c']],
+          'icon-size': PHOTO_SIZE,
+          'icon-anchor': 'bottom', 'icon-offset': [0, -5],   // pin-like: the poster sits above the dot
+          'icon-allow-overlap': ['step', ['zoom'], false, 12, true],
+          'icon-padding': 2,
+        },
+        paint: { 'icon-opacity': photoOpacityExpr() } },
       { id: 'globe-measure-line', type: 'line', source: 'measure-line',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
         paint: { 'line-color': '#2dd4bf', 'line-width': 1.6, 'line-opacity': 0.9,
@@ -632,6 +701,7 @@ function applyFilters() {
     map.setFilter('globe-points', points);
     map.setFilter(PULSE_LAYER, pulse);
     map.setFilter('globe-heat', expr);          // the heat copy holds no clusters
+    schedulePhotoFilters();                     // photo pins: dots' rule ∩ registered posters
   } catch (err) { /* filters land again on the next change */ }
 }
 
@@ -1395,6 +1465,630 @@ function applyHeat(on) {
   if (window.__globe) window.__globe.heat = on;
 }
 
+/* ══ photo pins (v0.4.5) ══════════════════════════════════════════════
+ * Posters materialise as pin thumbnails above the single dots as the user
+ * zooms in. After each settled move (350 ms) the first ~70 rendered singles
+ * (queryRenderedFeatures, topped up by bbox over the cached collection) go
+ * through a 5-wide queue: fetch /api/poster/<cid> → downscale to a 44×30
+ * fit-cover thumb → map.addImage('pp-<cid>'). 404s are remembered and
+ * skipped (the dot stays); the registry is capped (~300, LRU) and images
+ * that drift far out of view are released with map.removeImage. */
+
+function photoMinZoom() { return photoMode === 'on' ? PHOTO_ON_MINZOOM : PHOTO_AUTO_MINZOOM; }
+
+function photoOpacityExpr() {
+  return photoMode === 'on'
+    ? ['interpolate', ['linear'], ['zoom'], PHOTO_ON_MINZOOM, 0, 8, 1]
+    : ['interpolate', ['linear'], ['zoom'], PHOTO_AUTO_MINZOOM, 0, 11, 1];
+}
+
+/* Both photo layers only ever reference images that EXIST: their filters are
+ * recomputed (debounced) from the live image registry, so MapLibre never asks
+ * for an unregistered icon-image (which would log a console warning per pin).
+ * The viewport layer keeps the dots' filter too; the pane layer draws only
+ * pane-pinned cams whose poster has landed. */
+let photoFilterTimer = null;
+
+function schedulePhotoFilters() {
+  if (photoFilterTimer) return;
+  photoFilterTimer = setTimeout(() => { photoFilterTimer = null; applyPhotoFilters(); }, 180);
+}
+
+function applyPhotoFilters() {
+  if (!map || !styleReady) return;
+  try {
+    const ids = [...photoReg.keys()];
+    if (map.getLayer(PHOTO_LAYER)) {
+      const expr = activeFilterExpr();
+      const singles = ['!', ['has', 'point_count']];
+      const points = expr ? ['all', singles, expr] : singles;
+      map.setFilter(PHOTO_LAYER, ids.length
+        ? ['all', points, ['in', ['get', 'c'], ['literal', ids]]]
+        : ['boolean', false]);
+    }
+    if (map.getLayer(PANE_LAYER)) {
+      const pinned = [...photoPinned].filter((cid) => photoReg.has(cid));
+      map.setFilter(PANE_LAYER, pinned.length
+        ? ['in', ['get', 'c'], ['literal', pinned]]
+        : ['boolean', false]);
+    }
+  } catch (err) { /* style mid-swap — the next pass retries */ }
+}
+
+/* settings → layer state; safe before the style exists (buildStyle reads
+ * photoMode, onStyleReady re-applies) */
+function applyPhotoPinsSetting() {
+  const v = store.settings.globe_photo_pins;
+  photoMode = v === 'on' || v === 'off' ? v : 'auto';
+  if (window.__globe) { window.__globe.photoPinsMode = photoMode; window.__globe.photoPins = photoReg.size; }
+  if (map && styleReady) {
+    try {
+      map.setLayoutProperty(PHOTO_LAYER, 'visibility', photoMode === 'off' ? 'none' : 'visible');
+      map.setLayerZoomRange(PHOTO_LAYER, photoMinZoom(), 20);
+      map.setPaintProperty(PHOTO_LAYER, 'icon-opacity', photoOpacityExpr());
+    } catch (err) { /* style mid-swap — onStyleReady re-applies */ }
+  }
+  schedulePhotoPins();
+}
+
+function schedulePhotoPins() {
+  clearTimeout(photoTimer);
+  photoTimer = setTimeout(() => { photoTimer = null; refreshPhotoPins(); }, PHOTO_DEBOUNCE_MS);
+}
+
+function ensureCamCoords() {
+  if (camCoords && camCoords.size) return camCoords;
+  camCoords = new Map();
+  for (const f of (pointsCache && pointsCache.features) || []) {
+    const p = f.properties || {};
+    const g = f.geometry && f.geometry.coordinates;
+    if (p.c && g) camCoords.set(p.c, g);
+  }
+  return camCoords;
+}
+
+/* one viewport pass: pick candidates, queue missing posters, release far ones */
+function refreshPhotoPins() {
+  if (destroyed || !map || !styleReady || photoMode === 'off') return;
+  if (map.getZoom() < photoMinZoom()) return;            // below the zoom rule: nothing to fetch
+  const seen = new Set();
+  const picks = [];
+  const want = (p) => !!p && !!p.c && p.v !== 'exposure_aggregator'
+    && !seen.has(p.c) && !photoMiss.has(p.c);
+  try {                                                  // rendered singles first (probe may under-report)
+    for (const f of map.queryRenderedFeatures({ layers: ['globe-points'] })) {
+      if (picks.length >= PHOTO_BATCH) break;
+      const p = f.properties || {};
+      if (!want(p)) continue;
+      seen.add(p.c); picks.push(f);
+    }
+  } catch (err) { /* style mid-swap — the bbox top-up below still works */ }
+  if (picks.length < PHOTO_BATCH && pointsCache) {       // …topped up from the cached collection
+    const b = map.getBounds();
+    const w = b.getWest(), e = b.getEast(), s = b.getSouth(), n = b.getNorth();
+    const cross = e < w;
+    const world = !cross && (e - w) >= 359.9;
+    const pred = pointPredicate();
+    for (const f of pointsCache.features || []) {
+      if (picks.length >= PHOTO_BATCH) break;
+      const g = f.geometry && f.geometry.coordinates;
+      const p = f.properties || {};
+      if (!g || !want(p)) continue;
+      const lon = Number(g[0]), lat = Number(g[1]);
+      if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+      if (lat < s || lat > n) continue;
+      if (!world && (cross ? !(lon >= w || lon <= e) : !(lon >= w && lon <= e))) continue;
+      if (pred && !pred(p)) continue;                    // respect the active filters
+      seen.add(p.c); picks.push(f);
+    }
+  }
+  if (!picks.length) return;
+  const todo = [];
+  for (const f of picks) {
+    const cid = f.properties.c;
+    if (photoReg.has(cid)) { touchPhoto(cid); continue; }  // recently used — bump LRU order
+    todo.push(cid);
+  }
+  if (todo.length) queuePosters(todo);
+  evictFarPhotos();
+}
+
+/* 5-wide poster queue; a new batch aborts the pending fetches (stale work dies) */
+function queuePosters(cids) {
+  const list = (cids || []).filter((cid) => cid && !photoReg.has(cid) && !photoMiss.has(cid));
+  if (!list.length) return;
+  if (photoAbort) { try { photoAbort.abort(); } catch (err) { /* noop */ } }
+  photoAbort = new AbortController();
+  const signal = photoAbort.signal;
+  const seq = ++photoSeq;
+  let i = 0;
+  const worker = async () => {
+    while (i < list.length) {
+      if (destroyed || seq !== photoSeq || signal.aborted) return;
+      const cid = list[i++];
+      try { await registerPoster(cid, signal); }
+      catch (err) { /* 404 / blocked / aborted — the dot stays, never a broken marker */ }
+    }
+  };
+  for (let k = 0; k < Math.min(PHOTO_CONC, list.length); k++) worker();
+}
+
+async function registerPoster(cid, signal) {
+  if (!cid || photoReg.has(cid) || photoMiss.has(cid)) return false;
+  if (!map || destroyed || !styleReady || signal.aborted) return false;
+  const res = await fetch('/api/poster/' + encodeURIComponent(cid),
+    { signal, headers: { Accept: 'image/*' } });
+  if (!res.ok) {
+    if (res.status === 404) rememberPosterMiss(cid);     // no poster — never retried
+    return false;
+  }
+  const blob = await res.blob();
+  if (signal.aborted || destroyed || !map || !styleReady) return false;
+  const src = await createImageBitmap(blob);
+  const cv = document.createElement('canvas');           // fit-cover crop into the 44×30 thumb
+  cv.width = PHOTO_THUMB_W; cv.height = PHOTO_THUMB_H;
+  const ctx = cv.getContext('2d');
+  const sw = src.width || 1, sh = src.height || 1;
+  const scale = Math.max(PHOTO_THUMB_W / sw, PHOTO_THUMB_H / sh);
+  const dw = sw * scale, dh = sh * scale;
+  ctx.drawImage(src, (PHOTO_THUMB_W - dw) / 2, (PHOTO_THUMB_H - dh) / 2, dw, dh);
+  try { src.close(); } catch (err) { /* not fatal */ }
+  const thumb = await createImageBitmap(cv);
+  if (signal.aborted || destroyed || !map || !styleReady) {
+    try { thumb.close(); } catch (err) { /* noop */ }
+    return false;
+  }
+  try {
+    if (!map.hasImage(PHOTO_MARK + cid)) map.addImage(PHOTO_MARK + cid, thumb, { pixelRatio: 1 });
+  } catch (err) {
+    try { thumb.close(); } catch (err2) { /* noop */ }
+    return false;                                        // style mid-swap — retried next pass
+  }
+  photoReg.set(cid, true);
+  if (window.__globe) window.__globe.photoPins = photoReg.size;
+  schedulePhotoFilters();
+  evictOverCap();
+  return true;
+}
+
+function rememberPosterMiss(cid) {
+  if (!cid) return;
+  photoMiss.add(cid);
+  if (photoMiss.size > 900) {                            // bounded (oldest out)
+    const first = photoMiss.values().next();
+    if (!first.done) photoMiss.delete(first.value);
+  }
+}
+
+function touchPhoto(cid) {
+  if (!photoReg.has(cid)) return;
+  photoReg.delete(cid); photoReg.set(cid, true);
+}
+
+function removePhoto(cid) {
+  photoReg.delete(cid);
+  try { if (map && map.hasImage(PHOTO_MARK + cid)) map.removeImage(PHOTO_MARK + cid); }
+  catch (err) { /* style mid-swap — a fresh style starts clean anyway */ }
+  schedulePhotoFilters();
+  if (window.__globe) window.__globe.photoPins = photoReg.size;
+}
+
+function evictOverCap() {
+  while (photoReg.size > PHOTO_MAX) {
+    let victim = null;
+    for (const cid of photoReg.keys()) { if (!photoPinned.has(cid)) { victim = cid; break; } }
+    if (victim == null) break;
+    removePhoto(victim);
+  }
+}
+
+/* release images for cameras that drifted far out of view (keeps panning cheap) */
+function evictFarPhotos() {
+  if (!map || !photoReg.size) return;
+  const cc = ensureCamCoords();
+  const b = map.getBounds();
+  const c = map.getCenter();
+  const hw = Math.min(180, Math.abs(b.getEast() - b.getWest()) / 2) * 1.8 + 0.5;
+  const hh = Math.abs(b.getNorth() - b.getSouth()) / 2 * 1.8 + 0.5;
+  for (const cid of [...photoReg.keys()]) {
+    if (photoPinned.has(cid)) continue;                  // the pane owns these while on
+    const g = cc.get(cid);
+    if (!g) continue;
+    let dl = Math.abs(Number(g[0]) - c.lng);
+    if (dl > 180) dl = 360 - dl;
+    const dlat = Math.abs(Number(g[1]) - c.lat);
+    if (dl > hw || dlat > hh) removePhoto(cid);
+  }
+}
+
+/* ══ area panel (v0.4.5) ═════════════════════════════════════════════
+ * The right-hand menu. Clicking a CLUSTER bubble / COUNTRY label / CITY label
+ * opens a contextual pane for that area: status-breakdown chips, the area's
+ * cameras as rows with full per-camera controls (thumbnail, Watch / Details /
+ * ★ / ＋Stage — exposure rows stay metadata-only), search-in-area, sort and
+ * All/Live/Stale chips, plus contextual actions — Zoom to fit, Show photos
+ * (pane-only poster pins) and Filter (country panes). The content re-derives
+ * from the cached points + the globe's active filters; nothing persists. */
+
+function paneStatusCounts(members) {
+  const c = { live: 0, stale: 0, dead: 0, unknown: 0 };
+  for (const m of members) {
+    const s = (m.p && m.p.s) || '';
+    if (s === 'live') c.live++;
+    else if (s === 'stale') c.stale++;
+    else if (s === 'dead') c.dead++;
+    else c.unknown++;
+  }
+  return c;
+}
+
+function paneTitleText() {
+  if (!pane) return 'Area';
+  if (pane.kind === 'cluster') return `Cluster — ${fmt(pane.count || pane.all.length)} cams`;
+  if (pane.kind === 'country') return `${countryDisplayName(pane.key) || pane.key} — ${fmt(pane.members.length)} cams`;
+  return `${pane.key} — ${fmt(pane.members.length)} cams`;
+}
+
+function openAreaPanel(ctx) {
+  if (!ui.area || destroyed) return;
+  hideHoverCard();
+  if (clickPopup) { try { clickPopup.remove(); } catch (err) { /* noop */ } clickPopup = null; }
+  clearPanePhotos();                                     // drop the previous pane's photos first
+  const seq = pane ? pane.seq + 1 : 1;
+  pane = {
+    kind: ctx.kind, key: String(ctx.key == null ? '' : ctx.key),
+    clusterId: ctx.clusterId == null ? null : ctx.clusterId,
+    count: Number(ctx.count) || 0, note: '',
+    q: '', sort: 'name', filt: 'all', limit: PANE_PAGE, photosOn: false,
+    all: [], members: [], seq,
+  };
+  if (ui.areaQ) ui.areaQ.value = '';
+  setPaneSeg(ui.areaSort, pane.sort);
+  setPaneSeg(ui.areaFilt, pane.filt);
+  ui.area.hidden = false;
+  void ui.area.offsetWidth;                              // flush style so the slide-in animates
+  ui.area.classList.add('open');
+  if (window.__globe) window.__globe.areaPanel = true;
+  renderPane();
+  if (ctx.kind === 'cluster') loadClusterMembers(pane.clusterId, seq);
+  else {
+    const members = ctx.kind === 'country' ? membersForCountry(pane.key) : membersForCity(pane.key);
+    setPaneMembers(members, seq);
+  }
+}
+
+function setPaneMembers(members, seq) {
+  if (destroyed || !pane || pane.seq !== seq) return;
+  pane.all = members;
+  refreshPaneMembers();
+}
+
+/* re-derive the pane's rows from its full member set + the globe's filters */
+function refreshPaneMembers() {
+  if (!pane) return;
+  const pred = pointPredicate();
+  pane.members = pred ? pane.all.filter((m) => pred(m.p || {})) : pane.all.slice();
+  renderPane();
+  if (pane.photosOn) syncPanePhotos();
+}
+
+async function loadClusterMembers(clusterId, seq) {
+  const src = map && map.getSource('cams');
+  if (!src || clusterId == null || !src.getClusterLeaves) {
+    if (pane && pane.seq === seq) setPaneMembers([], seq);
+    return;
+  }
+  try {
+    const leaves = await src.getClusterLeaves(clusterId, 500, 0);
+    if (destroyed || !pane || pane.seq !== seq) return;
+    if (leaves && leaves.length >= 500) pane.note = `first 500 of ${fmt(pane.count)}`;
+    setPaneMembers((leaves || [])
+      .filter((f) => f && f.geometry && Array.isArray(f.geometry.coordinates))
+      .map((f) => ({ p: f.properties || {}, geom: f.geometry.coordinates.slice() })), seq);
+  } catch (err) {
+    if (pane && pane.seq === seq) {
+      pane.note = 'members unavailable — ' + (err.message || err);
+      setPaneMembers([], seq);
+    }
+  }
+}
+
+function membersForCountry(cc) {
+  const out = [], up = String(cc).toUpperCase();
+  for (const f of (pointsCache && pointsCache.features) || []) {
+    const p = f.properties || {};
+    const g = f.geometry && f.geometry.coordinates;
+    if (!g || String(p.y || '').toUpperCase() !== up) continue;
+    out.push({ p, geom: g });
+  }
+  return out;
+}
+
+function membersForCity(name) {
+  const out = [], key = String(name).toLowerCase();
+  for (const f of (pointsCache && pointsCache.features) || []) {
+    const p = f.properties || {};
+    const g = f.geometry && f.geometry.coordinates;
+    if (!g || String(p.t || '').toLowerCase() !== key) continue;
+    out.push({ p, geom: g });
+  }
+  return out;
+}
+
+function setPaneSeg(seg, val) {
+  if (!seg) return;
+  seg.querySelectorAll('.seg-btn').forEach((b) => b.classList.toggle('on', b.dataset.val === val));
+}
+
+function renderPane() {
+  if (!ui.area || !pane) return;
+  const counts = paneStatusCounts(pane.members);
+  ui.areaTitle.textContent = paneTitleText();
+  ui.areaSub.textContent = pane.kind === 'cluster'
+    ? 'cluster members · click a bubble again to refresh'
+    : pane.kind === 'country'
+      ? 'every cached row for this country'
+      : 'every cached row for this city';
+  if (pane.note) ui.areaSub.textContent += ' · ' + pane.note;
+  ui.areaChips.innerHTML = ['live', 'stale', 'dead', 'unknown'].map((k) => (
+    `<span class="ga-chip ga-${k}" title="${esc(k)} cameras in this pane"><i></i>${esc(k)} <b>${fmt(counts[k])}</b></span>`
+  )).join('');
+  const countryOn = pane.kind === 'country'
+    && (store.filters.country || []).filter(Boolean).map((c) => String(c).toUpperCase()).includes(pane.key.toUpperCase());
+  ui.areaActs.innerHTML =
+    `<button type="button" class="btn tiny" data-pa="zoom" title="Frame this pane's cameras on the globe">${I.frame} Zoom to fit</button>`
+    + `<button type="button" class="btn tiny${pane.photosOn ? ' on' : ''}" data-pa="photos" title="Register poster pins for this pane's members (up to ${PANE_PHOTO_BATCH}) — works below the photo-pin zoom">${I.cam} ${pane.photosOn ? 'Hide photos' : 'Show photos'}</button>`
+    + (pane.kind === 'country'
+      ? `<button type="button" class="btn tiny${countryOn ? ' on' : ''}" data-pa="filter" title="Apply the country filter (same as the label click)">${I.filt} Filter</button>`
+      : '');
+  renderPaneList();
+}
+
+function paneRowsView() {
+  let rows = pane.members;
+  if (pane.filt === 'live') rows = rows.filter((m) => (m.p && m.p.s) === 'live');
+  else if (pane.filt === 'stale') rows = rows.filter((m) => (m.p && m.p.s) === 'stale');
+  const q = pane.q.trim().toLowerCase();
+  if (q) rows = rows.filter((m) => String((m.p && m.p.n) || '').toLowerCase().includes(q));
+  const sorted = rows.slice();
+  if (pane.sort === 'status') {
+    sorted.sort((a, b) => {
+      const ra = PANE_STATUS_RANK[(a.p && a.p.s) || ''] ?? 9;
+      const rb = PANE_STATUS_RANK[(b.p && b.p.s) || ''] ?? 9;
+      if (ra !== rb) return ra - rb;
+      return String((a.p && a.p.n) || '').localeCompare(String((b.p && b.p.n) || ''), 'en', { sensitivity: 'base' });
+    });
+  } else {
+    sorted.sort((a, b) => String((a.p && a.p.n) || '').localeCompare(String((b.p && b.p.n) || ''), 'en', { sensitivity: 'base' }));
+  }
+  return sorted;
+}
+
+function paneRowHTML(m) {
+  const p = m.p || {};
+  const cid = p.c || '';
+  const meta = isExposure(p);
+  const sub = [p.f, p.p].filter(Boolean).map(esc).join(' \u00b7 ');
+  const thumb = meta
+    ? '<span class="ga-thumb ga-thumb-none" title="metadata only">meta</span>'
+    : `<span class="ga-thumb"><img loading="lazy" decoding="async" alt="" src="/api/poster/${encodeURIComponent(cid)}"></span>`;
+  const acts = meta ? '' : `<span class="ga-row-acts">
+      <button type="button" class="btn tiny primary icon-only" data-a="watch" data-cid="${esc(cid)}" title="Watch">${I.play}</button>
+      <button type="button" class="btn tiny icon-only" data-a="details" data-cid="${esc(cid)}" title="Details">${I.info}</button>
+      <button type="button" class="btn tiny icon-only${isFav(cid) ? ' on' : ''}" data-a="fav" data-cid="${esc(cid)}" title="Favourite">${I.star}</button>
+      <button type="button" class="btn tiny icon-only" data-a="stage" data-cid="${esc(cid)}" title="Add to Watch stage">${I.plus}</button>
+    </span>`;
+  return `<div class="ga-row${meta ? ' ga-row-meta' : ''}"${cid ? ` data-cid="${esc(cid)}"` : ''}>
+      ${thumb}
+      <span class="ga-main">
+        <span class="ga-name" title="${esc(p.n || '')}">${esc(p.n || '(unnamed)')}</span>
+        ${sub ? `<span class="ga-rowsub">${sub}</span>` : ''}
+        <span class="ga-rowmeta">${statusChipHTML({ status: p.s })}${meta ? '<span class="ga-metaonly">metadata only — never previewed</span>' : ''}</span>
+      </span>
+      ${acts}
+    </div>`;
+}
+
+function renderPaneList() {
+  const list = ui.areaList;
+  if (!list || !pane) return;
+  const rows = paneRowsView();
+  if (!rows.length) {
+    list.innerHTML = `<div class="ga-empty">${pane.all.length ? 'no cameras match the current filters' : 'no cameras in this area'}</div>`;
+    if (ui.areaCount) ui.areaCount.textContent = pane.all.length ? `0 of ${fmt(pane.all.length)}` : '';
+    return;
+  }
+  const shown = rows.slice(0, pane.limit);
+  if (ui.areaCount) {
+    ui.areaCount.textContent = shown.length < rows.length
+      ? `showing ${fmt(shown.length)} of ${fmt(rows.length)}`
+      : `${fmt(rows.length)} camera${rows.length === 1 ? '' : 's'}`;
+  }
+  list.innerHTML = shown.map(paneRowHTML).join('')
+    + (rows.length > shown.length
+      ? `<button type="button" class="btn tiny ga-more" data-pa="more">+ ${fmt(rows.length - shown.length)} more</button>`
+      : '');
+}
+
+function paneZoomFit() {
+  if (!pane || !map) return;
+  let w = 181, e = -181, s = 91, n = -91;
+  for (const m of pane.members) {
+    const g = m.geom;
+    if (!Array.isArray(g)) continue;
+    const lon = Number(g[0]), lat = Number(g[1]);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+    if (lon < w) w = lon;
+    if (lon > e) e = lon;
+    if (lat < s) s = lat;
+    if (lat > n) n = lat;
+  }
+  if (w > e) { toast('Nothing to frame in this pane yet', { type: 'info' }); return; }
+  if (e - w < 0.02 && n - s < 0.02) { flyTo([(w + e) / 2, (s + n) / 2], Math.max(13, map.getZoom())); return; }
+  try {
+    map.fitBounds([[w, Math.max(-85, s)], [e, Math.min(85, n)]],
+      { padding: 70, maxZoom: 13, duration: 1400, essential: true });
+  } catch (err) { /* keep the current view */ }
+  setFocus([(w + e) / 2, (s + n) / 2]);
+  playSound('navigate');
+}
+
+/* [2c] 'Show photos' — register posters for up to PANE_PHOTO_BATCH members and
+ * draw them in a pane-only symbol layer (works at any zoom, independent of the
+ * globe_photo_pins zoom rule). Toggling off removes the layer + unpins. */
+function panePhotoMembers() {
+  if (!pane) return [];
+  return pane.members
+    .filter((m) => m.p && m.p.c && !isExposure(m.p) && Array.isArray(m.geom))
+    .slice(0, PANE_PHOTO_BATCH);
+}
+
+function ensurePaneLayers() {
+  if (!map || !styleReady || !pane) return;
+  const feats = pane.members
+    .filter((m) => m.p && m.p.c && !isExposure(m.p) && Array.isArray(m.geom))
+    .slice(0, 600)
+    .map((m) => ({ type: 'Feature', properties: { c: m.p.c },
+      geometry: { type: 'Point', coordinates: [Number(m.geom[0]), Number(m.geom[1])] } }))
+    .filter((f) => Number.isFinite(f.geometry.coordinates[0]) && Number.isFinite(f.geometry.coordinates[1]));
+  const data = { type: 'FeatureCollection', features: feats };
+  try {
+    const src = map.getSource(PANE_SOURCE);
+    if (src) src.setData(data);
+    else map.addSource(PANE_SOURCE, { type: 'geojson', data });
+    if (!map.getLayer(PANE_LAYER)) {
+      const pinned = [...photoPinned].filter((cid) => photoReg.has(cid));
+      const before = map.getLayer('globe-measure-line') ? 'globe-measure-line' : undefined;
+      map.addLayer({ id: PANE_LAYER, type: 'symbol', source: PANE_SOURCE, maxzoom: 20,
+        filter: pinned.length ? ['in', ['get', 'c'], ['literal', pinned]] : ['boolean', false],
+        layout: {
+          'icon-image': ['concat', PHOTO_MARK, ['get', 'c']],
+          'icon-size': PHOTO_SIZE,
+          'icon-anchor': 'bottom', 'icon-offset': [0, -5],
+          'icon-allow-overlap': true,
+        },
+        paint: { 'icon-opacity': ['interpolate', ['linear'], ['zoom'], 2, 0, 4, 1] } }, before);
+    }
+  } catch (err) { /* style mid-swap — retried next render */ }
+}
+
+function clearPanePhotos() {
+  if (map && styleReady) {
+    try { if (map.getLayer(PANE_LAYER)) map.removeLayer(PANE_LAYER); } catch (err) { /* noop */ }
+    try { if (map.getSource(PANE_SOURCE)) map.removeSource(PANE_SOURCE); } catch (err) { /* noop */ }
+  }
+  for (const cid of [...photoPinned]) photoPinned.delete(cid);
+  if (window.__globe) window.__globe.panePhotos = false;
+  evictFarPhotos();
+  evictOverCap();
+}
+
+function setPanePhotos(on) {
+  if (!pane) return;
+  pane.photosOn = !!on;
+  if (window.__globe) window.__globe.panePhotos = pane.photosOn;
+  if (!on) clearPanePhotos();
+  else {
+    const members = panePhotoMembers();
+    for (const m of members) photoPinned.add(m.p.c);
+    if (members.length) {
+      ensurePaneLayers();
+      queuePosters(members.map((m) => m.p.c));
+      toast(`Photo pins on — registering ${fmt(members.length)} posters for this pane`, { type: 'info', timeout: 2400 });
+    } else {
+      toast('No pin-able members in this pane (exposures stay metadata-only)', { type: 'info' });
+    }
+  }
+  renderPane();                                          // refresh the action button state
+}
+
+function syncPanePhotos() {
+  if (!pane || !pane.photosOn) return;
+  const members = panePhotoMembers();
+  for (const cid of [...photoPinned]) photoPinned.delete(cid);
+  for (const m of members) photoPinned.add(m.p.c);
+  ensurePaneLayers();
+  queuePosters(members.map((m) => m.p.c));
+}
+
+function paneCountryFilter() {
+  if (!pane || pane.kind !== 'country') return;
+  countryToggle(pane.key, true);                         // the same setFilters the label click uses
+}
+
+function closeAreaPanel(quiet) {
+  if (!pane || !ui.area) return;
+  clearPanePhotos();
+  pane = null;
+  ui.area.classList.remove('open');
+  clearTimeout(paneHideTimer);
+  paneHideTimer = setTimeout(() => { if (!pane && ui.area) ui.area.hidden = true; }, 190);
+  if (window.__globe) { window.__globe.areaPanel = false; window.__globe.panePhotos = false; }
+  if (!quiet) playSound('toggle');
+}
+
+/* Esc must not fight the app's overlays: only close the pane when nothing else is open */
+function anyAppOverlayOpen() {
+  const vis = (id) => { const n = document.getElementById(id); return !!n && !n.hidden; };
+  if (vis('palette') || vis('modal-player') || vis('modal-warn') || vis('modal-settings') || vis('modal-help')) return true;
+  const d = document.getElementById('drawer');
+  if (d && d.classList.contains('open')) return true;
+  return !!document.querySelector('.menu.open');
+}
+
+function wireAreaPanel() {
+  if (!ui.area) return;
+  ui.area.addEventListener('click', (ev) => {
+    const pa = ev.target.closest('[data-pa]');
+    if (pa) {
+      const a = pa.dataset.pa;
+      if (a === 'close') closeAreaPanel();
+      else if (a === 'zoom') paneZoomFit();
+      else if (a === 'photos') setPanePhotos(!(pane && pane.photosOn));
+      else if (a === 'filter') paneCountryFilter();
+      else if (a === 'more' && pane) { pane.limit += PANE_PAGE; renderPaneList(); }
+      return;
+    }
+    const b = ev.target.closest('[data-a]');
+    if (!b || !pane) return;
+    const cid = b.dataset.cid || '';
+    const act = b.dataset.a;
+    if (act === 'watch') openPlayerFor(cid);
+    else if (act === 'details') openDrawer(cid);
+    else if (act === 'fav') {
+      toggleFavourite(cid).then(() => {
+        if (destroyed || !ui.areaList) return;
+        ui.areaList.querySelectorAll('[data-a="fav"]').forEach((x) => x.classList.toggle('on', isFav(x.dataset.cid)));
+      });
+    } else if (act === 'stage') addToStage(cid);
+  });
+  // thumbnail fallback: a failed poster becomes a quiet text note, never a broken image
+  ui.area.addEventListener('error', (ev) => {
+    const img = ev.target;
+    if (!img || img.tagName !== 'IMG') return;
+    const th = img.closest('.ga-thumb');
+    if (!th) return;
+    th.classList.add('ga-thumb-none');
+    th.textContent = 'no poster yet';
+  }, true);
+  if (ui.areaX) ui.areaX.addEventListener('click', closeAreaPanel);
+  if (ui.areaQ) ui.areaQ.addEventListener('input', () => {
+    if (!pane) return;
+    pane.q = ui.areaQ.value || '';
+    renderPaneList();
+  });
+  if (ui.areaSort) ui.areaSort.addEventListener('click', (ev) => {
+    const b = ev.target.closest('.seg-btn');
+    if (!b || !pane) return;
+    pane.sort = b.dataset.val; setPaneSeg(ui.areaSort, pane.sort); renderPaneList(); playSound('toggle');
+  });
+  if (ui.areaFilt) ui.areaFilt.addEventListener('click', (ev) => {
+    const b = ev.target.closest('.seg-btn');
+    if (!b || !pane) return;
+    pane.filt = b.dataset.val; setPaneSeg(ui.areaFilt, pane.filt); renderPaneList(); playSound('toggle');
+  });
+}
+
 /* ── URL state (#/globe?lat=..&lng=..&z=..&b=..&p=..) ────────────────── */
 
 function writeHash() {
@@ -1470,6 +2164,7 @@ function buildMap() {
     scheduleHash(); scheduleHere(); updateDebugCounts(); schedulePulse();
     scheduleMini();                                 // minimap viewport (~150 ms throttle)
     updateCityTier();                               // city-label count threshold band
+    schedulePhotoPins();                            // photo pins: viewport-driven poster pass (~350 ms)
     positionMeasureReadout(measureState && measureState.pts[measureState.pts.length - 1]);
   });
   map.on('move', () => {
@@ -1528,6 +2223,9 @@ function onStyleReady() {
     window.__globe.today = todayDateVal();
   }
   applyFilters();
+  photoReg.clear();                                 // a fresh style has no registered images
+  applyPhotoPinsSetting();                          // re-apply the photo-pin mode to the new style
+  applyPhotoFilters();                              // …and the empty registry filter
   pulseStatic = false;                              // fresh style: re-arm the pulse
   if (pointsCache) pushPoints(pointsCache);
   if (termWanted) addTerminator();                  // persisted ON: re-add on the new style
@@ -1553,6 +2251,10 @@ function onClusterClick(ev) {
   if (!f || f.properties.cluster_id == null) return;
   const src = map && map.getSource('cams');
   if (!src) return;
+  const p = f.properties || {};
+  // v0.4.5: EVERY cluster total opens the area panel — and the dive is kept
+  openAreaPanel({ kind: 'cluster', key: 'k' + p.cluster_id, clusterId: p.cluster_id,
+    count: p.point_count || 0, coords: f.geometry.coordinates.slice() });
   src.getClusterExpansionZoom(f.properties.cluster_id).then((z) => {
     if (destroyed || !map) return;
     map.flyTo({ center: f.geometry.coordinates, zoom: Math.min(19, z + 0.2),
@@ -1810,11 +2512,20 @@ function onCountryClick(ev) {
   const f = ev.features && ev.features[0];
   if (!f || !f.properties || !f.properties.y) return;
   hideHoverCard();
-  countryToggle(String(f.properties.y), true);
+  const cc = String(f.properties.y);
+  const had = (store.filters.country || []).filter(Boolean).includes(cc);
+  countryToggle(cc, true);                     // filter + fly, exactly as before
+  // v0.4.5: the panel — a second click on the same country clears and closes
+  if (had) {
+    if (pane && pane.kind === 'country' && pane.key === cc) closeAreaPanel(true);
+  } else {
+    openAreaPanel({ kind: 'country', key: cc, count: f.properties.cnt || 0 });
+  }
 }
 
 /* [3] city-label tier — click flies to the city centroid (cities have no
- * dedicated filter dimension in the app; the tooltip says what a click does). */
+ * dedicated filter dimension in the app; the tooltip says what a click does).
+ * v0.4.5: it also opens the area panel for that city (same click toggles shut). */
 function onCityClick(ev) {
   if (measureState) return;                    // measuring: clicks add vertices
   const f = ev.features && ev.features[0];
@@ -1822,6 +2533,10 @@ function onCityClick(ev) {
   hideHoverCard();
   playSound('click');
   flyTo(f.geometry.coordinates.slice(), 10);   // centroid, city scale
+  const t = String((f.properties && f.properties.t) || '');
+  if (!t) return;
+  if (pane && pane.kind === 'city' && pane.key === t) { closeAreaPanel(true); return; }
+  openAreaPanel({ kind: 'city', key: t, count: (f.properties && f.properties.cnt) || 0 });
 }
 
 function onCityMove(ev) {
@@ -2061,6 +2776,16 @@ function syncToolbar() {
       cb.checked = !!store.settings['globe_' + cb.dataset.layer];
     });
   }
+  if (ui.photoSeg) {
+    const pm = store.settings.globe_photo_pins === 'on' || store.settings.globe_photo_pins === 'off'
+      ? store.settings.globe_photo_pins : 'auto';
+    setPaneSeg(ui.photoSeg, pm);
+    if (ui.photoNote) {
+      ui.photoNote.textContent = pm === 'on' ? 'on — from z6 · poster thumbs over the dots'
+        : pm === 'off' ? 'off — posters hidden, dots only'
+          : 'auto — from z9.5 · poster thumbs over the dots';
+    }
+  }
 }
 
 function toggleRotate() {
@@ -2083,10 +2808,17 @@ function toggleFavOnly() {
 
 function wireOverlays() {
   wireSearch();
+  wireAreaPanel();
   // filters changed anywhere (sidebar, chips, country labels, pulse tokens)
-  // restyle the pins client-side and re-derive the world-pulse counts
-  unsubs.push(bus.on('filters', () => { applyFilters(); schedulePulse(); }));
-  unsubs.push(bus.on('prefs', () => { applyFilters(); schedulePulse(); }));
+  // restyle the pins client-side, re-derive the world-pulse counts and refresh
+  // an open area panel (its rows respect the same filters)
+  unsubs.push(bus.on('filters', () => { applyFilters(); schedulePulse(); if (pane) refreshPaneMembers(); }));
+  unsubs.push(bus.on('prefs', () => { applyFilters(); schedulePulse(); applyPhotoPinsSetting(); }));
+  unsubs.push(bus.on('settings', (patch) => {
+    if (patch && Object.prototype.hasOwnProperty.call(patch, 'globe_photo_pins')) {
+      applyPhotoPinsSetting(); syncToolbar();
+    }
+  }));
   // 'r' = random live cam while the globe container has focus (never leaks to the app)
   ui.wrap.addEventListener('keydown', (ev) => {
     if (ev.key !== 'r' || ev.ctrlKey || ev.metaKey || ev.altKey) return;
@@ -2123,6 +2855,19 @@ function wireOverlays() {
         if (key === 'today' && ui.dateWrap) ui.dateWrap.hidden = !cb.checked;
         playSound('toggle');
       });
+    });
+  }
+  if (ui.photoSeg) {
+    ui.photoSeg.addEventListener('click', (ev) => {
+      const b = ev.target.closest('.seg-btn');
+      if (!b) return;
+      saveSettings({ globe_photo_pins: b.dataset.val });
+      applyPhotoPinsSetting();
+      syncToolbar();
+      playSound('toggle');
+      toast(b.dataset.val === 'off' ? 'Photo pins off — dots only'
+        : b.dataset.val === 'on' ? 'Photo pins on — posters register from z6'
+          : 'Photo pins auto — posters register from z9.5', { type: 'info', timeout: 1900 });
     });
   }
   if (ui.rotateBtn) ui.rotateBtn.addEventListener('click', toggleRotate);
@@ -2179,13 +2924,18 @@ function wireOverlays() {
       if (b) countryToggle(b.dataset.c, true);
     });
   }
-  // Esc stops a running tour / finishes the ruler — and is NOT swallowed otherwise
+  // Esc stops a running tour / finishes the ruler — and closes the area panel
+  // when nothing else is open — otherwise it is NOT swallowed
   escHandler = (ev) => {
     if (ev.key !== 'Escape') return;
     const t = ev.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
     if (tourState) { ev.stopPropagation(); stopTour(); return; }
-    if (measureState) { ev.stopPropagation(); finishMeasure(); }
+    if (measureState) { ev.stopPropagation(); finishMeasure(); return; }
+    if (pane && ui.area && !ui.area.hidden && !anyAppOverlayOpen()) {
+      ev.stopPropagation();
+      closeAreaPanel();
+    }
   };
   document.addEventListener('keydown', escHandler, true);
   syncToolbar();
@@ -2215,6 +2965,13 @@ function cleanup() {
   clearTimeout(hoverTimer); hoverTimer = null;
   clearTimeout(pulseTimer); pulseTimer = null;
   clearTimeout(cardTimer); cardTimer = null;
+  clearTimeout(photoTimer); photoTimer = null;
+  clearTimeout(photoFilterTimer); photoFilterTimer = null;
+  clearTimeout(paneHideTimer); paneHideTimer = null;
+  if (photoAbort) { try { photoAbort.abort(); } catch (err) { /* noop */ } photoAbort = null; }
+  photoSeq++;
+  photoReg.clear(); photoMiss.clear(); photoPinned.clear(); camCoords = null;
+  pane = null;
   cardKey = null; cardFor = null; cardAnchor = null; cardAnchorPx = null;
   clearInterval(termTimer); termTimer = null; termWanted = false;
   clearTimeout(miniTimer); miniTimer = null;
@@ -2228,6 +2985,7 @@ function cleanup() {
     window.__globe.terminator = false; window.__globe.minimap = false;
     window.__globe.worldPulse = null;
     window.__globe.singlesVisible = false; window.__globe.cities = 0; window.__globe.pulse = false;
+    window.__globe.photoPins = 0; window.__globe.areaPanel = false; window.__globe.panePhotos = false;
   }
   if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
   if (ac) { try { ac.abort(); } catch (err) { /* noop */ } ac = null; }
@@ -2263,6 +3021,7 @@ export const globeView = {
       liveClusters: false, countryLabels: 0,
       legend: store.settings.globe_legend !== false, pulse: false,
       singlesVisible: false, cities: 0, worldPulse: null,
+      photoPins: 0, photoPinsMode: 'auto', areaPanel: false, panePhotos: false,
     });
     const todayD = todayDateVal();
     root.innerHTML = `<div class="vwrap view-enter">
@@ -2306,6 +3065,14 @@ export const globeView = {
               <input type="checkbox" data-layer="heat"><span>Density heatmap<em>every geocoded row · pins dimmed</em></span></label>
             <label title="Small synced map inset, bottom-left — same Esri imagery; click it to fly there">
               <input type="checkbox" data-layer="minimap"><span>Minimap inset<em>Esri imagery · viewport marker</em></span></label>
+            <div class="globe-photo-row" id="globe-photo-row" title="Photo pins — real camera posters register as pin thumbnails above their dots: auto fades in from z9.5, on forces from z6, off hides them. A camera without a cached poster keeps its plain dot (lazy queue, ~300-image LRU).">
+              <span class="gpr-name">Photo pins<em id="globe-photo-note">auto — from z9.5 · poster thumbs over the dots</em></span>
+              <span class="seg seg-s" id="globe-photo-seg" role="group" aria-label="Photo pins mode">
+                <button type="button" class="seg-btn" data-val="auto">Auto</button>
+                <button type="button" class="seg-btn" data-val="on">On</button>
+                <button type="button" class="seg-btn" data-val="off">Off</button>
+              </span>
+            </div>
             <div class="gpop-note">Attribution for every visible layer sits at the bottom-right:
               Esri imagery · NASA EOSDIS GIBS (public domain) · EOX Sentinel-2 (CC BY-NC-SA).</div>
           </div>
@@ -2339,6 +3106,33 @@ export const globeView = {
         </div>
         <div class="globe-pulse" id="globe-pulse" hidden></div>
         <div class="globe-hcard" id="globe-hcard" hidden></div>
+        <div class="globe-area" id="globe-area" hidden aria-label="Area cameras panel">
+          <div class="ga-head">
+            <span class="ga-head-main">
+              <span class="ga-title" id="globe-area-title">Area</span>
+              <span class="ga-sub" id="globe-area-sub"></span>
+            </span>
+            <button type="button" class="xbtn ga-x" id="globe-area-x" title="Close (Esc)" data-pa="close">&times;</button>
+          </div>
+          <div class="ga-chips" id="globe-area-chips"></div>
+          <div class="ga-acts" id="globe-area-acts"></div>
+          <div class="ga-tools">
+            <input type="search" id="globe-area-q" placeholder="filter by name in this area…" autocomplete="off" spellcheck="false" aria-label="Filter cameras in this area by name">
+            <div class="ga-tools-row">
+              <span class="seg seg-s" id="globe-area-sort" role="group" aria-label="Sort pane rows">
+                <button type="button" class="seg-btn" data-val="name">Name</button>
+                <button type="button" class="seg-btn" data-val="status">Status</button>
+              </span>
+              <span class="seg seg-s" id="globe-area-filter" role="group" aria-label="Filter pane rows by status">
+                <button type="button" class="seg-btn" data-val="all">All</button>
+                <button type="button" class="seg-btn" data-val="live">Live</button>
+                <button type="button" class="seg-btn" data-val="stale">Stale</button>
+              </span>
+              <span class="ga-count" id="globe-area-count"></span>
+            </div>
+          </div>
+          <div class="ga-list" id="globe-area-list"></div>
+        </div>
         <div class="globe-loading" id="globe-loading">loading globe…</div>
       </div>
     </div>`;
@@ -2380,6 +3174,19 @@ export const globeView = {
       legendBody: root.querySelector('#globe-legend-body'),
       pulse: root.querySelector('#globe-pulse'),
       hcard: root.querySelector('#globe-hcard'),
+      area: root.querySelector('#globe-area'),
+      areaTitle: root.querySelector('#globe-area-title'),
+      areaSub: root.querySelector('#globe-area-sub'),
+      areaChips: root.querySelector('#globe-area-chips'),
+      areaActs: root.querySelector('#globe-area-acts'),
+      areaQ: root.querySelector('#globe-area-q'),
+      areaSort: root.querySelector('#globe-area-sort'),
+      areaFilt: root.querySelector('#globe-area-filter'),
+      areaCount: root.querySelector('#globe-area-count'),
+      areaList: root.querySelector('#globe-area-list'),
+      areaX: root.querySelector('#globe-area-x'),
+      photoSeg: root.querySelector('#globe-photo-seg'),
+      photoNote: root.querySelector('#globe-photo-note'),
     };
 
     // geometry lessons from the Leaflet view: the container must have a real box
@@ -2395,6 +3202,7 @@ export const globeView = {
     if (store.settings.globe_terminator) setTerminator(true);   // re-arm the 60 s refresh
     ui.legend.hidden = false;                              // the legend box is part of the view
     setLegendExpanded(store.settings.globe_legend !== false);
+    applyPhotoPinsSetting();                               // photo-pin mode before the style is built
 
     loadLib().then((ml) => {
       if (destroyed) return;

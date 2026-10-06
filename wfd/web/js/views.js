@@ -1469,6 +1469,19 @@ export const HELP_SECTIONS = [
         <li><b>Legend</b> (bottom, next to the minimap): status dot colours plus a cluster colour ramp —
         <b>cluster colour = live share</b> (grey-violet = none/few live, amber = some, teal/green = mostly live).
         The header folds the box away; the state persists.</li>
+        <li><b>Photo pins</b>: zoom to z9.5+ and real camera posters fade in as pin thumbnails above their dots —
+        the layers list carries an <b>Auto / On / Off</b> row (On starts at z6, Off hides them). Posters queue a few
+        at a time; a camera with no cached poster simply keeps its dot, and the image registry is capped so panning stays cheap.</li>
+        <li><b>Area panel</b>: click a cluster bubble, a country label or a city label total — a right-hand menu opens
+        for that area with a status breakdown (live / stale / dead / unknown), its cameras as rows (thumbnail, name,
+        status, family · protocol) and quick controls: search-in-area, sort by name/status, and All / Live / Stale chips
+        (up to 120 rows at a time, with “show more”).</li>
+        <li><b>Every row carries the full per-camera actions</b> — ▶ Watch, ⓘ Details, ★ Favourite and ＋ Stage —
+        the same behaviour as the map popups; exposure rows stay metadata-only (no thumbnail, no actions).</li>
+        <li><b>Contextual actions</b>: <b>Zoom to fit</b> frames the pane's cameras, <b>Show photos</b> registers poster
+        pins for up to 40 members (works below the photo-pin zoom; toggle off restores), and on a country pane
+        <b>Filter</b> applies the same country filter as the label. The pane follows the globe's active filters;
+        <kbd>Esc</kbd> closes it when nothing else is open, and its state is never persisted.</li>
       </ul>`,
   },
   {
