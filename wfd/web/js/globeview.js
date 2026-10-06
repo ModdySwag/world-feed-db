@@ -195,6 +195,7 @@ let hashTimer = null;
 let hoverTimer = null; let hoverId = null; let hoverLatLng = null;
 let hoverPopup = null; let clickPopup = null;
 let lastInput = 0;
+const heldPointers = new Set();        // pointer ids down anywhere in the app
 let docClose = null;
 let termTimer = null;                 // 60 s terminator refresh interval
 let termWanted = false;               // last requested terminator state (style may rebuild)
@@ -2386,6 +2387,14 @@ function buildMap() {
     ui.host.addEventListener(evt, bumpInput, { passive: true });
   }
   ui.wrap.addEventListener('keydown', bumpInput, { capture: true });
+  // v0.4.7: input ANYWHERE in the app counts too (player modal, palette,
+  // sidebar, menus) and a held pointer keeps the drift paused.
+  document.addEventListener('pointerdown', docPointerDown, { capture: true, passive: true });
+  document.addEventListener('pointerup', docPointerUp, { capture: true, passive: true });
+  document.addEventListener('pointercancel', docPointerUp, { capture: true, passive: true });
+  document.addEventListener('wheel', docInputBump, { capture: true, passive: true });
+  document.addEventListener('keydown', docInputBump, { capture: true });
+  window.addEventListener('blur', docBlurClear, { capture: true });
 
   kickPoints();
   startLoop();
@@ -2395,6 +2404,13 @@ function buildMap() {
 }
 
 function bumpInput() { lastInput = performance.now(); }
+/* v0.4.7 app-wide input tracking: any pointer/wheel/key input pauses the idle
+ * drift; a pointer held down keeps it paused (a held drag must never resume
+ * sliding underfoot). Registered in init(), removed again in cleanup(). */
+function docPointerDown(ev) { if (ev.pointerId !== undefined) heldPointers.add(ev.pointerId); bumpInput(); }
+function docPointerUp(ev) { if (ev.pointerId !== undefined) heldPointers.delete(ev.pointerId); bumpInput(); }
+function docInputBump() { bumpInput(); }
+function docBlurClear() { heldPointers.clear(); }
 function wrapLng(lng) { return ((lng + 540) % 360) - 180; }
 
 /* style readiness is idempotent: the 'style.load' event OR the loop's isStyleLoaded()
@@ -2928,17 +2944,23 @@ function startLoop() {
         }
       } catch (err) { /* style mid-swap — the next tick retries */ }
     }
-    // ~0.12°/s idle drift; pauses on any input, resumes after 20 s idle.
-    // Tours and the ruler hold it still for their duration, then it resumes.
+    // ~0.12°/s idle drift — time-based via performance.now() deltas (frame-
+    // rate independent; a 0.25 s per-step cap means a stalled frame can never
+    // jump). It holds still while touring or measuring, while ANY app overlay
+    // is open (player modal, warn, palette, settings, help, drawer, menu),
+    // while a pointer is held down anywhere in the app, and while the tab is
+    // hidden; it resumes only after 20 s of true idle.
+    const now = performance.now();                       // same clock as rAF ts
     if (store.settings.globe_autorotate && !document.hidden && !tourState && !measureState
+      && heldPointers.size === 0 && !anyAppOverlayOpen()
       && (ts - lastInput) > 20000 && !map.isMoving()) {
-      const dt = last ? Math.min(0.25, (ts - last) / 1000) : 0;
+      const dt = last ? Math.min(0.25, (now - last) / 1000) : 0;
       if (dt > 0) {
         const c = map.getCenter();
         map.setCenter([wrapLng(c.lng + 0.12 * dt), c.lat]);
       }
     }
-    last = ts;
+    last = now;
   };
   rafId = requestAnimationFrame(step);
 }
@@ -3226,6 +3248,13 @@ function cleanup() {
   if (hoverPopup) { try { hoverPopup.remove(); } catch (err) { /* noop */ } hoverPopup = null; }
   if (clickPopup) { try { clickPopup.remove(); } catch (err) { /* noop */ } clickPopup = null; }
   if (docClose) { document.removeEventListener('click', docClose); docClose = null; }
+  document.removeEventListener('pointerdown', docPointerDown, { capture: true });
+  document.removeEventListener('pointerup', docPointerUp, { capture: true });
+  document.removeEventListener('pointercancel', docPointerUp, { capture: true });
+  document.removeEventListener('wheel', docInputBump, { capture: true });
+  document.removeEventListener('keydown', docInputBump, { capture: true });
+  window.removeEventListener('blur', docBlurClear, { capture: true });
+  heldPointers.clear();
   if (map) { const m = map; map = null; try { m.remove(); } catch (err) { /* noop */ } }
   styleReady = false;
   hoverId = null; hoverLatLng = null;
