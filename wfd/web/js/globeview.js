@@ -59,6 +59,21 @@
  *     the same setFilters the label click uses). Content re-derives from the
  *     cached points + the active filters; the panel state is never persisted.
  *
+ * v0.4.6 — polish wave (deep links · thumbnail chip · country merge):
+ * [11] cold deep links '#/globe?lat=..&lng=..&z=..&b=..&p=..' land exactly
+ *     there: this module captures the hash at import AND at render() (both run
+ *     before the app router's replaceState rewrites it) and the first build
+ *     applies the captured camera — the live hash still wins afterwards;
+ * [12] a thumbnail-progress chip near the pulse HUD: 'thumbnails 12/76…' while
+ *     the poster queue has pending work for the current viewport, 'thumbnails
+ *     ready ✓' once per drained batch (~2.5 s) then it fades; never below the
+ *     photo-pin zoom or when the mode is off. __globe carries the counters
+ *     (thumbDone / thumbTotal / thumbState);
+ * [13] country labels merge registry values that denote the same country
+ *     ('US' + 'United States' → one label with the combined counts); a click
+ *     still filters EVERY merged variant and the next click clears them all.
+ *     Only values the in-page map can vouch for merge — unknown values stay.
+ *
  * Settings keys (all via saveSettings, all prefs-persisted):
  *   globe_labels · globe_night · globe_today · globe_today_date · globe_eox ·
  *   globe_terminator · globe_heat · globe_minimap · globe_autorotate ·
@@ -211,6 +226,22 @@ const photoPinned = new Set();        // cids the area panel's 'Show photos' own
 let camCoords = null;                 // cid -> [lon, lat], built lazily from the cached points
 let pane = null;                      // open area panel: {kind, key, all, members, q, sort, filt, …}
 let paneHideTimer = null;             // slide-out → hidden
+
+/* v0.4.6 deep-link capture: the router (app.js) rewrites location.hash via
+ * history.replaceState(viewLink()) — which carries no lat/lng/z/b/p — and this
+ * view's MapLibre build is lazy, so by the time buildMap() runs on a COLD
+ * '#/globe?lat=…' link the hash is already stripped. Capture it here at module
+ * load (this module evaluates before boot()) and again in render(); the first
+ * build consumes the capture, later builds read the live hash only. */
+const ENTRY_HASH_RAW = String(location.hash || '');
+let entryHashUsed = false;
+let pendingHashState = null;
+
+/* v0.4.6 thumbnail-progress chip (poster-queue counters) */
+let thumbState = 'idle';              // 'idle' | 'loading' | 'done'
+let thumbDone = 0;                    // items settled in the current batch
+let thumbTotal = 0;                   // items queued in the current batch
+let thumbHideTimer = null;
 
 /* ── lazy library load (the only place MapLibre is fetched) ──────────── */
 
@@ -497,6 +528,40 @@ const COUNTRY_NAMES = {
   XK: 'Kosovo', XX: 'Unknown', ZA: 'South Africa', ZM: 'Zambia',
 };
 
+/* v0.4.6 (B3): registry name variants that denote a country the map already
+ * knows by another name — OBSERVED variants only, each one unambiguous; the
+ * merge never invents a country, unknown values keep their own label. */
+const COUNTRY_ALIASES = {
+  'usa': 'US', 'united states of america': 'US',
+  'czech republic': 'CZ',
+  'korea, republic of': 'KR', 'republic of korea': 'KR',
+  'russian federation': 'RU',
+  'taiwan, province of': 'TW',
+  'viet nam': 'VN',
+  'iran, islamic republic': 'IR',
+  'venezuela, bolivaria': 'VE',        // registry-truncated values
+  'bolivia, plurination': 'BO',
+  'macedonia': 'MK',
+};
+
+/* normalized display name -> ISO code (for grouping: 'United States' -> US) */
+const NAME_TO_CODE = (() => {
+  const m = new Map();
+  for (const [cc, name] of Object.entries(COUNTRY_NAMES)) m.set(String(name).toLowerCase(), cc);
+  for (const [name, cc] of Object.entries(COUNTRY_ALIASES)) m.set(name, cc);
+  return m;
+})();
+
+/* the merge key for a raw registry `y` value: the ISO code when the value is a
+ * 2-letter code or a name the in-page map can vouch for; null = never merged. */
+function countryGroupKey(y) {
+  const raw = sanitizeLatin(y);
+  if (!raw) return null;
+  const up = raw.toUpperCase();
+  if (/^[A-Z]{2}$/.test(up)) return up;
+  return NAME_TO_CODE.get(raw.toLowerCase()) || null;
+}
+
 /* Latin-1 only: the vendored Noto Sans subset ships range 0-255, so strip
  * anything above it (CJK, arrows, emoji) — a label must never render as tofu. */
 function sanitizeLatin(s) {
@@ -541,21 +606,58 @@ function buildCountryLabels(fc) {
     else if (s === 'dead') a.dead++;
     else a.unk++;
   }
-  const rows = [...agg.entries()].filter(([, a]) => a.n >= COUNTRY_MIN_ROWS)
-    .sort((x, y) => y[1].n - x[1].n).slice(0, COUNTRY_CAP);
+  /* v0.4.6: collapse raw values that denote the same country into one group.
+   * Combined counts drive the label; every raw value stays in `variants` so a
+   * click filters ALL of them (and the second click clears them all). Values
+   * with no reliable mapping keep their own label (honest fallback). */
+  const groups = new Map();                     // group key -> { key, variants: [{y,a}] }
+  const solo = [];                              // unknown values: never merged
+  for (const [y, a] of agg.entries()) {
+    const key = countryGroupKey(y);
+    if (!key) { solo.push({ key: null, variants: [{ y, a }] }); continue; }
+    let g = groups.get(key);
+    if (!g) { g = { key, variants: [] }; groups.set(key, g); }
+    g.variants.push({ y, a });
+  }
+  const all = [...groups.values(), ...solo];
+  for (const g of all) {
+    g.variants.sort((x, y2) => y2.a.n - x.a.n);            // primary = the biggest raw value
+    g.n = 0; g.live = 0; g.stale = 0; g.dead = 0; g.unk = 0;
+    g.cx = 0; g.cy = 0; g.lat = 0; g.w = 181; g.e = -181; g.s = 91; g.n2 = -91;
+    for (const v of g.variants) {
+      const a = v.a;
+      g.n += a.n; g.live += a.live; g.stale += a.stale; g.dead += a.dead; g.unk += a.unk;
+      g.cx += a.cx; g.cy += a.cy; g.lat += a.lat;
+      if (a.w < g.w) g.w = a.w;
+      if (a.e > g.e) g.e = a.e;
+      if (a.s < g.s) g.s = a.s;
+      if (a.n2 > g.n2) g.n2 = a.n2;
+    }
+    g.merged = g.variants.length > 1;
+    g.name = (g.merged && g.key && COUNTRY_NAMES[g.key])
+      ? COUNTRY_NAMES[g.key]
+      : (countryDisplayName(g.variants[0].y) || sanitizeLatin(g.variants[0].y));
+  }
+  const rows = all.filter((g) => g.n >= COUNTRY_MIN_ROWS)
+    .sort((x, y2) => y2.n - x.n).slice(0, COUNTRY_CAP);
   countryBox = new Map();
-  const features = rows.map(([y, a], i) => {
-    countryBox.set(y, [a.w, a.s, a.e, a.n2]);
-    const mlon = Math.atan2(a.cy / a.n, a.cx / a.n) / RAD;
+  const features = rows.map((g, i) => {
+    const primary = g.variants[0].y;
+    const box = [g.w, g.s, g.e, g.n2];
+    countryBox.set(primary, box);
+    for (const v of g.variants) if (!countryBox.has(v.y)) countryBox.set(v.y, box);
+    const mlon = Math.atan2(g.cy / g.n, g.cx / g.n) / RAD;
     const line1 = i < COUNTRY_TOP
-      ? (countryDisplayName(y) || sanitizeLatin(y))
-      : `${sanitizeLatin(y)} · ${fmt(a.n)}`;               // small ones: code + count
-    const line2 = `${fmt(a.n)} cams · ${fmt(a.live)} live`;
+      ? g.name
+      : `${sanitizeLatin(g.key || primary)} · ${fmt(g.n)}`;   // small ones: code + count
+    const line2 = `${fmt(g.n)} cams · ${fmt(g.live)} live`;
+    const props = { y: primary, nm: g.name, cnt: g.n, live: g.live, stale: g.stale,
+      dead: g.dead, unk: g.unk, label: `${line1}\n${line2}` };
+    if (g.merged) { props.merged = true; props.variants = g.variants.map((v) => v.y); }
     return {
       type: 'Feature',
-      geometry: { type: 'Point', coordinates: [mlon, a.lat / a.n] },
-      properties: { y, cnt: a.n, live: a.live, stale: a.stale, dead: a.dead, unk: a.unk,
-        label: `${line1}\n${line2}` },
+      geometry: { type: 'Point', coordinates: [mlon, g.lat / g.n] },
+      properties: props,
     };
   });
   return { type: 'FeatureCollection', features };
@@ -599,7 +701,13 @@ function pushCountryLabels(fc) {
   const src = map && map.getSource('countries');
   const data = buildCountryLabels(fc);
   if (src) src.setData(data);
-  if (window.__globe) window.__globe.countryLabels = data.features.length;
+  if (window.__globe) {
+    window.__globe.countryLabels = data.features.length;
+    window.__globe.countryMerge = data.features.filter((f) => f.properties.merged).map((f) => ({
+      y: f.properties.y, nm: f.properties.nm, cnt: f.properties.cnt, live: f.properties.live,
+      variants: f.properties.variants,
+    }));
+  }
 }
 
 function pushCityLabels(fc) {
@@ -1529,6 +1637,7 @@ function applyPhotoPinsSetting() {
     } catch (err) { /* style mid-swap — onStyleReady re-applies */ }
   }
   schedulePhotoPins();
+  renderThumbChip();                                    // mode change re-gates the chip (off hides it)
 }
 
 function schedulePhotoPins() {
@@ -1593,6 +1702,55 @@ function refreshPhotoPins() {
   evictFarPhotos();
 }
 
+/* [12] thumbnail-progress chip — the bounds of the poster queue for this
+ * viewport: 'thumbnails 12/76…' while items are pending, ONE 'thumbnails
+ * ready ✓' flip per drained batch (~2.5 s) then a fade. Hidden below the
+ * photo-pin zoom and when the mode is off (the pane's 'Show photos' queue
+ * shares the chip when the viewport itself qualifies). No toasts. */
+function thumbChipEligible() {
+  return photoMode !== 'off' && !!map && styleReady && map.getZoom() >= photoMinZoom();
+}
+
+function thumbPublish() {
+  if (window.__globe) {
+    window.__globe.thumbDone = thumbDone;
+    window.__globe.thumbTotal = thumbTotal;
+    window.__globe.thumbState = thumbState;
+  }
+}
+
+function renderThumbChip() {
+  thumbPublish();
+  const el = ui.thumbChip;
+  if (!el) return;
+  clearTimeout(thumbHideTimer); thumbHideTimer = null;
+  if (destroyed || thumbState === 'idle' || !thumbChipEligible()) {
+    el.hidden = true; el.classList.remove('ok', 'fade');
+    return;
+  }
+  el.hidden = false;
+  el.classList.remove('fade');
+  if (thumbState === 'loading') {
+    el.classList.remove('ok');
+    el.textContent = `thumbnails ${thumbDone}/${thumbTotal}…`;
+    return;
+  }
+  el.classList.add('ok');
+  el.textContent = 'thumbnails ready ✓';
+  thumbHideTimer = setTimeout(() => {
+    thumbHideTimer = null;
+    const node = ui.thumbChip;
+    if (!node || thumbState !== 'done') return;
+    node.classList.add('fade');                          // .35 s opacity ease, then hide
+    thumbHideTimer = setTimeout(() => {
+      thumbHideTimer = null;
+      if (thumbState === 'done') thumbState = 'idle';
+      if (ui.thumbChip) { ui.thumbChip.hidden = true; ui.thumbChip.classList.remove('ok', 'fade'); }
+      thumbPublish();
+    }, 420);
+  }, 2500);
+}
+
 /* 5-wide poster queue; a new batch aborts the pending fetches (stale work dies) */
 function queuePosters(cids) {
   const list = (cids || []).filter((cid) => cid && !photoReg.has(cid) && !photoMiss.has(cid));
@@ -1601,13 +1759,26 @@ function queuePosters(cids) {
   photoAbort = new AbortController();
   const signal = photoAbort.signal;
   const seq = ++photoSeq;
+  thumbState = 'loading';                                // v0.4.6: chip + __globe counters
+  thumbDone = 0;
+  thumbTotal = list.length;
+  renderThumbChip();
   let i = 0;
+  let running = Math.min(PHOTO_CONC, list.length);
   const worker = async () => {
     while (i < list.length) {
       if (destroyed || seq !== photoSeq || signal.aborted) return;
       const cid = list[i++];
       try { await registerPoster(cid, signal); }
       catch (err) { /* 404 / blocked / aborted — the dot stays, never a broken marker */ }
+      if (destroyed || seq !== photoSeq) return;         // a newer batch owns the chip now
+      thumbDone++;
+      renderThumbChip();
+    }
+    if (--running === 0 && !destroyed && seq === photoSeq && !signal.aborted) {
+      thumbDone = thumbTotal;                            // the batch drained (fetched, 404'd or failed)
+      thumbState = 'done';
+      renderThumbChip();
     }
   };
   for (let k = 0; k < Math.min(PHOTO_CONC, list.length); k++) worker();
@@ -1737,6 +1908,7 @@ function openAreaPanel(ctx) {
   const seq = pane ? pane.seq + 1 : 1;
   pane = {
     kind: ctx.kind, key: String(ctx.key == null ? '' : ctx.key),
+    variants: Array.isArray(ctx.variants) ? ctx.variants.map(String) : null,
     clusterId: ctx.clusterId == null ? null : ctx.clusterId,
     count: Number(ctx.count) || 0, note: '',
     q: '', sort: 'name', filt: 'all', limit: PANE_PAGE, photosOn: false,
@@ -1752,7 +1924,7 @@ function openAreaPanel(ctx) {
   renderPane();
   if (ctx.kind === 'cluster') loadClusterMembers(pane.clusterId, seq);
   else {
-    const members = ctx.kind === 'country' ? membersForCountry(pane.key) : membersForCity(pane.key);
+    const members = ctx.kind === 'country' ? membersForCountry(pane.key, pane.variants) : membersForCity(pane.key);
     setPaneMembers(members, seq);
   }
 }
@@ -1793,12 +1965,13 @@ async function loadClusterMembers(clusterId, seq) {
   }
 }
 
-function membersForCountry(cc) {
-  const out = [], up = String(cc).toUpperCase();
+function membersForCountry(cc, variants) {
+  const out = [];
+  const ups = new Set(countryKeysOf(cc, variants).map((k) => k.toUpperCase()));
   for (const f of (pointsCache && pointsCache.features) || []) {
     const p = f.properties || {};
     const g = f.geometry && f.geometry.coordinates;
-    if (!g || String(p.y || '').toUpperCase() !== up) continue;
+    if (!g || !ups.has(String(p.y || '').toUpperCase())) continue;
     out.push({ p, geom: g });
   }
   return out;
@@ -1828,13 +2001,14 @@ function renderPane() {
     ? 'cluster members · click a bubble again to refresh'
     : pane.kind === 'country'
       ? 'every cached row for this country'
+        + (pane.variants && pane.variants.length > 1 ? ` · merged: ${pane.variants.join(' + ')}` : '')
       : 'every cached row for this city';
   if (pane.note) ui.areaSub.textContent += ' · ' + pane.note;
   ui.areaChips.innerHTML = ['live', 'stale', 'dead', 'unknown'].map((k) => (
     `<span class="ga-chip ga-${k}" title="${esc(k)} cameras in this pane"><i></i>${esc(k)} <b>${fmt(counts[k])}</b></span>`
   )).join('');
   const countryOn = pane.kind === 'country'
-    && (store.filters.country || []).filter(Boolean).map((c) => String(c).toUpperCase()).includes(pane.key.toUpperCase());
+    && countryAllFiltered(countryKeysOf(pane.key, pane.variants));
   ui.areaActs.innerHTML =
     `<button type="button" class="btn tiny" data-pa="zoom" title="Frame this pane's cameras on the globe">${I.frame} Zoom to fit</button>`
     + `<button type="button" class="btn tiny${pane.photosOn ? ' on' : ''}" data-pa="photos" title="Register poster pins for this pane's members (up to ${PANE_PHOTO_BATCH}) — works below the photo-pin zoom">${I.cam} ${pane.photosOn ? 'Hide photos' : 'Show photos'}</button>`
@@ -2013,7 +2187,7 @@ function syncPanePhotos() {
 
 function paneCountryFilter() {
   if (!pane || pane.kind !== 'country') return;
-  countryToggle(pane.key, true);                         // the same setFilters the label click uses
+  countryToggle(pane.key, true, pane.variants);          // the same setFilters the label click uses
 }
 
 function closeAreaPanel(quiet) {
@@ -2114,8 +2288,10 @@ function scheduleHash() {
   hashTimer = setTimeout(() => { hashTimer = null; writeHash(); }, 800);
 }
 
-function readHashState() {
-  const raw = String(location.hash || '');
+/* parse a '#/globe?lat=..&lng=..' raw hash into camera state; null when the
+ * hash carries no lat/lng (the caller then picks its own fallback) */
+function parseHashState(raw0) {
+  const raw = String(raw0 || '');
   const q = raw.indexOf('?');
   if (q < 0) return null;
   const params = new URLSearchParams(raw.slice(q + 1));
@@ -2136,10 +2312,19 @@ function readHashState() {
   };
 }
 
+function readHashState() { return parseHashState(location.hash || ''); }
+
 /* ── map build + interaction wiring ──────────────────────────────────── */
 
 function buildMap() {
-  const start = readHashState() || { ...WORLD_VIEW, pitch: 15 };   // fresh entry: a subtle 3D tilt
+  // deep link: the live hash first (warm navigation), then the render-time
+  // capture, then the module-load capture — the router's hash rewrite happens
+  // before this lazy build finishes and must not strand a cold deep link.
+  let start = readHashState() || pendingHashState;
+  if (!start && !entryHashUsed) start = parseHashState(ENTRY_HASH_RAW);
+  pendingHashState = null;
+  entryHashUsed = true;
+  if (!start) start = { ...WORLD_VIEW, pitch: 15 };                // fresh entry: a subtle 3D tilt
   map = new M.Map({
     container: ui.host,
     style: buildStyle(),
@@ -2165,6 +2350,7 @@ function buildMap() {
     scheduleMini();                                 // minimap viewport (~150 ms throttle)
     updateCityTier();                               // city-label count threshold band
     schedulePhotoPins();                            // photo pins: viewport-driven poster pass (~350 ms)
+    renderThumbChip();                              // thumbnail chip: re-evaluate the zoom/mode gate
     positionMeasureReadout(measureState && measureState.pts[measureState.pts.length - 1]);
   });
   map.on('move', () => {
@@ -2338,9 +2524,13 @@ function onCountryMove(ev) {
   const f = ev.features && ev.features[0];
   if (!f) return;
   const p = f.properties || {};
-  const name = countryDisplayName(p.y) || p.y;
+  const name = p.nm || countryDisplayName(p.y) || p.y;
   let html = `<span class="gtip-name">${esc(name)} · ${fmt(p.cnt)} cams · ${fmt(p.live || 0)} live</span>`;
   html += `<div class="gtip-sub">${fmt(p.stale || 0)} stale · ${fmt(p.dead || 0)} dead · ${fmt(p.unk || 0)} unknown/unverified</div>`;
+  const mvars = countryVariantsOf(p);
+  if (mvars && mvars.length > 1) {
+    html += `<div class="gtip-sub">merged for display: ${esc(mvars.join(' + '))} — one label, one filter (click sets all)</div>`;
+  }
   html += '<div class="gtip-sub">click to filter · click again to clear</div>';
   if ((store.filters.status || []).length) {
     html += '<div class="gtip-sub">counts cover all statuses — the status filter is not applied here</div>';
@@ -2487,24 +2677,64 @@ function onCardMapMove() {
   if (Math.hypot(p.x - cardAnchorPx.x, p.y - cardAnchorPx.y) > 48) hideHoverCard();
 }
 
-/* [2] click a country label: apply that country through the SAME setFilters the
- * sidebar uses (a second click clears it, chip-style) and fly to the country bbox. */
-function countryToggle(cc, fly) {
-  const cur = (store.filters.country || []).filter(Boolean);
-  const had = cur.includes(cc);
-  setFilters({ country: had ? cur.filter((v) => v !== cc) : [...cur, cc] });
-  playSound('toggle');
-  if (!had && fly && map && countryBox.has(cc)) {
-    const [w, s, e, n] = countryBox.get(cc);
-    const e2 = w > e ? e + 360 : e;            // bbox crosses the antimeridian
+/* [2] country filter: shared by the label click, the area panel's Filter button
+ * and the pulse tokens. v0.4.6 — a MERGED label toggles EVERY raw `y` variant
+ * it stands for through the SAME setFilters the sidebar uses (the next click
+ * clears them all). Pulse tokens pass one raw value, exactly as before. */
+/* feature properties are tile-encoded: array values (like our `variants`) come
+ * back JSON-stringified from queryRenderedFeatures / click events — decode
+ * both shapes before use */
+function countryVariantsOf(props) {
+  const v = props && props.variants;
+  if (Array.isArray(v)) return v.map(String);
+  if (typeof v === 'string' && v.trim()) {
     try {
-      map.fitBounds([[w, Math.max(-85, s)], [e2, Math.min(85, n)]],
-        { padding: 60, maxZoom: 6, duration: 1400, essential: true });
-    } catch (err) { /* the filter alone still applies */ }
+      const a = JSON.parse(v);
+      return Array.isArray(a) ? a.map(String) : null;
+    } catch (err) { /* not a JSON variants value */ }
   }
-  toast(had ? `Country filter cleared — ${cc}`
-    : `Country filter — ${cc} · click the label or the chip again to clear`,
-  { type: 'info', timeout: had ? 1800 : 2600 });
+  return null;
+}
+
+function countryKeysOf(cc, variants) {
+  const out = [];
+  for (const v of (Array.isArray(variants) && variants.length ? variants : [cc])) {
+    const s = String(v == null ? '' : v).trim();
+    if (s && !out.some((k) => k.toUpperCase() === s.toUpperCase())) out.push(s);
+  }
+  return out;
+}
+
+function countryAllFiltered(keys) {
+  const cur = (store.filters.country || []).filter(Boolean).map((c) => String(c).toUpperCase());
+  return keys.length > 0 && keys.every((k) => cur.includes(k.toUpperCase()));
+}
+
+function countryToggle(cc, fly, variants) {
+  const keys = countryKeysOf(cc, variants);
+  const up = keys.map((k) => k.toUpperCase());
+  const cur = (store.filters.country || []).filter(Boolean);
+  const allIn = countryAllFiltered(keys);
+  setFilters({ country: allIn
+    ? cur.filter((c) => !up.includes(String(c).toUpperCase()))            // a second click clears them all
+    : cur.concat(keys.filter((k) => !cur.some((c) => String(c).toUpperCase() === k.toUpperCase()))) });
+  playSound('toggle');
+  if (!allIn && fly && map) {
+    const box = keys.map((k) => countryBox.get(k)).find(Boolean);
+    if (box) {
+      const [w, s, e, n] = box;
+      const e2 = w > e ? e + 360 : e;          // bbox crosses the antimeridian
+      try {
+        map.fitBounds([[w, Math.max(-85, s)], [e2, Math.min(85, n)]],
+          { padding: 60, maxZoom: 6, duration: 1400, essential: true });
+      } catch (err) { /* the filter alone still applies */ }
+    }
+  }
+  const disp = keys.length > 1 ? (countryDisplayName(keys[0]) || keys[0]) : keys[0];
+  const note = keys.length > 1 ? ` (${keys.join(' + ')})` : '';
+  toast(allIn ? `Country filter cleared — ${disp}`
+    : `Country filter — ${disp}${note} · click the label or the chip again to clear`,
+  { type: 'info', timeout: allIn ? 1800 : 2600 });
 }
 
 function onCountryClick(ev) {
@@ -2513,13 +2743,14 @@ function onCountryClick(ev) {
   if (!f || !f.properties || !f.properties.y) return;
   hideHoverCard();
   const cc = String(f.properties.y);
-  const had = (store.filters.country || []).filter(Boolean).includes(cc);
-  countryToggle(cc, true);                     // filter + fly, exactly as before
+  const variants = countryVariantsOf(f.properties);   // tile-encoded: may arrive as a JSON string
+  const had = countryAllFiltered(countryKeysOf(cc, variants));
+  countryToggle(cc, true, variants);           // filter + fly; merged groups set ALL variants
   // v0.4.5: the panel — a second click on the same country clears and closes
   if (had) {
     if (pane && pane.kind === 'country' && pane.key === cc) closeAreaPanel(true);
   } else {
-    openAreaPanel({ kind: 'country', key: cc, count: f.properties.cnt || 0 });
+    openAreaPanel({ kind: 'country', key: cc, count: f.properties.cnt || 0, variants });
   }
 }
 
@@ -2967,6 +3198,8 @@ function cleanup() {
   clearTimeout(cardTimer); cardTimer = null;
   clearTimeout(photoTimer); photoTimer = null;
   clearTimeout(photoFilterTimer); photoFilterTimer = null;
+  clearTimeout(thumbHideTimer); thumbHideTimer = null;
+  thumbState = 'idle'; thumbDone = 0; thumbTotal = 0;
   clearTimeout(paneHideTimer); paneHideTimer = null;
   if (photoAbort) { try { photoAbort.abort(); } catch (err) { /* noop */ } photoAbort = null; }
   photoSeq++;
@@ -2986,6 +3219,7 @@ function cleanup() {
     window.__globe.worldPulse = null;
     window.__globe.singlesVisible = false; window.__globe.cities = 0; window.__globe.pulse = false;
     window.__globe.photoPins = 0; window.__globe.areaPanel = false; window.__globe.panePhotos = false;
+    window.__globe.thumbDone = 0; window.__globe.thumbTotal = 0; window.__globe.thumbState = 'idle';
   }
   if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
   if (ac) { try { ac.abort(); } catch (err) { /* noop */ } ac = null; }
@@ -3005,6 +3239,7 @@ export const globeView = {
   render(root) {
     cleanup();
     destroyed = false;
+    pendingHashState = readHashState();          // v0.4.6: intact here — the router rewrites it after render() returns
     if (!window.__globe) {
       window.__globe = { ready: false, points: 0, clusters: 0, fps: 0, projection: '', errors: [],
         liveClusters: false, countryLabels: 0, legend: true, pulse: false,
@@ -3022,6 +3257,7 @@ export const globeView = {
       legend: store.settings.globe_legend !== false, pulse: false,
       singlesVisible: false, cities: 0, worldPulse: null,
       photoPins: 0, photoPinsMode: 'auto', areaPanel: false, panePhotos: false,
+      thumbDone: 0, thumbTotal: 0, thumbState: 'idle',
     });
     const todayD = todayDateVal();
     root.innerHTML = `<div class="vwrap view-enter">
@@ -3105,6 +3341,7 @@ export const globeView = {
           </div>
         </div>
         <div class="globe-pulse" id="globe-pulse" hidden></div>
+        <div class="globe-thumb-chip" id="globe-thumb-chip" hidden aria-live="polite"></div>
         <div class="globe-hcard" id="globe-hcard" hidden></div>
         <div class="globe-area" id="globe-area" hidden aria-label="Area cameras panel">
           <div class="ga-head">
@@ -3173,6 +3410,7 @@ export const globeView = {
       legendBtn: root.querySelector('#globe-legend-btn'),
       legendBody: root.querySelector('#globe-legend-body'),
       pulse: root.querySelector('#globe-pulse'),
+      thumbChip: root.querySelector('#globe-thumb-chip'),
       hcard: root.querySelector('#globe-hcard'),
       area: root.querySelector('#globe-area'),
       areaTitle: root.querySelector('#globe-area-title'),
