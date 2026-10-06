@@ -2,6 +2,14 @@
 
 A worldwide, self-healing database and viewer for public live video feeds — traffic cams, webcams, HLS/MJPEG/JPEG-refresh streams, and YouTube-live channels.
 
+## What it looks like
+
+![World Feed DB — the world-map globe](docs/shots/globe.jpg)
+
+![World Feed DB — the video wall](docs/shots/wall.jpg)
+
+![World Feed DB — the Watch stage](docs/shots/watch.jpg)
+
 ## What it is
 
 World Feed DB collects public live video feeds, keeps them in one registry, checks whether they actually work, and shows them on a local web page: a map, a 3D globe, a wall of previews, a multi-watch grid, and a search you can filter by country, protocol, source family and status.
