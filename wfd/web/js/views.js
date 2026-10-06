@@ -12,7 +12,7 @@ import {
   isFav, toggleFavourite, addToStage, removeFromStage, addManyToStage, openDrawer,
   openPlayerModal, statusChipHTML, reduced, selectCamera, rememberCamera,
   saveSettings, labelFavourite, reorderFavourites, downloadFile, stagedIds, resetFilters,
-  playerHandlers,
+  playerHandlers, diag,
 } from './app.js';
 import { posterEl, createPlayer, startLivePreview, isMetadataOnly } from './player.js';
 import { globeView } from './globeview.js';
@@ -47,6 +47,23 @@ function skeletonCards(n) {
   let h = '';
   for (let i = 0; i < n; i++) h += '<div class="skel skel-card"></div>';
   return h;
+}
+
+/* Cancel pending poster/image loads before a grid is rebuilt: detach each img
+ * first (the poster error handler no-ops on disconnected nodes), then drop its
+ * src so the in-flight image fetch aborts — an old image can never land in a
+ * card of a later result set, and stale loads stop occupying the server's
+ * snapshot gate / browser connections. */
+function releasePosters(scope) {
+  if (!scope || !scope.querySelectorAll) return 0;
+  let n = 0;
+  for (const img of scope.querySelectorAll('img[src]')) {
+    img.remove();
+    img.removeAttribute('src');
+    n++;
+  }
+  if (n) diag.posterReleased += n;
+  return n;
 }
 
 function countUp(node, target, dur = 600) {
@@ -517,7 +534,7 @@ const mapView = (() => {
     setStatus('loading…');
     try {
       const fc = await apiGet('/api/cameras', params);
-      if (s !== seq) return;
+      if (s !== seq) { diag.mapStale++; return; }
       const feats = fc.features || [];
       renderMarkers(feats);
       const pinned = !!store.filters.bbox;
@@ -528,7 +545,7 @@ const mapView = (() => {
         noteEl.textContent = 'Showing the first 2,500 rows — refine filters or zoom in for the rest.';
       }
     } catch (err) {
-      if (s !== seq) return;
+      if (s !== seq) { diag.mapStale++; return; }
       cluster.clearLayers();
       setStatus('cameras load failed — ' + err.message + ' (nothing shown)', true);
     }
@@ -585,6 +602,8 @@ const mapView = (() => {
 const wallView = (() => {
   let unsubs = [];
   let seq = 0; let offset = 0; let loadingMore = false; let lastPageFull = false;
+  let ctrl = null;                 // in-flight /api/cameras request (aborted when superseded)
+  let busy = false;
 
   function currentTotal() {
     return store.facets ? store.facets.total : null;
@@ -621,16 +640,20 @@ const wallView = (() => {
     const grid = $('#wall-grid', root);
     if (!grid) return;
     const s = ++seq;
+    if (busy && ctrl) { diag.wallAborted++; try { ctrl.abort(); } catch (err) { /* noop */ } }
+    const myCtrl = (ctrl = new AbortController());
+    busy = true;
     if (reset) {
       offset = 0;
       grid.className = 'card-grid';
+      releasePosters(grid);        // cancel the previous result set's image loads before dropping it
       grid.innerHTML = skeletonCards(12);
     }
     const rpp = Math.max(12, Math.min(240, Number(store.settings.results_per_page) || 60));
     const params = { ...filterParams(), sort: store.filters.sort, order: store.filters.order, limit: rpp, offset };
     try {
-      const fc = await apiGet('/api/cameras', params);
-      if (s !== seq) return;
+      const fc = await apiGet('/api/cameras', params, { signal: myCtrl.signal });
+      if (s !== seq) { diag.wallStale++; return; }
       const feats = fc.features || [];
       if (reset) grid.innerHTML = '';
       if (reset && !feats.length) {
@@ -652,9 +675,12 @@ const wallView = (() => {
       updateCount(root);
       updateFoot(root);
     } catch (err) {
-      if (s !== seq) return;
+      if (err && err.name === 'AbortError') return;      // superseded — counted at the abort site
+      if (s !== seq) { diag.wallStale++; return; }
       if (reset) grid.innerHTML = `<div class="empty err">wall load failed — ${esc(err.message)}<br><span>nothing shown (no fake data)</span></div>`;
       updateFoot(root);
+    } finally {
+      if (ctrl === myCtrl) busy = false;
     }
   }
 
@@ -704,7 +730,12 @@ const wallView = (() => {
       unsubs.push(bus.on('settings', (patch) => { if (patch && 'hide_dead' in patch) paintHideDeadChip(root); }));
     },
     refresh() { const r = $('#view'); if (r) load(r, { reset: true }); },
-    destroy() { unsubs.forEach((u) => u()); unsubs = []; seq++; },
+    destroy() {
+      unsubs.forEach((u) => u()); unsubs = [];
+      seq++;
+      if (busy && ctrl) { try { ctrl.abort(); } catch (err) { /* noop */ } }
+      releasePosters($('#view'));
+    },
   };
 })();
 
@@ -881,6 +912,8 @@ const watchView = (() => {
 const searchView = (() => {
   let unsubs = [];
   let seq = 0; let offset = 0; let loadingMore = false; let lastPageFull = false;
+  let ctrl = null;                 // in-flight /api/cameras request (aborted when superseded)
+  let busy = false;
   let mode = 'cards';                       // cards | rows (kept for the session)
   let items = [];
   const selection = new Set();              // ids chosen for “Send to Watch”
@@ -897,6 +930,7 @@ const searchView = (() => {
     const box = $('#search-results', root);
     if (!box) return;
     box.className = mode === 'cards' ? 'card-grid' : 'rows';
+    releasePosters(box);
     box.innerHTML = '';
     items.forEach((cam, i) => {
       const opts = {
@@ -945,10 +979,14 @@ const searchView = (() => {
     const box = $('#search-results', root);
     if (!box) return;
     const s = ++seq;
+    if (busy && ctrl) { diag.searchAborted++; try { ctrl.abort(); } catch (err) { /* noop */ } }
+    const myCtrl = (ctrl = new AbortController());
+    busy = true;
     if (reset) {
       offset = 0;
       items = [];
       box.className = mode === 'cards' ? 'card-grid' : 'rows';
+      releasePosters(box);
       box.innerHTML = mode === 'cards'
         ? skeletonCards(12)
         : '<div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div><div class="skel skel-row"></div>';
@@ -956,8 +994,8 @@ const searchView = (() => {
     const rpp = Math.max(12, Math.min(240, Number(store.settings.results_per_page) || 60));
     const params = { ...filterParams(), sort: store.filters.sort, order: store.filters.order, limit: rpp, offset };
     try {
-      const fc = await apiGet('/api/cameras', params);
-      if (s !== seq) return;
+      const fc = await apiGet('/api/cameras', params, { signal: myCtrl.signal });
+      if (s !== seq) { diag.searchStale++; return; }
       const feats = fc.features || [];
       if (reset) { items = []; box.innerHTML = ''; }
       items.push(...feats.map((f) => rememberCamera(f.properties)));
@@ -976,8 +1014,11 @@ const searchView = (() => {
       updateCount(root);
       updateFoot(root);
     } catch (err) {
-      if (s !== seq) return;
+      if (err && err.name === 'AbortError') return;      // superseded — counted at the abort site
+      if (s !== seq) { diag.searchStale++; return; }
       if (reset) box.innerHTML = `<div class="empty err">search failed — ${esc(err.message)}</div>`;
+    } finally {
+      if (ctrl === myCtrl) busy = false;
     }
   }
 
@@ -1080,7 +1121,12 @@ const searchView = (() => {
       unsubs.push(bus.on('prefs', () => updateHearts(root)));
     },
     refresh() { const r = $('#view'); if (r) load(r, { reset: true }); },
-    destroy() { unsubs.forEach((u) => u()); unsubs = []; seq++; },
+    destroy() {
+      unsubs.forEach((u) => u()); unsubs = [];
+      seq++;
+      if (busy && ctrl) { try { ctrl.abort(); } catch (err) { /* noop */ } }
+      releasePosters($('#view'));
+    },
   };
 })();
 

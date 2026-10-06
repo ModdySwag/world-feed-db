@@ -126,6 +126,20 @@ export const bus = {
   },
 };
 
+/* ══ consumer-guard diagnostics ════════════════════════════════════════ */
+
+/* Sequence-guard telemetry: every async response path that feeds the
+ * sidebar / facets / wall / search increments these when a superseded
+ * response is aborted or dropped, so a smoke can prove the guards engaged
+ * during a rapid-click stress (window.__wfdDiag). */
+export const diag = {
+  facetsStale: 0, facetsAborted: 0,
+  wallStale: 0, wallAborted: 0,
+  searchStale: 0, searchAborted: 0,
+  mapStale: 0,
+  posterReleased: 0,
+};
+
 /* ══ tiny helpers ══════════════════════════════════════════════════════ */
 
 export const $ = (sel, root = document) => root.querySelector(sel);
@@ -203,7 +217,7 @@ function setApiState(ok, message) {
       : `local API unreachable — ${lastApiError}`;
 }
 
-export async function apiGet(path, params) {
+export async function apiGet(path, params, opts = {}) {
   const u = new URL(path, location.origin);
   for (const [k, v] of Object.entries(params || {})) {
     if (v == null || v === '') continue;
@@ -211,8 +225,9 @@ export async function apiGet(path, params) {
   }
   let res;
   try {
-    res = await fetch(u, { headers: { Accept: 'application/json' } });
+    res = await fetch(u, { headers: { Accept: 'application/json' }, signal: opts.signal });
   } catch (err) {
+    if (err && err.name === 'AbortError') throw err;   // superseded by a newer request — not an API-health problem
     setApiState(false, err.message || 'network error');
     throw new Error('API unreachable — is the viewer server running?');
   }
@@ -492,6 +507,7 @@ export function setFilters(patch) {
   bus.emit('filters');
   syncHash();
   renderChips();
+  syncFacetSelection();      // highlights derive from store immediately — never wait on /api/facets
   updateStatusbar();
   fetchFacets();
 }
@@ -501,6 +517,7 @@ export function resetFilters() {
   bus.emit('filters');
   syncHash();
   renderChips();
+  syncFacetSelection();
   updateStatusbar();
   fetchFacets();
   toast('Filters cleared', { type: 'info' });
@@ -515,6 +532,22 @@ export function toggleFacet(dim, value) {
   playSound('toggle');
 }
 
+/* Facet highlight state derives solely from store.filters: called on every
+ * filter change so the sidebar .on classes stay in lockstep with the chips
+ * whether or not the /api/facets round-trip has landed yet. */
+export function syncFacetSelection() {
+  const f = store.filters;
+  const picks = {
+    provenance: new Set([f.provenance]),
+    status: new Set(f.status), family: new Set(f.family), country: new Set(f.country),
+    protocol: new Set(f.protocol), tag: new Set(f.tag),
+  };
+  $$('#sidebar-sections .facet').forEach((b) => {
+    const set = picks[b.dataset.dim];
+    if (set) b.classList.toggle('on', set.has(b.dataset.val));
+  });
+}
+
 export function setProvenance(v) {
   if (v === 'exposure' && !store.exposureEnabled) return;
   setFilters({ provenance: v });
@@ -525,33 +558,44 @@ export function setProvenance(v) {
 
 const FACET_DIMS = ['status', 'family', 'country', 'protocol', 'tag'];
 let facetSeq = 0;
+let facetCtrl = null;      // AbortController of the newest in-flight facet group
+let facetBusy = false;
 
 export async function fetchFacets() {
   const seq = ++facetSeq;
+  if (facetBusy && facetCtrl) { diag.facetsAborted++; try { facetCtrl.abort(); } catch (err) { /* noop */ } }
+  const myCtrl = (facetCtrl = new AbortController());
+  facetBusy = true;
   const base = filterParams();
   try {
-    const main = await apiGet('/api/facets', base);
-    if (seq !== facetSeq) return;
+    const main = await apiGet('/api/facets', base, { signal: myCtrl.signal });
+    if (seq !== facetSeq) { diag.facetsStale++; return; }
     const extra = {};
     const active = FACET_DIMS.filter((d) => store.filters[d].length);
     await Promise.all(active.map(async (d) => {
       try {
-        const res = await apiGet('/api/facets', filterParams({ exclude: [d] }));
+        const res = await apiGet('/api/facets', filterParams({ exclude: [d] }), { signal: myCtrl.signal });
         extra[d] = res;
-      } catch (err) { /* keep main counts for that dim */ }
+      } catch (err) {
+        if (err && err.name === 'AbortError') throw err;   // whole group superseded — bail
+        /* keep main counts for that dim */
+      }
     }));
-    if (seq !== facetSeq) return;
+    if (seq !== facetSeq) { diag.facetsStale++; return; }
     store.facets = main;
     store.facetsSelf = extra;
     renderSidebar();
     bus.emit('facets');
     updateStatusbar();
   } catch (err) {
-    if (seq !== facetSeq) return;
+    if (err && err.name === 'AbortError') return;          // superseded — counted at the abort site
+    if (seq !== facetSeq) { diag.facetsStale++; return; }
     const box = $('#sidebar-sections');
     if (box && !store.facets) {
       box.innerHTML = `<div class="side-err">facets unavailable — ${esc(err.message)}</div>`;
     }
+  } finally {
+    if (facetCtrl === myCtrl) facetBusy = false;
   }
 }
 
@@ -774,8 +818,27 @@ function sideSection(title, rows) {
 }
 
 /* sidebar interactions (delegated, wired once) */
+function activateFacet(b) {
+  const dim = b.dataset.dim;
+  const val = b.dataset.val;
+  if (dim === 'provenance') setProvenance(val);
+  else toggleFacet(dim, val);
+}
+
 function wireSidebar() {
   const box = $('#sidebar-sections');
+  /* Facet toggles act on pointerdown. A facets response can rebuild (re-sort)
+   * this list while a press is still down; the resulting click would then land
+   * on a rebuilt button — a different value, or nothing. Activating on the
+   * press itself (setFilters only syncs classes + chips; nothing is rebuilt
+   * inside the handler) keeps rapid multi-clicking dependable. Keyboard
+   * activation still arrives as a click with detail === 0. */
+  box.addEventListener('pointerdown', (ev) => {
+    if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+    const b = ev.target.closest('.facet');
+    if (!b || !box.contains(b)) return;
+    activateFacet(b);
+  });
   box.addEventListener('click', (ev) => {
     const more = ev.target.closest('[data-more]');
     if (more) {
@@ -786,12 +849,10 @@ function wireSidebar() {
       renderSidebar();
       return;
     }
+    if (ev.detail !== 0) return;             // pointer presses were handled on pointerdown
     const b = ev.target.closest('.facet');
     if (!b) return;
-    const dim = b.dataset.dim;
-    const val = b.dataset.val;
-    if (dim === 'provenance') setProvenance(val);
-    else toggleFacet(dim, val);
+    activateFacet(b);
   });
   box.addEventListener('input', (ev) => {
     if (ev.target.id === 'country-q') {
@@ -1825,6 +1886,7 @@ async function boot() {
   wireDrawer();
   wireKeyboard();
   soundGestureHook();
+  try { window.__wfdDiag = diag; } catch (err) { /* noop */ }
   setApiState(null);
   setPrefsState('idle');
   updateStatusbar();
