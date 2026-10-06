@@ -22,15 +22,25 @@
  *
  * Population layer (info density at the default world view):
  * [1] clusters carry live/stale/dead/unk counts (clusterProperties) — the circle
- *     colour is the live SHARE and hover tooltips break the mix down;
- * [2] a country-label layer (z<=6) shows "Country · count" for the top ~28
- *     countries (>=40 geocoded rows) — click to apply the country filter and fly
- *     to its bbox, click again to clear (counts always cover ALL statuses);
- * [3] a fixed-position hover card (250 ms dwell) details a cluster breakdown or a
+ *     colour is the live SHARE, a soft blurred glow sits under each bubble and
+ *     hover tooltips break the mix down;
+ * [2] a country-label layer (z<=6) shows two lines — "Country" / "N cams · M live"
+ *     — for the top ~28 countries (>=40 geocoded rows); ranks 13+ shrink to the
+ *     2-letter code + count. Click to apply the country filter and fly to its
+ *     bbox, click again to clear (counts always cover ALL statuses);
+ * [3] a city-label tier (z5–9.5) from the server's `t` (city) property —
+ *     "City · N", with the count threshold stepping up as you zoom out;
+ * [4] progressive camera disclosure: single dots fade/grow in from z3.5 while
+ *     the cluster split starts a stop earlier (clusterRadius 50 / maxZoom 11),
+ *     and live singles carry a pulsing glow (rAF ~10 fps; paused while the
+ *     document is hidden; static under prefers-reduced-motion);
+ * [5] a fixed-position hover card (250 ms dwell) details a cluster breakdown or a
  *     pin (lazy /api/poster/<cid> preview; exposure rows stay metadata-only);
- * [4] an always-on 'world pulse' strip counts what the viewport holds
- *     (cams · live · top countries — click to filter · families present);
- * [5] a collapsible legend decodes the status dots and the cluster live-share ramp.
+ * [6] an always-on 'world pulse' strip counts what the viewport holds
+ *     (cams · live · 'hot right now' country — click to filter · top countries ·
+ *     families present);
+ * [7] a collapsible legend decodes the status dots and the cluster live-share ramp;
+ * [8] a World/Region/City viewpoint-preset group — transient easeTo jumps.
  *
  * Settings keys (all via saveSettings, all prefs-persisted):
  *   globe_labels · globe_night · globe_today · globe_today_date · globe_eox ·
@@ -40,7 +50,7 @@
 import {
   store, bus, apiGet, esc, fmt, toast, saveSettings, openDrawer, openPlayerModal,
   toggleFavourite, isFav, copyText, go, viewLink, statusChipHTML,
-  rememberCamera, clamp, stagedIds, setFilters,
+  rememberCamera, clamp, stagedIds, setFilters, reduced,
 } from './app.js';
 import { playSound } from './sound.js';
 
@@ -89,6 +99,31 @@ const HCARD_DWELL_MS = 250;               // hover-card dwell before it appears
 const CLUSTER_FILL = ['interpolate', ['linear'], ['/', ['get', 'live'], ['get', 'point_count']],
   0, '#8892a0', 0.08, '#a09cc0', 0.3, '#f5a524', 0.62, '#22d3ee', 0.85, '#3ddc84'];
 
+/* progressive disclosure + city tier (see the header block) ──────────────── */
+const CLUSTER_RADIUS = ['interpolate', ['linear'], ['zoom'],
+  0, ['step', ['get', 'point_count'], 15, 100, 20, 750, 28],
+  4, ['step', ['get', 'point_count'], 14, 100, 19, 750, 27],
+  7, ['step', ['get', 'point_count'], 13, 100, 18, 750, 25],
+  10, ['step', ['get', 'point_count'], 12, 100, 17, 750, 23]];
+/* glow = the same ramp pre-scaled 1.6x. MapLibre v5 rejects a zoom expression
+ * nested inside arithmetic ("may only be used as input to a top-level step or
+ * interpolate"), so the factor is folded into the stops, never applied with *. */
+const CLUSTER_GLOW_RADIUS = ['interpolate', ['linear'], ['zoom'],
+  0, ['step', ['get', 'point_count'], 24, 100, 32, 750, 44.8],
+  4, ['step', ['get', 'point_count'], 22.4, 100, 30.4, 750, 43.2],
+  7, ['step', ['get', 'point_count'], 20.8, 100, 28.8, 750, 40],
+  10, ['step', ['get', 'point_count'], 19.2, 100, 27.2, 750, 36.8]];
+const SINGLE_RADIUS = ['interpolate', ['linear'], ['zoom'],
+  3.5, 1.6, 6, 2.6, 9, 3.6, 12, 4.6, 14, 6];
+const SINGLE_MINZOOM = 3.5;                // below this the singles regress (clusters only)
+const PULSE_LAYER = 'globe-live-pulse';    // live-dot glow, rAF-animated
+const PULSE_MINZOOM = 4; const PULSE_MAXZOOM = 13;
+const CITY_MIN_ROWS = 8;                   // fewest rows a city ever needs to be labelled
+const CITY_CAP = 200;                      // …and only the top-N cities are built
+const CITY_MAXZOOM = 9.5;                  // the city tier regresses past z9.5
+const CITY_BANDS = [[9, 8], [7, 15], [5, 40]];    // zoom >= z -> min cams for a label
+const COUNTRY_TOP = 12;                    // ranks 1-12 keep the full name; the rest "CC · N"
+
 /* ── module state (survives view switches; reset by cleanup) ─────────── */
 
 let M = null;                 // window.maplibregl, resolved by loadLib()
@@ -124,6 +159,9 @@ let cardFor = null;                   // feature the visible card is showing
 let cardAnchor = null; let cardAnchorPx = null;
 let posterSeq = 0;                    // guards the one-poster-at-a-time fetch
 const posterCache = new Map();        // cid -> 'ok' | 'none'
+let pulseLast = 0;                    // live-pulse paint throttle (~10 fps)
+let pulsePhase = 0;                   // oscillation phase (rad)
+let pulseStatic = false;              // reduced motion: one static glow, set once
 
 /* ── lazy library load (the only place MapLibre is fetched) ──────────── */
 
@@ -192,7 +230,7 @@ function buildStyle() {
       },
       cams: {
         type: 'geojson', data: EMPTY_FC,
-        cluster: true, clusterRadius: 55, clusterMaxZoom: 12, clusterMinPoints: 2,
+        cluster: true, clusterRadius: 50, clusterMaxZoom: 11, clusterMinPoints: 2,
         // cluster intelligence: every cluster carries status counts so colour and
         // tooltips can speak in live-share terms (reduce over the point properties)
         clusterProperties: {
@@ -204,6 +242,7 @@ function buildStyle() {
       },
       'cams-heat': { type: 'geojson', data: EMPTY_FC },       // non-clustered copy for the heatmap
       countries: { type: 'geojson', data: EMPTY_FC },         // country labels (built from the cached points)
+      cities: { type: 'geojson', data: EMPTY_FC },            // city labels (t property, same cache)
       focus: { type: 'geojson', data: EMPTY_FC },
       'measure-dots': { type: 'geojson', data: EMPTY_FC },
       'measure-line': { type: 'geojson', data: EMPTY_FC },
@@ -241,27 +280,34 @@ function buildStyle() {
         'circle-color': 'rgba(45,212,191,.14)', 'circle-stroke-width': 2.5,
         'circle-stroke-color': '#2dd4bf',
       } },
-      // country labels — "Country · count" for the top countries, built from the
-      // cached points; present at world zoom, faded out by z>6 (layer maxzoom 7)
+      // country labels — a two-line "Country / N cams · M live" for the top
+      // countries, built from the cached points; present at world zoom, faded
+      // out by z>6 (layer maxzoom 7). The label string is computed client-side
+      // (label prop) so it can carry both lines and the live split.
       { id: 'globe-country-labels', type: 'symbol', source: 'countries', maxzoom: 7,
         layout: {
           'text-field': ['get', 'label'], 'text-font': ['Noto Sans Regular'],
-          'text-size': ['step', ['get', 'cnt'], 11.5, 200, 12.5, 1000, 13.5, 2500, 15],
-          'text-max-width': 9, 'text-padding': 3, 'text-allow-overlap': false,
+          'text-size': ['step', ['get', 'cnt'], 11, 100, 13, 400, 15],
+          'text-max-width': 20, 'text-padding': 3, 'text-allow-overlap': false,
+          'text-line-height': 1.15,
         },
         paint: {
           'text-color': '#eaf2ff',
-          'text-halo-color': 'rgba(4, 7, 12, 0.9)', 'text-halo-width': 1.3,
+          'text-halo-color': 'rgba(4, 7, 12, 0.9)', 'text-halo-width': 1.5,
           'text-opacity': ['interpolate', ['linear'], ['zoom'], 3, 1, 5.5, 0.6, 6.6, 0],
+        } },
+      { id: 'globe-clusters-glow', type: 'circle', source: 'cams', filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': CLUSTER_FILL,                     // same live-share ramp, blurred halo
+          'circle-radius': CLUSTER_GLOW_RADIUS,             // 1.6x, pre-scaled stops
+          'circle-opacity': clusterGlowOpacityExpr(heatOn),
+          'circle-blur': 1,
         } },
       { id: 'globe-clusters', type: 'circle', source: 'cams', filter: ['has', 'point_count'],
         paint: {
           'circle-color': CLUSTER_FILL,                     // live share, not raw size
-          'circle-radius': ['interpolate', ['linear'], ['zoom'],
-            0, ['step', ['get', 'point_count'], 15, 100, 20, 750, 28],
-            5, ['step', ['get', 'point_count'], 13, 100, 18, 750, 25],
-            10, ['step', ['get', 'point_count'], 12, 100, 17, 750, 23]],
-          'circle-opacity': heatOn ? 0.25 : 0.85,
+          'circle-radius': CLUSTER_RADIUS,
+          'circle-opacity': clusterOpacityExpr(heatOn),     // soft regress as they split
           'circle-stroke-width': 1.5, 'circle-stroke-color': '#ffffff',
         } },
       { id: 'globe-cluster-count', type: 'symbol', source: 'cams', filter: ['has', 'point_count'],
@@ -269,11 +315,39 @@ function buildStyle() {
           'text-size': ['interpolate', ['linear'], ['zoom'], 0, 12.5, 4, 11.5, 8, 11] },
         paint: { 'text-color': '#04121a', 'text-halo-color': 'rgba(255, 255, 255, 0.28)',
           'text-halo-width': 0.6, 'text-opacity': heatOn ? 0.25 : 1 } },
-      { id: 'globe-points', type: 'circle', source: 'cams', filter: ['!', ['has', 'point_count']],
+      // city tier — placed ABOVE the cluster layers on purpose: symbol collision
+      // ranks by draw order (a later layer wins), and below them the cluster
+      // count text hides the city label at every shared anchor (measured).
+      // "City · N" at z5–9.5; the count threshold steps up as you zoom out
+      // (CITY_BANDS, re-applied by updateCityTier on every moveend).
+      { id: 'globe-city-labels', type: 'symbol', source: 'cities',
+        minzoom: 5, maxzoom: CITY_MAXZOOM,
+        filter: ['>=', ['get', 'cnt'], 40],
+        layout: {
+          'text-field': ['get', 'label'], 'text-font': ['Noto Sans Regular'],
+          'text-size': ['step', ['get', 'cnt'], 10.5, 40, 11.5, 80, 12.5],
+          'text-max-width': 14, 'text-padding': 3, 'text-allow-overlap': false,
+        },
         paint: {
-          'circle-color': PIN_COLOR, 'circle-radius': 4,
-          'circle-opacity': heatOn ? 0.25 : 1,
-          'circle-stroke-width': 1, 'circle-stroke-color': '#ffffff',
+          'text-color': '#d9e7f5',
+          'text-halo-color': 'rgba(4, 7, 12, 0.9)', 'text-halo-width': 1.2,
+          'text-opacity': ['interpolate', ['linear'], ['zoom'], 5, 0, 5.5, 1, 9, 1, 9.4, 0],
+        } },
+      { id: PULSE_LAYER, type: 'circle', source: 'cams',
+        minzoom: PULSE_MINZOOM, maxzoom: PULSE_MAXZOOM,
+        filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 's'], 'live']],
+        paint: {                                          // startLoop animates radius/opacity ~10 fps
+          'circle-color': '#3ddc84', 'circle-blur': 0.7,
+          'circle-radius': pulseRadiusExpr(1.4), 'circle-opacity': 0.2,
+        } },
+      { id: 'globe-points', type: 'circle', source: 'cams', filter: ['!', ['has', 'point_count']],
+        minzoom: SINGLE_MINZOOM,                          // progressive: regress below z3.5
+        paint: {
+          'circle-color': PIN_COLOR,
+          'circle-radius': SINGLE_RADIUS,                 // grow with zoom
+          'circle-opacity': pointsOpacityExpr(heatOn),    // fade in from z3.5
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 3.5, 0, 6, 0.5, 12, 0.9],
+          'circle-stroke-color': '#ffffff',
         } },
       { id: 'globe-measure-line', type: 'line', source: 'measure-line',
         layout: { 'line-cap': 'round', 'line-join': 'round' },
@@ -305,6 +379,7 @@ function pushPoints(fc) {
   const heat = map.getSource('cams-heat');       // same rows, one non-clustered copy
   if (heat) heat.setData(fc);
   pushCountryLabels(fc);
+  pushCityLabels(fc);
   const n = (fc.features || []).length;
   if (window.__globe) window.__globe.points = n;
   if (ui.loading) ui.loading.hidden = true;
@@ -314,10 +389,67 @@ function pushPoints(fc) {
   schedulePulse();
 }
 
-/* country aggregation for the label layer — count + wrapped mean centroid + bbox.
- * Labels reflect the FULL cached set (all statuses) by design: they are a coverage
- * read of the map, not a filtered result (the tooltip says so when a status filter
- * is active). Countries with >= COUNTRY_MIN_ROWS rows only, top COUNTRY_CAP. */
+/* country aggregation for the label layer — count + status split + wrapped mean
+ * centroid + bbox. Labels reflect the FULL cached set (all statuses) by design:
+ * they are a coverage read of the map, not a filtered result (the tooltip says
+ * so when a status filter is active). Countries with >= COUNTRY_MIN_ROWS rows
+ * only, top COUNTRY_CAP. Line 1 = full display name for the top COUNTRY_TOP
+ * ranks, else "CC · N"; line 2 = "N cams · M live". Latin-1 glyphs only. */
+
+/* ISO alpha-2 -> display name for every code present in the registry; an
+ * unknown 2-letter code falls back to itself (honest, never invented). */
+const COUNTRY_NAMES = {
+  AI: 'Anguilla', AL: 'Albania', AR: 'Argentina', AT: 'Austria', AU: 'Australia',
+  AW: 'Aruba', BA: 'Bosnia and Herzegovina', BB: 'Barbados', BE: 'Belgium',
+  BG: 'Bulgaria', BL: 'Saint Barthelemy', BM: 'Bermuda', BO: 'Bolivia',
+  BQ: 'Caribbean Netherlands', BR: 'Brazil', BY: 'Belarus', BZ: 'Belize',
+  CA: 'Canada', CD: 'DR Congo', CH: 'Switzerland', CL: 'Chile', CN: 'China',
+  CR: 'Costa Rica', CV: 'Cabo Verde', CW: 'Curacao', CY: 'Cyprus',
+  CZ: 'Czechia', DE: 'Germany', DK: 'Denmark', DO: 'Dominican Republic',
+  EC: 'Ecuador', EE: 'Estonia', EG: 'Egypt', ES: 'Spain', FI: 'Finland',
+  FO: 'Faroe Islands', FR: 'France', GB: 'United Kingdom', GD: 'Grenada',
+  GP: 'Guadeloupe', GR: 'Greece', GT: 'Guatemala', GY: 'Guyana', HR: 'Croatia',
+  HU: 'Hungary', ID: 'Indonesia', IE: 'Ireland', IL: 'Israel', IN: 'India',
+  IQ: 'Iraq', IR: 'Iran', IS: 'Iceland', IT: 'Italy', JM: 'Jamaica',
+  JO: 'Jordan', JP: 'Japan', KE: 'Kenya', KG: 'Kyrgyzstan', KR: 'South Korea',
+  KY: 'Cayman Islands', KZ: 'Kazakhstan', LA: 'Laos', LK: 'Sri Lanka',
+  LT: 'Lithuania', LU: 'Luxembourg', LV: 'Latvia', MA: 'Morocco',
+  MK: 'North Macedonia', MQ: 'Martinique', MT: 'Malta', MU: 'Mauritius',
+  MV: 'Maldives', MX: 'Mexico', MY: 'Malaysia', NA: 'Namibia',
+  NL: 'Netherlands', NO: 'Norway', NZ: 'New Zealand', PA: 'Panama',
+  PE: 'Peru', PH: 'Philippines', PL: 'Poland', PR: 'Puerto Rico',
+  PT: 'Portugal', PY: 'Paraguay', RO: 'Romania', RS: 'Serbia', RU: 'Russia',
+  SA: 'Saudi Arabia', SC: 'Seychelles', SE: 'Sweden', SG: 'Singapore',
+  SI: 'Slovenia', SK: 'Slovakia', SM: 'San Marino', SV: 'El Salvador',
+  SX: 'Sint Maarten', TC: 'Turks and Caicos', TH: 'Thailand', TR: 'Turkey',
+  TT: 'Trinidad and Tobago', TW: 'Taiwan', TZ: 'Tanzania', UA: 'Ukraine',
+  US: 'United States', UY: 'Uruguay', VA: 'Vatican City', VE: 'Venezuela',
+  VG: 'British Virgin Islands', VI: 'U.S. Virgin Islands', VN: 'Vietnam',
+  XK: 'Kosovo', XX: 'Unknown', ZA: 'South Africa', ZM: 'Zambia',
+};
+
+/* Latin-1 only: the vendored Noto Sans subset ships range 0-255, so strip
+ * anything above it (CJK, arrows, emoji) — a label must never render as tofu. */
+function sanitizeLatin(s) {
+  return String(s || '').replace(/[^\x20-\xFF]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function titleCaseName(s) {
+  return s.toLowerCase()
+    .replace(/\bof\b/g, 'of').replace(/\band\b/g, 'and').replace(/\bthe\b/g, 'the')
+    .replace(/(^|[\s,(])([a-z])/g, (m, p, c) => p + c.toUpperCase());
+}
+
+/* display name for a `y` value: 2-letter code -> mapped name; an all-caps
+ * stored name -> title case; anything else is already a display name. */
+function countryDisplayName(y) {
+  const raw = sanitizeLatin(y);
+  if (!raw) return '';
+  const up = raw.toUpperCase();
+  if (/^[A-Z]{2}$/.test(up)) return COUNTRY_NAMES[up] || up;
+  return raw === up ? titleCaseName(raw) : raw;
+}
+
 function buildCountryLabels(fc) {
   const agg = new Map();
   for (const f of (fc && fc.features) || []) {
@@ -327,24 +459,68 @@ function buildCountryLabels(fc) {
     const lon = Number(g[0]); const lat = Number(g[1]);
     if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
     let a = agg.get(p.y);
-    if (!a) { a = { n: 0, cx: 0, cy: 0, lat: 0, w: 181, e: -181, s: 91, n2: -91 }; agg.set(p.y, a); }
+    if (!a) { a = { n: 0, live: 0, stale: 0, dead: 0, unk: 0, cx: 0, cy: 0, lat: 0, w: 181, e: -181, s: 91, n2: -91 }; agg.set(p.y, a); }
     a.n++; a.lat += lat;
     a.cx += Math.cos(lon * RAD); a.cy += Math.sin(lon * RAD);   // wrapped mean (antimeridian-safe)
     if (lon < a.w) a.w = lon;
     if (lon > a.e) a.e = lon;
     if (lat < a.s) a.s = lat;
     if (lat > a.n2) a.n2 = lat;
+    const s = p.s || '';
+    if (s === 'live') a.live++;
+    else if (s === 'stale') a.stale++;
+    else if (s === 'dead') a.dead++;
+    else a.unk++;
   }
   const rows = [...agg.entries()].filter(([, a]) => a.n >= COUNTRY_MIN_ROWS)
     .sort((x, y) => y[1].n - x[1].n).slice(0, COUNTRY_CAP);
   countryBox = new Map();
-  const features = rows.map(([y, a]) => {
+  const features = rows.map(([y, a], i) => {
     countryBox.set(y, [a.w, a.s, a.e, a.n2]);
+    const mlon = Math.atan2(a.cy / a.n, a.cx / a.n) / RAD;
+    const line1 = i < COUNTRY_TOP
+      ? (countryDisplayName(y) || sanitizeLatin(y))
+      : `${sanitizeLatin(y)} · ${fmt(a.n)}`;               // small ones: code + count
+    const line2 = `${fmt(a.n)} cams · ${fmt(a.live)} live`;
+    return {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [mlon, a.lat / a.n] },
+      properties: { y, cnt: a.n, live: a.live, stale: a.stale, dead: a.dead, unk: a.unk,
+        label: `${line1}\n${line2}` },
+    };
+  });
+  return { type: 'FeatureCollection', features };
+}
+
+/* city aggregation for the label tier — name + count + wrapped mean centroid.
+ * Same coverage law as the country tier (the FULL cached set, all statuses);
+ * only cities with >= CITY_MIN_ROWS rows are built (top CITY_CAP by count) and
+ * updateCityTier() re-applies the per-zoom count threshold on every moveend. */
+function buildCityLabels(fc) {
+  const agg = new Map();
+  for (const f of (fc && fc.features) || []) {
+    const p = f.properties || {};
+    const g = f.geometry && f.geometry.coordinates;
+    if (!p.t || !g) continue;
+    const name = sanitizeLatin(p.t);
+    if (!name || !/[A-Za-z0-9]/.test(name)) continue;    // skip '-', '', punctuation-only
+    const lon = Number(g[0]); const lat = Number(g[1]);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+    const key = name.toLowerCase();
+    let a = agg.get(key);
+    if (!a) { a = { name: name.slice(0, 26), n: 0, live: 0, cx: 0, cy: 0, lat: 0 }; agg.set(key, a); }
+    a.n++; a.lat += lat;
+    a.cx += Math.cos(lon * RAD); a.cy += Math.sin(lon * RAD);
+    if (p.s === 'live') a.live++;
+  }
+  const rows = [...agg.values()].filter((a) => a.n >= CITY_MIN_ROWS)
+    .sort((x, y) => y.n - x.n).slice(0, CITY_CAP);
+  const features = rows.map((a) => {
     const mlon = Math.atan2(a.cy / a.n, a.cx / a.n) / RAD;
     return {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [mlon, a.lat / a.n] },
-      properties: { y, cnt: a.n, label: `${y} · ${fmt(a.n)}` },
+      properties: { t: a.name, cnt: a.n, live: a.live, label: `${a.name} · ${fmt(a.n)}` },
     };
   });
   return { type: 'FeatureCollection', features };
@@ -355,6 +531,28 @@ function pushCountryLabels(fc) {
   const data = buildCountryLabels(fc);
   if (src) src.setData(data);
   if (window.__globe) window.__globe.countryLabels = data.features.length;
+}
+
+function pushCityLabels(fc) {
+  const src = map && map.getSource('cities');
+  const data = buildCityLabels(fc);
+  if (src) src.setData(data);
+  if (window.__globe) window.__globe.cities = data.features.length;
+  updateCityTier();
+}
+
+/* the city tier's count threshold steps by zoom band (CITY_BANDS): z5–6 shows
+ * cities with >= 40 rows, z7–8 >= 15, z9 >= 8; past z9.5 the layer maxzoom
+ * retires it. A moveend re-applies the threshold band. */
+function updateCityTier() {
+  if (!map || !styleReady) return;
+  const z = map.getZoom();
+  let min = null;
+  for (const [z0, m] of CITY_BANDS) { if (z >= z0) { min = m; break; } }
+  try {
+    map.setFilter('globe-city-labels', min == null
+      ? ['boolean', false] : ['>=', ['get', 'cnt'], min]);
+  } catch (err) { /* style mid-swap — the next moveend re-applies */ }
 }
 
 /* honest coverage: "N geocoded of T rows" — T from /api/stats, asked once. */
@@ -423,12 +621,16 @@ function applyFilters() {
   if (!map || !styleReady) return;
   const expr = activeFilterExpr();
   const cluster = expr ? ['all', ['has', 'point_count'], expr] : ['has', 'point_count'];
-  const points = expr ? ['all', ['!', ['has', 'point_count']], expr]
-    : ['!', ['has', 'point_count']];
+  const singlesBase = ['!', ['has', 'point_count']];
+  const points = expr ? ['all', singlesBase, expr] : singlesBase;
+  const live = ['all', singlesBase, ['==', ['get', 's'], 'live']];
+  const pulse = expr ? ['all', singlesBase, ['==', ['get', 's'], 'live'], expr] : live;
   try {
     map.setFilter('globe-clusters', cluster);
+    map.setFilter('globe-clusters-glow', cluster);
     map.setFilter('globe-cluster-count', cluster);
     map.setFilter('globe-points', points);
+    map.setFilter(PULSE_LAYER, pulse);
     map.setFilter('globe-heat', expr);          // the heat copy holds no clusters
   } catch (err) { /* filters land again on the next change */ }
 }
@@ -1154,12 +1356,33 @@ function applyMinimap(on) {
 
 /* [6] heat dim — the pins step back while the heatmap is on. */
 
+/* shared opacity expressions so buildStyle and setHeatDim speak the same ramp;
+ * the heat factor is folded into the interpolate stops (a zoom expression may
+ * not be nested inside arithmetic) */
+function clusterOpacityExpr(heat) {
+  return heat ? 0.25 : ['interpolate', ['linear'], ['zoom'], 9, 1, 11, 0.95];
+}
+function clusterGlowOpacityExpr(heat) {
+  return heat ? 0.06 : ['interpolate', ['linear'], ['zoom'], 0, 0.22, 9, 0.16, 11, 0.12];
+}
+function pointsOpacityExpr(heat) {
+  const f = heat ? 0.26 : 1;
+  return ['interpolate', ['linear'], ['zoom'], 3.5, 0, 5, 0.55 * f, 8, 0.95 * f];
+}
+/* the pulse radius is a fresh top-level zoom interpolate per tick, with the
+ * oscillation factor folded into the stops */
+function pulseRadiusExpr(k) {
+  return ['interpolate', ['linear'], ['zoom'],
+    3.5, 1.6 * k, 6, 2.6 * k, 9, 3.6 * k, 12, 4.6 * k, 14, 6 * k];
+}
+
 function setHeatDim(on) {
   if (!map || !styleReady) return;
   try {
-    map.setPaintProperty('globe-clusters', 'circle-opacity', on ? 0.25 : 0.85);
+    map.setPaintProperty('globe-clusters', 'circle-opacity', clusterOpacityExpr(on));
+    map.setPaintProperty('globe-clusters-glow', 'circle-opacity', clusterGlowOpacityExpr(on));
     map.setPaintProperty('globe-cluster-count', 'text-opacity', on ? 0.25 : 1);
-    map.setPaintProperty('globe-points', 'circle-opacity', on ? 0.25 : 1);
+    map.setPaintProperty('globe-points', 'circle-opacity', pointsOpacityExpr(on));
   } catch (err) { /* style mid-swap — the rebuilt style picks the dim up */ }
 }
 
@@ -1246,6 +1469,7 @@ function buildMap() {
   map.on('moveend', () => {
     scheduleHash(); scheduleHere(); updateDebugCounts(); schedulePulse();
     scheduleMini();                                 // minimap viewport (~150 ms throttle)
+    updateCityTier();                               // city-label count threshold band
     positionMeasureReadout(measureState && measureState.pts[measureState.pts.length - 1]);
   });
   map.on('move', () => {
@@ -1265,9 +1489,13 @@ function buildMap() {
   map.on('click', 'globe-country-labels', onCountryClick);
   map.on('mousemove', 'globe-country-labels', onCountryMove);
   map.on('mouseleave', 'globe-country-labels', onCountryLeave);
+  map.on('click', 'globe-city-labels', onCityClick);
+  map.on('mousemove', 'globe-city-labels', onCityMove);
+  map.on('mouseleave', 'globe-city-labels', onCountryLeave);
   map.on('mouseenter', 'globe-points', () => { if (!measureState) setCursor('pointer'); });
   map.on('mouseenter', 'globe-clusters', () => { if (!measureState) setCursor('pointer'); });
   map.on('mouseenter', 'globe-country-labels', () => { if (!measureState) setCursor('pointer'); });
+  map.on('mouseenter', 'globe-city-labels', () => { if (!measureState) setCursor('pointer'); });
   map.on('move', onCardMapMove);                  // hide the hover card once the anchor drifts
   map.on('dragstart', hideHoverCard);
   map.on('zoomstart', hideHoverCard);
@@ -1300,6 +1528,7 @@ function onStyleReady() {
     window.__globe.today = todayDateVal();
   }
   applyFilters();
+  pulseStatic = false;                              // fresh style: re-arm the pulse
   if (pointsCache) pushPoints(pointsCache);
   if (termWanted) addTerminator();                  // persisted ON: re-add on the new style
   updateTodaySub(todayDateVal());
@@ -1401,12 +1630,15 @@ function onClusterMove(ev) {
   hoverCardMove('cluster', f, ev.point);
 }
 
-/* [2] country-label hover: "United States · 3,584 cams" (+ honesty sub-caption) */
+/* [2] country-label hover: "United States · 6,640 cams · 2,100 live" plus the
+ * full status split, and the honesty sub-caption when a status filter is on */
 function onCountryMove(ev) {
   const f = ev.features && ev.features[0];
   if (!f) return;
   const p = f.properties || {};
-  let html = `<span class="gtip-name">${esc(p.y)} · ${fmt(p.cnt)} cams</span>`;
+  const name = countryDisplayName(p.y) || p.y;
+  let html = `<span class="gtip-name">${esc(name)} · ${fmt(p.cnt)} cams · ${fmt(p.live || 0)} live</span>`;
+  html += `<div class="gtip-sub">${fmt(p.stale || 0)} stale · ${fmt(p.dead || 0)} dead · ${fmt(p.unk || 0)} unknown/unverified</div>`;
   html += '<div class="gtip-sub">click to filter · click again to clear</div>';
   if ((store.filters.status || []).length) {
     html += '<div class="gtip-sub">counts cover all statuses — the status filter is not applied here</div>';
@@ -1581,6 +1813,27 @@ function onCountryClick(ev) {
   countryToggle(String(f.properties.y), true);
 }
 
+/* [3] city-label tier — click flies to the city centroid (cities have no
+ * dedicated filter dimension in the app; the tooltip says what a click does). */
+function onCityClick(ev) {
+  if (measureState) return;                    // measuring: clicks add vertices
+  const f = ev.features && ev.features[0];
+  if (!f || !f.geometry) return;
+  hideHoverCard();
+  playSound('click');
+  flyTo(f.geometry.coordinates.slice(), 10);   // centroid, city scale
+}
+
+function onCityMove(ev) {
+  const f = ev.features && ev.features[0];
+  if (!f) return;
+  const p = f.properties || {};
+  let html = `<span class="gtip-name">${esc(p.t)} · ${fmt(p.cnt)} cams</span>`;
+  if (p.live) html += `<div class="gtip-sub">${fmt(p.live)} live</div>`;
+  html += '<div class="gtip-sub">click to fly to this city</div>';
+  scheduleTip('t' + (p.t || ''), html, f.geometry ? f.geometry.coordinates : ev.lngLat);
+}
+
 /* ── [4] world pulse — always-on strip: what the current viewport holds ──
  * Counted client-side from the cached points (same bounds maths as the minimap)
  * and throttled ~300 ms; country tokens apply the country filter like labels. */
@@ -1612,7 +1865,7 @@ function inViewStats() {
   const cross = e < w;
   const world = !cross && (e - w) >= 359.9;
   const pred = pointPredicate();
-  const out = { n: 0, live: 0, byCountry: new Map(), fams: new Set() };
+  const out = { n: 0, live: 0, byCountry: new Map(), byLive: new Map(), fams: new Set() };
   for (const f of pointsCache.features || []) {
     const g = f.geometry && f.geometry.coordinates;
     if (!g) continue;
@@ -1623,7 +1876,10 @@ function inViewStats() {
     const p = f.properties || {};
     if (pred && !pred(p)) continue;
     out.n++;
-    if (p.s === 'live') out.live++;
+    if (p.s === 'live') {
+      out.live++;
+      if (p.y) out.byLive.set(p.y, (out.byLive.get(p.y) || 0) + 1);
+    }
     if (p.y) out.byCountry.set(p.y, (out.byCountry.get(p.y) || 0) + 1);
     if (p.f) out.fams.add(p.f);
   }
@@ -1637,18 +1893,21 @@ function updatePulse() {
   if (!st.n) {
     ui.pulse.hidden = false;
     ui.pulse.innerHTML = '<span class="gp-hint">no geocoded cameras in view — pan back</span>';
-    if (window.__globe) window.__globe.pulse = { cams: 0, live: 0, countries: [], families: 0,
-      text: ui.pulse.textContent };
+    if (window.__globe) window.__globe.worldPulse = { cams: 0, live: 0, countries: [], hotspots: [],
+      families: 0, hot: null, text: ui.pulse.textContent };
     return;
   }
   const top = [...st.byCountry.entries()].sort((a, b2) => b2[1] - a[1]).slice(0, 3);
+  const hot = [...st.byLive.entries()].sort((a, b2) => b2[1] - a[1])[0] || null;
   ui.pulse.innerHTML = `<span class="gp-main">in view: <b>${fmt(st.n)}</b> cams · live <b>${fmt(st.live)}</b></span>`
+    + (hot ? `<button type="button" class="gp-hot" data-c="${esc(hot[0])}" title="hottest country right now — most live cams in view; click to filter, click again to clear">hot: ${esc(hot[0])} · ${fmt(hot[1])} live</button>` : '')
     + top.map(([c, k]) => `<button type="button" class="gp-cc" data-c="${esc(c)}" title="filter by country ${esc(c)} — click again to clear">${esc(c)} ${fmt(k)}</button>`).join('')
     + `<span class="gp-fam">${fmt(st.fams.size)} famil${st.fams.size === 1 ? 'y' : 'ies'} present</span>`;
   ui.pulse.hidden = false;
   if (window.__globe) {
-    window.__globe.pulse = { cams: st.n, live: st.live, families: st.fams.size,
-      countries: top.map(([c, k]) => ({ y: c, n: k })), text: ui.pulse.textContent };
+    window.__globe.worldPulse = { cams: st.n, live: st.live, families: st.fams.size,
+      countries: top.map(([c, k]) => ({ y: c, n: k })),
+      hot: hot ? { y: hot[0], live: hot[1] } : null, text: ui.pulse.textContent };
   }
 }
 
@@ -1678,6 +1937,9 @@ function updateDebugCounts() {
     const feats = map.queryRenderedFeatures({ layers: ['globe-clusters'] });
     window.__globe.clusters = feats.length;
     window.__globe.liveClusters = feats.some((f) => ((((f || {}).properties || {}).live) || 0) >= 1);
+    window.__globe.singlesVisible = !!map.getLayer('globe-points')
+      && map.getZoom() >= SINGLE_MINZOOM;          // progressive disclosure state
+    window.__globe.pulse = !!map.getLayer(PULSE_LAYER);
   } catch (err) { /* style may be mid-swap */ }
 }
 
@@ -1696,6 +1958,30 @@ function startLoop() {
       if (window.__globe) window.__globe.fps = Math.round((frames * 1000) / (ts - t0));
       frames = 0; t0 = ts;
     }
+    // live-dot pulse: ~10 fps paint updates on ONE layer (cheap); paused while
+    // the document is hidden; a single static glow under prefers-reduced-motion
+    if (styleReady && !document.hidden && ts - pulseLast >= 100) {
+      pulseLast = ts;
+      try {
+        if (map.getLayer(PULSE_LAYER)) {
+          if (reduced()) {
+            if (!pulseStatic) {
+              pulseStatic = true;
+              map.setPaintProperty(PULSE_LAYER, 'circle-radius', pulseRadiusExpr(1.4));
+              map.setPaintProperty(PULSE_LAYER, 'circle-opacity', 0.2);
+            }
+          } else {
+            pulseStatic = false;
+            pulsePhase += 0.55;                            // ~1.1 s period
+            const sine = Math.sin(pulsePhase);
+            map.setPaintProperty(PULSE_LAYER, 'circle-radius',
+              pulseRadiusExpr(1.4 + 0.4 * sine));          // 1.0x .. 1.8x
+            map.setPaintProperty(PULSE_LAYER, 'circle-opacity', 0.235 - 0.115 * sine);
+          }
+          if (window.__globe) window.__globe.pulse = true;
+        }
+      } catch (err) { /* style mid-swap — the next tick retries */ }
+    }
     // ~0.12°/s idle drift; pauses on any input, resumes after 20 s idle.
     // Tours and the ruler hold it still for their duration, then it resumes.
     if (store.settings.globe_autorotate && !document.hidden && !tourState && !measureState
@@ -1712,6 +1998,23 @@ function startLoop() {
 }
 
 /* ── overlays ────────────────────────────────────────────────────────── */
+
+/* viewpoint presets — transient easeTo jumps (World / Region / City); nothing
+ * persists. Region keeps the current centre at z5; City keeps the centre and
+ * drops into a close, pitched view. */
+function applyViewpoint(kind) {
+  if (!map || destroyed || measureState) return;
+  const c = map.getCenter();
+  const cam = kind === 'world'
+    ? { center: [8, 20], zoom: 1.6, bearing: 0, pitch: 15, duration: 1700 }
+    : kind === 'region'
+      ? { center: [c.lng, c.lat], zoom: 5, duration: 1300 }
+      : { center: [c.lng, c.lat], zoom: 11.5, bearing: -15, pitch: 50, duration: 1500 };
+  hideHoverCard();
+  map.easeTo({ ...cam, essential: true });
+  if (window.__globe) window.__globe.viewpoint = kind;
+  playSound('navigate');
+}
 
 function syncToolbar() {
   if (!ui.root) return;
@@ -1823,6 +2126,9 @@ function wireOverlays() {
     });
   }
   if (ui.rotateBtn) ui.rotateBtn.addEventListener('click', toggleRotate);
+  if (ui.vpWorld) ui.vpWorld.addEventListener('click', () => applyViewpoint('world'));
+  if (ui.vpRegion) ui.vpRegion.addEventListener('click', () => applyViewpoint('region'));
+  if (ui.vpCity) ui.vpCity.addEventListener('click', () => applyViewpoint('city'));
   if (ui.randomBtn) ui.randomBtn.addEventListener('click', () => randomLive());
   if (ui.copyBtn) {
     ui.copyBtn.addEventListener('click', () => {
@@ -1869,7 +2175,7 @@ function wireOverlays() {
   if (ui.legendBtn) ui.legendBtn.addEventListener('click', toggleLegend);
   if (ui.pulse) {
     ui.pulse.addEventListener('click', (ev) => {
-      const b = ev.target.closest('.gp-cc');
+      const b = ev.target.closest('.gp-cc, .gp-hot');   // country tokens + hot token
       if (b) countryToggle(b.dataset.c, true);
     });
   }
@@ -1920,7 +2226,8 @@ function cleanup() {
   if (window.__globe) {
     window.__globe.tour = false; window.__globe.measure = false;
     window.__globe.terminator = false; window.__globe.minimap = false;
-    window.__globe.pulse = null;
+    window.__globe.worldPulse = null;
+    window.__globe.singlesVisible = false; window.__globe.cities = 0; window.__globe.pulse = false;
   }
   if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
   if (ac) { try { ac.abort(); } catch (err) { /* noop */ } ac = null; }
@@ -1942,7 +2249,8 @@ export const globeView = {
     destroyed = false;
     if (!window.__globe) {
       window.__globe = { ready: false, points: 0, clusters: 0, fps: 0, projection: '', errors: [],
-        liveClusters: false, countryLabels: 0, legend: true, pulse: null };
+        liveClusters: false, countryLabels: 0, legend: true, pulse: false,
+        singlesVisible: false, cities: 0, worldPulse: null };
     }
     window.__globe.ready = false;
     window.__globe.projection = '';
@@ -1953,7 +2261,8 @@ export const globeView = {
       minimap: !!store.settings.globe_minimap,
       today: todayDateVal(),
       liveClusters: false, countryLabels: 0,
-      legend: store.settings.globe_legend !== false, pulse: null,
+      legend: store.settings.globe_legend !== false, pulse: false,
+      singlesVisible: false, cities: 0, worldPulse: null,
     });
     const todayD = todayDateVal();
     root.innerHTML = `<div class="vwrap view-enter">
@@ -1967,6 +2276,11 @@ export const globeView = {
         </div>
         <div class="globe-qnote" id="globe-qnote" hidden></div>
         <div class="globe-tools" id="globe-tools">
+          <span class="globe-vp" role="group" aria-label="Viewpoint presets">
+            <button type="button" class="btn small" id="globe-vp-world" title="World view — the whole globe (centre 8°,20°, z1.6, tilted)">World</button>
+            <button type="button" class="btn small" id="globe-vp-region" title="Region view — z5 around the current centre">Region</button>
+            <button type="button" class="btn small" id="globe-vp-city" title="City view — z11.5, pitched 50° around the current centre">City</button>
+          </span>
           <button type="button" class="btn small icon-only" id="globe-layers-btn" title="Imagery layers">${I.layers}</button>
           <button type="button" class="btn small icon-only" id="globe-terminator-btn" title="Day/night terminator — a visual cue; imagery is not swapped">${I.term}</button>
           <button type="button" class="btn small icon-only" id="globe-tour-btn" title="Cinematic tour — favourites (saved order), else the Watch stage">${I.tour}</button>
@@ -2043,6 +2357,9 @@ export const globeView = {
       randomBtn: root.querySelector('#globe-random-btn'),
       copyBtn: root.querySelector('#globe-copy-btn'),
       favBtn: root.querySelector('#globe-fav-btn'),
+      vpWorld: root.querySelector('#globe-vp-world'),
+      vpRegion: root.querySelector('#globe-vp-region'),
+      vpCity: root.querySelector('#globe-vp-city'),
       pop: root.querySelector('#globe-pop'),
       here: root.querySelector('#globe-here'),
       hereList: root.querySelector('#globe-here-list'),

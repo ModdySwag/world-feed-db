@@ -1449,8 +1449,18 @@ export const HELP_SECTIONS = [
         <li><b>Auto-rotate</b> (toolbar): idle spin — <b>on by default</b>; pauses on any input and resumes after 20 s idle.
         It is a persisted setting, like every layer toggle.</li>
         <li><b>Country labels</b>: at world and continental zooms (z ≤ 6) the top ~28 countries (≥ 40 geocoded rows) carry a
-        “Country · count” label built from the cached points — the counts cover <em>every</em> status. <b>Click a label</b> to set the
-        country filter (the same chips the sidebar uses) and fly to that country's bounding box; click it again to clear.</li>
+        two-line label — full name on top, “N cams · M live” below; the smallest shrink to “CC · count”. Counts cover
+        <em>every</em> status. <b>Click a label</b> to set the country filter (the same chips the sidebar uses) and fly to that
+        country's bounding box; click it again to clear.</li>
+        <li><b>City labels</b>: between z5 and z9.5 the biggest cities (registry city field) get a “City · N” label — the count
+        threshold rises as you zoom out (40 → 15 → 8 rows). <b>Click one</b> to fly to that city; cities carry no filter
+        dimension, and the tooltip says so.</li>
+        <li><b>Progressive detail</b>: single camera dots fade in from z3.5 and grow with zoom, cluster bubbles split a step
+        earlier (regional singles appear sooner) and carry a soft glow. <b>Live</b> single dots pulse with a green halo — the
+        pulse pauses while the tab is in the background and stays static with reduced motion on.
+        <b>World / Region / City</b> (toolbar, top-right) ease the camera between the three scales; City tilts to 50°.</li>
+        <li><b>Hot right now</b>: the world-pulse strip adds the country with the most live cameras in view — click the
+        <b>hot</b> token to filter by it, click again to clear.</li>
         <li><b>Hover cards</b>: dwell on a cluster bubble or a pin for ~250 ms — a card breaks a cluster down by status
         (live · stale · dead · unknown+unverified) or previews a camera with its cached <code>/api/poster</code> frame
         (“no poster yet” when there is none; exposure rows stay metadata-only).</li>

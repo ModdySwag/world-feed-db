@@ -746,7 +746,8 @@ class ViewerHandler(SimpleHTTPRequestHandler):
 
         Every row with usable coordinates, short property keys so the ~14k
         features stay small for the WebGL layer: c=camera_id, n=name, s=status,
-        p=protocol, f=source_family, y=country (trimmed), v=provenance. Rows
+        p=protocol, f=source_family, y=country (trimmed), v=provenance,
+        t=city (trimmed, may be empty — drives the city label tier). Rows
         with NULL lat/lon and the (0,0) null-island rows are skipped. Exposure
         rows are served ONLY while the surface is on, and they keep
         v='exposure_aggregator' so the globe renders them metadata-only.
@@ -760,7 +761,7 @@ class ViewerHandler(SimpleHTTPRequestHandler):
         try:
             rows = conn.execute(
                 "SELECT camera_id, name, status, protocol, source_family, country, "
-                "lon, lat, provenance FROM cameras WHERE " + " AND ".join(where)
+                "city, lon, lat, provenance FROM cameras WHERE " + " AND ".join(where)
             ).fetchall()
         finally:
             conn.close()
@@ -775,6 +776,7 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                 "f": row["source_family"] or "",
                 "y": (row["country"] or "").strip(),
                 "v": row["provenance"],
+                "t": (row["city"] or "").strip()[:48],
             },
         } for row in rows]
         self._send_json(200, {"type": "FeatureCollection", "features": features})

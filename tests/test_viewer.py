@@ -459,8 +459,18 @@ def test_globe_points_shape_and_count():
         lon, lat = f["geometry"]["coordinates"]
         assert -180 <= lon <= 180 and -90 <= lat <= 90, (lon, lat)
         assert not (lon == 0 and lat == 0), f               # null-island rows skipped
-        assert set(f["properties"]) == {"c", "n", "s", "p", "f", "y", "v"}, \
+        assert set(f["properties"]) == {"c", "n", "s", "p", "f", "y", "v", "t"}, \
             sorted(f["properties"])
+        assert isinstance(f["properties"]["t"], str), f
+
+    # the city key (t) mirrors the db: every trimmed non-empty city on a
+    # geocoded row must appear, and nothing may be invented
+    expected_city = _db_rows(
+        "SELECT COUNT(*) AS n FROM cameras WHERE lat IS NOT NULL AND lon IS NOT NULL "
+        "AND NOT (lat = 0 AND lon = 0) AND TRIM(city) != ''" + gate)[0]["n"]
+    city_n = sum(1 for f in feats if f["properties"]["t"])
+    assert city_n == expected_city, (city_n, expected_city)
+    assert expected_city > 0, "no geocoded rows carry a city — city tier would be empty"
 
 
 def test_globe_points_exposure_gating():
