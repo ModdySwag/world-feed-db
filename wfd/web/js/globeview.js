@@ -82,7 +82,7 @@
 import {
   store, bus, apiGet, esc, fmt, toast, saveSettings, openDrawer, openPlayerModal,
   toggleFavourite, isFav, copyText, go, viewLink, statusChipHTML,
-  rememberCamera, clamp, stagedIds, setFilters, reduced, addToStage,
+  rememberCamera, clamp, stagedIds, setFilters, reduced, addToStage, dispName,
 } from './app.js';
 import { playSound } from './sound.js';
 
@@ -791,6 +791,9 @@ function activeFilterExpr() {
     const ids = [...store.favIds];
     parts.push(ids.length ? ['in', ['get', 'c'], ['literal', ids]] : ['boolean', false]);
   }
+  if (store.settings.globe_hide_offline !== false) {
+    parts.push(['!=', ['get', 'o'], 1]);      // skip cams with a fresh offline verdict
+  }
   if (!parts.length) return null;
   return parts.length === 1 ? parts[0] : ['all', ...parts];
 }
@@ -838,7 +841,7 @@ function popupHTML(p) {
   if (p.f) bits.push(esc(p.f));
   if (p.p) bits.push(esc(p.p));
   let h = '<div class="gpop">';
-  h += `<div class="gpop-name">${esc(p.n || '(unnamed)')}</div>`;
+  h += `<div class="gpop-name">${esc(dispName(p))}</div>`;
   if (bits.length) h += `<div class="gpop-sub">${bits.join(' · ')}</div>`;
   h += `<div class="gpop-meta">${statusChipHTML({ status: p.s })}</div>`;
   if (isExposure(p)) {
@@ -949,7 +952,7 @@ function renderHereList() {
   ui.hereList.innerHTML = hereFeats.slice(0, 60).map((f, i) => {
     const p = f.properties || {};
     return `<button type="button" class="globe-result" data-i="${i}">
-      <span class="gr-name">${esc(p.name || '(unnamed)')}</span>
+      <span class="gr-name">${esc(dispName(p))}</span>
       ${statusChipHTML(p)}
     </button>`;
   }).join('');
@@ -1001,7 +1004,7 @@ function wireSearch() {
         const p = f.properties || {};
         const sub = [p.city, p.country].filter(Boolean).join(', ') || p.source_family || '';
         return `<button type="button" class="globe-result" data-i="${i}">
-          <span class="gr-name">${esc(p.name || '(unnamed)')}</span>
+          <span class="gr-name">${esc(dispName(p))}</span>
           <span class="gr-sub">${esc(sub)}</span></button>`;
       }).join('');
       box.hidden = false;
@@ -2056,7 +2059,7 @@ function paneRowHTML(m) {
   return `<div class="ga-row${meta ? ' ga-row-meta' : ''}"${cid ? ` data-cid="${esc(cid)}"` : ''}>
       ${thumb}
       <span class="ga-main">
-        <span class="ga-name" title="${esc(p.n || '')}">${esc(p.n || '(unnamed)')}</span>
+        <span class="ga-name" title="${esc(p.n || '')}">${esc(dispName(p))}</span>
         ${sub ? `<span class="ga-rowsub">${sub}</span>` : ''}
         <span class="ga-rowmeta">${statusChipHTML({ status: p.s })}${meta ? '<span class="ga-metaonly">metadata only — never previewed</span>' : ''}</span>
       </span>
@@ -2597,7 +2600,7 @@ function hcardClusterHTML(p) {
 
 function hcardPointHTML(p) {
   const bits = [p.y, p.f].filter(Boolean).map(esc);
-  let h = `<div class="ghc-title">${esc(p.n || '(unnamed)')}</div>`;
+  let h = `<div class="ghc-title">${esc(dispName(p))}</div>`;
   if (bits.length) h += `<div class="ghc-sub">${bits.join(' · ')}</div>`;
   h += `<div class="ghc-meta">${statusChipHTML({ status: p.s })}`
     + `${p.p ? `<span class="ghc-proto">${esc(p.p)}</span>` : ''}</div>`;

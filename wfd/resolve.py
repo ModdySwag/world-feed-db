@@ -82,6 +82,7 @@ POSTER_TTL_S = 12 * 3600       # positive poster verdict
 POSTER_NEG_TTL_S = 3600        # negative poster verdict (no og:image, etc.)
 LIVE_TTL_S = 300               # fresh token+cookies; skyline sessions die in ~5-10 min
 LIVE_NEG_TTL_S = 120           # negative live verdict — don't hammer the site
+OFFLINE_TTL_S = 4 * 3600       # operator-declared OFFLINE page — long-lived; the self-heal sweep re-checks
 SEG_TTL_S = 20 * 60            # per-cid segment-map entry lifetime
 SKAPING_TTL_S = 900            # skaping og:image = a 10-minute slot file, refresh sooner
 STILL_TTL_S = 90               # in-process still-bytes memo (viewer /api/still)
@@ -783,9 +784,11 @@ def get_live(camera_id: str, page_url: str, *, force: bool = False) -> Optional[
             new = dict(result)
             new.update({"ok": True, "resolved_at": _now_iso(), "host": host or resolver})
         else:
+            # an operator-declared OFFLINE page is a long-lived verdict (the
+            # skyline self-heal sweep re-checks it); other failures stay short
             new = {"ok": False, "error": f"{resolver} resolve failed",
                    "resolved_at": _now_iso(), "host": host or resolver,
-                   "ttl_s": LIVE_NEG_TTL_S}
+                   "ttl_s": OFFLINE_TTL_S if fail_reason == "offline" else LIVE_NEG_TTL_S}
             if fail_reason:
                 new["reason"] = fail_reason
         data = _load_json_direct(_live_path())

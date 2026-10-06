@@ -459,8 +459,11 @@ def test_globe_points_shape_and_count():
         lon, lat = f["geometry"]["coordinates"]
         assert -180 <= lon <= 180 and -90 <= lat <= 90, (lon, lat)
         assert not (lon == 0 and lat == 0), f               # null-island rows skipped
-        assert set(f["properties"]) == {"c", "n", "s", "p", "f", "y", "v", "t"}, \
-            sorted(f["properties"])
+        props = set(f["properties"])
+        assert {"c", "n", "s", "p", "f", "y", "v", "t"} <= props <= \
+            {"c", "n", "s", "p", "f", "y", "v", "t", "o"}, sorted(props)
+        if "o" in props:
+            assert f["properties"]["o"] == 1, f
         assert isinstance(f["properties"]["t"], str), f
 
     # the city key (t) mirrors the DISPLAY-EFFECTIVE city: the source city

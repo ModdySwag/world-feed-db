@@ -53,6 +53,7 @@ export const DEFAULT_SETTINGS = {
   globe_favonly: false,            // World Map: pins limited to favourites
   globe_legend: true,              // World Map: legend expanded (status dots + cluster live-share ramp)
   globe_photo_pins: 'auto',        // World Map: poster photo pins ('auto' = from z9.5; 'on' = from z6; 'off')
+  globe_hide_offline: true,        // World Map: hide cams with a fresh offline verdict (site-declared OFFLINE pages)
   results_per_page: 60,
   hide_dead: true,                 // wall / search / map lists skip dead feeds (Status filter can still request dead)
   accent: 'teal',                  // teal | violet | amber
@@ -321,6 +322,8 @@ export function saveSettings(patch) {
     fetchFacets();
     bus.emit('filters');
   }
+  // the globe re-applies its pin filters on 'filters' (listener in globeview.js)
+  if (patch && 'globe_hide_offline' in patch) bus.emit('filters');
 }
 
 let settingsQueue = {};
@@ -1381,6 +1384,18 @@ export function rememberCamera(cam) {
   return cam;
 }
 
+/* Display name for a camera-like object: the registry name when present, else
+ * an informative fallback (exposure datasets carry no names at all) —
+ * "Unnamed camera · <city>, <country>". Accepts both the full row shape
+ * ({name, city, country}) and the globe's short-key shape ({n, t, y}). */
+export function dispName(o) {
+  o = o || {};
+  const n = o.name || o.n || '';
+  if (n) return n;
+  const place = [o.city || o.t, o.country || o.y].filter(Boolean).join(', ');
+  return place ? `Unnamed camera · ${place}` : 'Unnamed camera';
+}
+
 export function openDrawer(cid) {
   if (!cid) return;
   selectCamera(cid);
@@ -1424,7 +1439,7 @@ function isMetaOnly(row) {
 
 function renderDrawer(row) {
   const meta = isMetaOnly(row);
-  $('#drawer-title').textContent = row.name || '(unnamed)';
+  $('#drawer-title').textContent = dispName(row);
   const sub = [[row.city, row.country].filter(Boolean).join(', '), row.source_family].filter(Boolean).join(' · ');
   $('#drawer-sub').textContent = sub || row.camera_id;
 
@@ -1558,7 +1573,7 @@ export function playerHandlers() {
 export function openPlayerModal(camera) {
   if (!camera || !camera.camera_id) return;
   rememberCamera(camera);
-  $('#player-title').textContent = camera.name || '(unnamed)';
+  $('#player-title').textContent = dispName(camera);
   $('#player-chip').innerHTML = statusChipHTML(camera);
   const host = $('#player-host');
   host.innerHTML = '';
@@ -1829,6 +1844,8 @@ function buildSettingsModal() {
     `<input type="number" min="12" max="240" step="12" value="${Number(s.results_per_page) || 60}" data-set="results_per_page">`));
   rows.push(row('Hide dead cameras', 'wall / search lists skip dead feeds; the Status facet can still ask for dead (a chip in the Wall header mirrors this).',
     `<label class="switch"><input type="checkbox" data-set="hide_dead"${s.hide_dead !== false ? ' checked' : ''}><span></span></label>`));
+  rows.push(row('World Map: hide offline', 'globe pins skip cams with a fresh OFFLINE verdict (site-declared offline pages); the self-heal sweep flips them back when they return.',
+    `<label class="switch"><input type="checkbox" data-set="globe_hide_offline"${s.globe_hide_offline !== false ? ' checked' : ''}><span></span></label>`));
 
   rows.push('<h4 class="set-h">Behaviour</h4>');
   rows.push(row('Default view', '"last" reopens the view you left; or pin one.',

@@ -193,6 +193,8 @@ def test_skyline_offline_negative_reason_via_get_live():
         assert data[cid]["ok"] is False, data[cid]
         assert data[cid]["reason"] == "offline", data[cid]
         assert resolve.cached_negative_reason(cid) == "offline"
+        # a site-declared OFFLINE verdict is long-lived (the self-heal sweep re-checks it)
+        assert data[cid]["ttl_s"] == resolve.OFFLINE_TTL_S, data[cid]
     finally:
         resolve.fetch_page = orig
         resolve.reset_caches()

@@ -168,6 +168,15 @@ def _eff_city(row) -> str:
     return schemamod.effective_city(row["city"], geo)
 
 
+def _offline(camera_id: str) -> bool:
+    """True when the resolve cache holds a fresh offline verdict (pure cache
+    read, no network) — drives the globe's hide-offline filter."""
+    try:
+        return resolvemod.cached_negative_reason(camera_id) == "offline"
+    except Exception:  # noqa: BLE001 — a cache read must never break the payload
+        return False
+
+
 # ---------------------------------------------------------------------------
 # query-param helpers
 # ---------------------------------------------------------------------------
@@ -822,6 +831,7 @@ class ViewerHandler(SimpleHTTPRequestHandler):
                 "y": (row["country"] or "").strip(),
                 "v": row["provenance"],
                 "t": _eff_city(row)[:48],
+                **({"o": 1} if _offline(row["camera_id"]) else {}),
             },
         } for row in rows]
         self._send_json(200, {"type": "FeatureCollection", "features": features})

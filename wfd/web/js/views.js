@@ -12,7 +12,7 @@ import {
   isFav, toggleFavourite, addToStage, removeFromStage, addManyToStage, openDrawer,
   openPlayerModal, statusChipHTML, reduced, selectCamera, rememberCamera,
   saveSettings, labelFavourite, reorderFavourites, downloadFile, stagedIds, resetFilters,
-  playerHandlers, diag,
+  playerHandlers, diag, dispName,
 } from './app.js';
 import { posterEl, createPlayer, startLivePreview, isMetadataOnly } from './player.js';
 import { globeView } from './globeview.js';
@@ -152,7 +152,7 @@ function buildCard(cam, opts = {}) {
   }
 
   const body = el('div', 'card-body');
-  const name = el('div', 'c-name', esc(cam.name || '(unnamed)'));
+  const name = el('div', 'c-name', esc(dispName(cam)));
   name.title = cam.name || '';
   const sub = el('div', 'c-sub');
   const bits = [];
@@ -189,7 +189,7 @@ function buildRow(cam, opts = {}) {
   row.appendChild(thumb);
 
   const main = el('div', 'ri-main');
-  main.appendChild(el('div', 'ri-name', esc(cam.name || '(unnamed)')));
+  main.appendChild(el('div', 'ri-name', esc(dispName(cam))));
   const bits = [];
   if (cam.source_family) bits.push(cam.source_family);
   if (cam.city || cam.country) bits.push([cam.city, cam.country].filter(Boolean).join(', '));
@@ -463,7 +463,7 @@ const mapView = (() => {
     const meta = p.display_policy === 'metadata_only' || p.provenance === 'exposure_aggregator';
     const bits = [];
     if (p.city || p.country) bits.push([p.city, p.country].filter(Boolean).join(', '));
-    let h = `<div class="pp"><div class="pp-name">${esc(p.name || '(unnamed)')}</div>`;
+    let h = `<div class="pp"><div class="pp-name">${esc(dispName(p))}</div>`;
     if (bits.length) h += `<div class="pp-sub">${esc(bits.join(''))}</div>`;
     h += `<div class="pp-meta">${statusChipHTML(p)}${p.source_family ? `<span class="pp-fam">${esc(p.source_family)}</span>` : ''}${meta ? '<span class="pv pv-exposure">metadata only</span>' : ''}</div>`;
     if (meta) h += '<div class="pp-warn">No preview — metadata only (exposure policy).</div>';

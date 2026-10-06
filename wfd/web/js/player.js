@@ -19,7 +19,7 @@
  * Exports: extractYouTubeId, formatLabel, posterEl, relayUrl, createPlayer, startLivePreview, LiveBudget.
  */
 import { playSound } from './sound.js';
-import { store } from './app.js';
+import { store, dispName } from './app.js';
 
 /* ── small local helpers (no deps, safe inline) ───────────────────────── */
 
@@ -861,7 +861,7 @@ export function createPlayer(camera, opts = {}) {
 
     if (isMetadataOnly(cam)) el.classList.add('meta-only'); else el.classList.remove('meta-only');
 
-    nameEl.textContent = cam.name || '(unnamed)';
+    nameEl.textContent = dispName(cam);
     nameEl.title = cam.name || '';
     const bits = [];
     if (cam.city || cam.country) bits.push([cam.city, cam.country].filter(Boolean).join(', '));

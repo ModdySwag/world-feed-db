@@ -410,4 +410,15 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 - **Suites**: geo 9/9 (new) · viewer 19/19 (the globe test now mirrors the effective-city semantics) · full regression 24 suites / 341 checks green. Viewer restarted (:8773).
 - **Companion**: QLD poster warm completed 137/137 (0 fail); recurring QLD health sweep still running at fold time (~120 s cadence, conditional GET) — registry verdicts land as it finishes.
 
+### A30 · Viewer honesty pass — unnamed-row labels, persistent OFFLINE verdicts, globe hide-offline
+
+> Trigger: owner — screenshot of a godeye exposure tile reading "(unnamed) … unverified … metadata only": "what is this error and how to fix it?" + "go for next" (the remaining shelf items).
+
+- **"(unnamed)" explained + fixed**: not an error — the three exposure datasets carry NO name field at all (all 20,881 jrw/godeye/rafasapiens rows are nameless upstream), and exposure rows are metadata-only by design. New `dispName()` (app.js) renders **"Unnamed camera · <city>, <country>"** (accepts full-row and globe short-key shapes); wired through 12 render sites: drawer title · player modal title · wall cards · list rows · palette preview · globe popup/hover/area-panel. Smoke: drawer "Unnamed camera · Taoyuan City, Taiwan, Province Of", cards "· Bretigny-Sur-Orge, France" / "· Plzen, Czech Re…"; shot `research/player/05-unnamed-fixed.png`.
+- **Persistent OFFLINE verdicts**: a skyline OFFLINE page (the site's own declaration) now caches with `OFFLINE_TTL_S = 4 h` instead of the 120 s negative TTL — honest reason kept, instant answers, and a re-check can flip cams back. `/api/globe-points` gains `o: 1` for rows holding a fresh offline verdict (pure cache read; live-verified: 10 rows, Kyoto offline cam present).
+- **Globe hide-offline** (mirrors hide-dead): new `globe_hide_offline` setting (default ON) adds `['!=', ['get','o'], 1]` to the globe's active filter (layer-level, same pattern as the other globe filters); Settings → "World Map: hide offline"; re-applies live via the filters bus.
+- **Skyline self-heal sweep**: `py -3.11 -m wfd resolve warm --kind live --host skylinewebcams.com` classifies the whole family (resumable; evidence `data/resolve/warm-live-*.jsonl`; re-run with `--refresh` on a cadence = the self-heal loop). First slice 80 → 69 ok / 11 offline persisted; full sweep running at fold time.
+- **Verification**: resolve 36/36 (+offline-TTL assertion) · viewer 19/19 (globe pin keeps base keys, optional `o`) · node ESM ×4 · :8773 restarted with the new code · live payload 14,210 features / 10 `o=1`.
+
+
 
