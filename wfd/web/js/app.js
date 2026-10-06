@@ -54,6 +54,7 @@ export const DEFAULT_SETTINGS = {
   globe_legend: true,              // World Map: legend expanded (status dots + cluster live-share ramp)
   globe_photo_pins: 'auto',        // World Map: poster photo pins ('auto' = from z9.5; 'on' = from z6; 'off')
   results_per_page: 60,
+  hide_dead: true,                 // wall / search / map lists skip dead feeds (Status filter can still request dead)
   accent: 'teal',                  // teal | violet | amber
   sidebar_open: true,
   watch_stage: [],
@@ -294,10 +295,17 @@ export function applySettingsAttrs() {
 }
 
 export function saveSettings(patch) {
+  const prevHideDead = store.settings.hide_dead;
   Object.assign(store.settings, patch);
   applySettingsAttrs();
   queueSettingsSave(patch);
   bus.emit('settings', patch);
+  // hide_dead changes the effective status filter: refresh facets + every
+  // filter-driven list (wall / search / map markers), exactly like a filter edit.
+  if (patch && 'hide_dead' in patch && prevHideDead !== store.settings.hide_dead) {
+    fetchFacets();
+    bus.emit('filters');
+  }
 }
 
 let settingsQueue = {};
@@ -443,13 +451,33 @@ export function anyFiltersActive() {
     || f.protocol.length || f.tag.length || !!f.q || !!f.bbox;
 }
 
+/* hide dead cameras (settings.hide_dead) — the status csv requested when ON.
+ * The server's status= is an INCLUSION list (viewer.py _build_where:
+ * `status IN (...)`), so 'dead' is excluded by asking for the complement:
+ * every registry status except 'dead' (wfd.schema.Health: live | stale | dead |
+ * unknown | unverified | quarantined | retired — only live/stale/unknown/
+ * unverified have rows in data/worldfeed.db today; the other two are no-op
+ * names kept for forward-compat). An explicit Status-facet selection passes
+ * through unchanged: dead is excluded unless the user explicitly picked it. */
+export const NON_DEAD_STATUSES = ['live', 'stale', 'unknown', 'unverified', 'quarantined', 'retired'];
+
+export function hideDeadStatusParam(selected) {
+  const sel = selected || [];
+  return sel.length ? sel.join(',') : NON_DEAD_STATUSES.join(',');
+}
+
 export function filterParams(opts = {}) {
   const excl = opts.exclude || [];
   const f = store.filters;
   const has = (d) => !excl.includes(d);
   const p = { geo: 'any' };
   if (has('provenance')) p.provenance = f.provenance || 'public';
-  if (has('status') && f.status.length) p.status = f.status.join(',');
+  if (has('status')) {
+    const csv = store.settings.hide_dead !== false
+      ? hideDeadStatusParam(f.status)
+      : f.status.join(',');
+    if (csv) p.status = csv;
+  }
   if (has('family') && f.family.length) p.family = f.family.join(',');
   if (has('country') && f.country.length) p.country = f.country.join(',');
   if (has('protocol') && f.protocol.length) p.protocol = f.protocol.join(',');
@@ -1544,6 +1572,8 @@ function buildSettingsModal() {
     `<label class="switch"><input type="checkbox" data-set="map_tiles"${s.map_tiles ? ' checked' : ''}><span></span></label>`));
   rows.push(row('Results per page', 'wall + search pagination size (12–240).',
     `<input type="number" min="12" max="240" step="12" value="${Number(s.results_per_page) || 60}" data-set="results_per_page">`));
+  rows.push(row('Hide dead cameras', 'wall / search lists skip dead feeds; the Status facet can still ask for dead (a chip in the Wall header mirrors this).',
+    `<label class="switch"><input type="checkbox" data-set="hide_dead"${s.hide_dead !== false ? ' checked' : ''}><span></span></label>`));
 
   rows.push('<h4 class="set-h">Behaviour</h4>');
   rows.push(row('Default view', '"last" reopens the view you left; or pin one.',

@@ -300,6 +300,13 @@ body.sidebar-closed #sidebar-handle svg { transform: rotate(180deg); }
   border-radius: 20px; padding: 2px 10px; font-size: 11.5px; cursor: pointer;
 }
 .example-chip:hover { border-color: var(--accent); }
+.hd-chip {
+  display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--border-strong);
+  border-radius: 20px; padding: 2.5px 10px; font-size: 11.5px; color: var(--muted);
+  background: rgba(255, 255, 255, .04); cursor: pointer; white-space: nowrap;
+}
+.hd-chip:hover { border-color: var(--accent); color: var(--txt); }
+.hd-chip.on { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: var(--accent-soft); }
 
 /* ── cards (wall + search) ───────────────────────────────────────────── */
 .card-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); align-content: start; }

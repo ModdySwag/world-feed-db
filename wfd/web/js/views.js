@@ -605,6 +605,18 @@ const wallView = (() => {
     btn.disabled = loadingMore;
   }
 
+  function paintHideDeadChip(root) {
+    const b = $('#wall-hidedead', root);
+    if (!b) return;
+    const on = store.settings.hide_dead !== false;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.textContent = on ? 'Hide dead ✓' : 'Dead included';
+    b.title = on
+      ? 'dead feeds are hidden from wall / search lists — click to include them'
+      : 'dead feeds are included — click to hide them';
+  }
+
   async function load(root, { reset }) {
     const grid = $('#wall-grid', root);
     if (!grid) return;
@@ -654,6 +666,7 @@ const wallView = (() => {
       root.innerHTML = `<div class="vwrap view-enter">
         <div class="vhead"><div><h2 class="vtitle">Wall</h2><div class="vsub" id="wall-count">loading…</div></div>
           <div class="vtools">
+            <button type="button" class="hd-chip" id="wall-hidedead" aria-pressed="true" title="hide dead feeds"></button>
             <div class="seg seg-s" id="wall-tilesize" title="Tile size">
               ${['sm', 'md', 'lg'].map((v) => `<button type="button" class="seg-btn${store.settings.tile_size === v ? ' on' : ''}" data-size="${v}">${v === 'sm' ? 'S' : v === 'md' ? 'M' : 'L'}</button>`).join('')}
             </div>
@@ -664,6 +677,10 @@ const wallView = (() => {
         <div class="vfoot"><button type="button" class="btn more" id="wall-more" hidden>Load more</button></div>
       </div>`;
 
+      paintHideDeadChip(root);
+      $('#wall-hidedead', root).addEventListener('click', () => {
+        saveSettings({ hide_dead: store.settings.hide_dead === false });
+      });
       $('#wall-tilesize', root).addEventListener('click', (ev) => {
         const b = ev.target.closest('[data-size]');
         if (!b) return;
@@ -684,6 +701,7 @@ const wallView = (() => {
       unsubs.push(bus.on('facets', () => { updateCount(root); updateFoot(root); }));
       unsubs.push(bus.on('refresh', () => load(root, { reset: true })));
       unsubs.push(bus.on('prefs', () => updateHearts(root)));
+      unsubs.push(bus.on('settings', (patch) => { if (patch && 'hide_dead' in patch) paintHideDeadChip(root); }));
     },
     refresh() { const r = $('#view'); if (r) load(r, { reset: true }); },
     destroy() { unsubs.forEach((u) => u()); unsubs = []; seq++; },
