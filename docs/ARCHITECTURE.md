@@ -137,7 +137,7 @@ PLAN.md holds the program decisions; this file holds the engineering contracts.
   `numpy`, `cryptography`, `pywin32`. **No pytest** — tests are plain runners:
   each `tests/test_*.py` runs standalone, prints `PASS`/`FAIL` lines, exits non-zero
   on failure, and stays pytest-compatible (functions named `test_*`).
-- Shell: MSYS bash (`cd /c/Users/user/world-feed-db` …); native tools get
+- Shell: MSYS bash (`cd <repo>` …); native tools get
   `C:/forward/slash` paths. Run everything from the repo root.
 - Polite fetch: ≥1 s spacing per host by default; identifiable UA; bounded retries;
   respect 429/Retry-After. Agency/directory lanes only — **no device contact, ever**

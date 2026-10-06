@@ -1,6 +1,6 @@
 # S5 — OSINT/scanner layer, legal/ethical boundary, management-surface precedents
 
-**Program:** worldwide, updateable, self-healing DB + viewer of PUBLIC live video feeds (owner: Moddy)
+**Program:** worldwide, updateable, self-healing DB + viewer of PUBLIC live video feeds
 **Scope of this wave:** OSINT/scanner projects, discovery-service options (Shodan/Censys/ZoomEye/FOFA), policy-design inputs, management-surface precedents.
 **Date:** 2026-10-05 (ACST). **Method:** repo files fetched via `gh` API (READMEs, source, trees, blob downloads); docs extracted where reachable; dataset files downloaded and counted; no accounts created, no cameras probed, no scans run. Counts re-verified where possible and dated; anything unverified is marked `(verify)`.
 

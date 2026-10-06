@@ -1,6 +1,6 @@
 # NS2 · AUSTRALIAN INSTITUTIONAL / GOVERNMENT sources
 
-**Collected:** 2026-10-06 ACST, from Moddy's Win11 host (MSYS bash, curl, ffprobe/ffmpeg 9.0.1, yt-dlp).
+**Collected:** 2026-10-06 ACST, from a Windows 11 host (MSYS bash, curl, ffprobe/ffmpeg 9.0.1, yt-dlp).
 **Method:** (1) fetch each site + robots.txt; (2) parse HTML/JS for API endpoints, iframe widgets, image URL patterns; (3) extract server-side JS config (ajaxurl, JSON endpoint, widget IDs); (4) live-verify sample feeds with curl + ffprobe.
 **Policy line:** public-by-design sources only (government/agency/operator-published). No device probing. ≤3 attempts per target pattern.
 

@@ -17,12 +17,12 @@ Non-goal (default): accessing private/exposed cameras.
 - **C5 Management surface** — search / add / remove / curate (CLI + web). Add = paste URL → probe → classify → store with health. Remove = soft-delete + auto-retire after N consecutive fails.
 - **C6 Config & Credential layer** (D7) — per-user settings + secure credential store (keyring/DPAPI; `.env` fallback), BYOK inputs for every key-gated source, `KEY REQUIRED` honest states, onboarding checklist from `ACCOUNTS-AND-KEYS.md`. Open-source-ready: zero secrets in the repo; a public user supplies their own keys. Profile system (D7.1): **clean template** (public, keyless, honest degraded states) + **private `moddy` overlay** (his keys/curation, never committed); the build resolves everything through the active profile.
 
-Reuse candidates: zero-hud `world_feed.py` channel/health patterns; GEV app schema + serve-stale; go2rtc as restream engine.
+Reuse candidates: the WV1 sidecar's `world_feed.py` channel/health patterns; GEV app schema + serve-stale; go2rtc as restream engine.
 
 ## 3 · Decisions so far
 
 - **D1** (10-05) "The lot" = aggregate ready-made corpora (a) + our own per-family enumeration (b). Start: collation of both; builds come after.
-- **D2** (10-05) Pipeline basis = WV1's verified methods: direct HLS via ffmpeg; YouTube via yt-dlp (`bv*[height<=720]+ba/b`, channel `/live` URLs, `android_vr` fallback); image-refresh tier; go2rtc restream option. (Evidence: zero-hud WV1 dossier.)
+- **D2** (10-05) Pipeline basis = WV1's verified methods: direct HLS via ffmpeg; YouTube via yt-dlp (`bv*[height<=720]+ba/b`, channel `/live` URLs, `android_vr` fallback); image-refresh tier; go2rtc restream option. (Evidence: the WV1 dossier.)
 - **D3** (10-05) Seed corpora shortlist: **Live-Environment-Streams** (5,997 entries; 4,226 active; downloaded), **Argus** (229k claim; 100 MB geojson — fetch later), **OpenTrafficCamMap** (7,515; per-state scraper library), **cctv-camera-database** (28,400 specs + RTSP URL patterns, CC0).
 - **D4** (10-05) Reference systems to study/borrow: trafficvision.live (155k+ claim; real-time stream testing; map + route UX), Argus (scrapers→SQLite→layered JSON), camforge (connectors + policy module + PostGIS), GEV app (schema, serve-stale), livetrafficcam.com (rolling verified-live checks).
 - **D5** (10-05) Default policy for the base layer: public-by-design only; insecam-class documented-not-scraped pending owner decision (S5 supplies inputs).
@@ -63,9 +63,9 @@ Full table: `SOURCES-CATALOG.md`.
 ## 6 · Open questions (owner decisions)
 
 - **Q1 (RESOLVED 10-05)** Scope of "the lot": insecam-class exposed-camera corpora **INCLUDED** as a flagged category — see D6. (Grey edge noted: keep provenance flags so any future public release can diverge.)
-- **Q2 (RESOLVED 2026-10-05, owner)**: keep as-is — standalone repo at `C:\Users\user\world-feed-db`; no rename, no fold-in.
+- **Q2 (RESOLVED 2026-10-05, owner)**: keep as-is — standalone repo; no rename, no fold-in.
 - **Q3 Keys / quotas**: Windy Webcams API key? webcams.travel key? Nimble quota exhausted (402 "trial quota finished" during research). Hound MCP works as fallback. **Default taken 2026-10-05: no Nimble top-up for now — Hound MCP is the working fallback for crawls; the Windy key already covers webcams.travel/lookr brands; revisit Nimble only if a build crawl needs it.**
-- **Q4 (RESOLVED 2026-10-05, owner)**: shared backend + simple local web UI first; desktop / moddys.net / zero-hud surfaces decided later.
+- **Q4 (RESOLVED 2026-10-05, owner)**: shared backend + simple local web UI first; desktop / moddys.net surfaces decided later.
 - **Q5 YouTube grey zone (default kept 2026-10-05)**: keep "personal/local, non-redistributed" stance per WV1.
 - **Q6 Exposure ingest route**: datasets-only [recommended] vs also the live directory crawl (`/en/bycountry/{CC}`, `/en/bytype/{Type}`, polite rate + kill-switch); and which dataset first — OpenEyes (7,170, newer, has manufacturer) vs jrw (17.4K, 2019-stale). (see A2) **UPDATE 10-05 evening: owner "and 3 go" read as approval — baseline sitemap census captured (2,271 current IDs → `research/exposed/insecam-census-2026-10-05.json`; 1 request, robots-allowed, no device contact). Next: ingest GODEYE + rafasapiens era snapshots; listing-level crawl timing at build.** **RESOLVED 2026-10-05 (owner, re-confirmed): datasets first — GODEYE + rafasapiens era chain now; the polite listing crawl is its own separate later step (not in the first build sprint).**
 - **Q7 No-probe rule (default kept 2026-10-05)**: [keep — status `unverified` + snapshot date shown; never contact listed devices].
@@ -192,7 +192,7 @@ Next moves: token-extraction spikes (Skyline, BalticLiveCam) at build time; Wind
 
 > Trigger: owner resumed ("continue world-feed-db") and re-read + re-picked the five build-forking questions; all five landed on the recommended options.
 
-- Locked: **Q2** keep standalone repo · **Q4** shared backend + simple local web UI first (desktop / moddys.net / zero-hud later) · **Q6** datasets-first exposure ingest — GODEYE + rafasapiens era chain now, polite listing crawl = separate later step · **Q8** exposure display = metadata + click-through warning, no autoplay/preview · **Q11** respect robots — re-derive the 853 source names from originals.
+- Locked: **Q2** keep standalone repo · **Q4** shared backend + simple local web UI first (desktop / moddys.net later) · **Q6** datasets-first exposure ingest — GODEYE + rafasapiens era chain now, polite listing crawl = separate later step · **Q8** exposure display = metadata + click-through warning, no autoplay/preview · **Q11** respect robots — re-derive the 853 source names from originals.
 - Quiet defaults kept: **Q3** no Nimble top-up (Hound fallback) · **Q5** YouTube personal/local stance · **Q7** no-probe · **Q9** private-first gate · **Q10** takedown deferred.
 - Build phase opens — sprint 1: (a) credential/settings layer (profiles loader, keyring/DPAPI + `.env` fallback, honest `KEY REQUIRED` states); (b) exposure dataset ingesters (credential redaction + provenance flags per S5 §B); (c) L-E-S + government enumerator scaffolds per S2's "QUICK BUILD NOTES".
 - Small wins queued alongside: Road511 param discovery · QLD email draft (`qldtraffic@tmr.qld.gov.au`) · deno install for yt-dlp · Shodan camera-search dry run (search-only, credit-budgeted).

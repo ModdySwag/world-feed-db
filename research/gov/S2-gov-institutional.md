@@ -1,6 +1,6 @@
 # S2 · GOVERNMENT + INSTITUTIONAL public live-camera sources (worldwide) — evidence file
 
-**Collected:** 2026-10-05, ~21:00–22:40 ACST (UTC+10:30), from Moddy's Win11 host (MSYS bash, curl, python3).
+**Collected:** 2026-10-05, ~21:00–22:40 ACST (UTC+10:30), from a Windows 11 host (MSYS bash, curl, python3).
 **Method:** (1) mined the real scraper code of two repos — `GoSlowPoke168/Argus` (`scripts/scrapers/*`) and `AidanWelch/OpenTrafficCamMap` (`compilation/*`, `compilation/USA/*.mjs`) — both freshly cloned 2026-10-05; (2) live probes with curl (limit 1–2 requests/source, polite UA, no auth where possible); (3) targeted web research via search/extract for international + institutional sources.
 **Policy line:** public-by-design sources only. No probing of private/exposed cameras; no credentials used; ~60 polite requests total.
 **Notation:** counts carry `(source, date)`; `(verify)` = not live-checked. Every "VERIFIED TODAY" records the exact fetch result (HTTP status / bytes / type). Repo-mined endpoints are marked `[Argus code]` / `[OTC code]` and were NOT separately live-fetched unless a verify line says so.

@@ -1,7 +1,7 @@
 # New-sources research wave NS1–NS4 — SYNTHESIS (START HERE for the next build)
 
 - **When:** 2026-10-06 02:55–03:25 (4 subagents, 2 delegation units; parent-verified).
-- **What:** camera sites collected by Moddy in his Brave browser (14 sites + leads), researched for programmatically enumerable public feeds.
+- **What:** camera sites collected in a Brave browser session (14 sites + leads), researched for programmatically enumerable public feeds.
 - **Method:** every feed claim live-fetched by the child (HTTP status + content-type + bytes; HLS via playlist + TS-segment proofs); the parent re-fetched a sample from every dossier (all pass). Children wrote their dossier BEFORE their final calls; two children were flagged "failed" on trailing DeepSeek 429s — their files were complete (files are the truth, not status flags).
 - **Dossiers:** `NS1-directories.md` · `NS2-au-institutional.md` · `NS3-resorts.md` · `NS4-nature-misc.md` (this directory).
 

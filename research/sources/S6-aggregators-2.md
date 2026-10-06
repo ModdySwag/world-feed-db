@@ -193,6 +193,6 @@ Scope: the NEW non-government directories from Moddy's batch-2 tabs (TABS-LIST-2
 
 ## Evidence artifacts (all this wave)
 
-- `C:\Users\user\world-feed-db\research\sources\S6-aggregators-2.md` (this file; 15 entries)
+- `research/sources/S6-aggregators-2.md` (this file; 15 entries)
 - Scratch (session `$TMPDIR/s6`): `wc24-s1..7.xml` (webcamera24 sitemaps, 229.9 MB), `owdb-sitemap.xml`, `owdb-openapi.json` (OpenAPI spec), `owdb-api.html`/`owdb-docs.html`, `e24-sitemap.xml` + `e24-cams.txt` (414), `ectv-playlist.json`, `skyline-streams.txt` (580), `ce-*.html` (CruisingEarth), `pm-*.html` (Panomax), `argos-*.html/json` (ARGOS stats/sitemap/sources), `tab2-*.html` (zoos/bondi/monterey), `ce-jupiter.html` (Panomax iframe evidence), `wc-pl counter` in `wcpl-home.html`.
-- Prior context used (not duplicated): `research/sources/S1-aggregators.md`; `research/gov/S2-gov-institutional.md` (panomax TODO line); `zero-hud\reference\world\WV1-live-video-sources.md`.
+- Prior context used (not duplicated): `research/sources/S1-aggregators.md`; `research/gov/S2-gov-institutional.md` (panomax TODO line); the WV1 dossier.

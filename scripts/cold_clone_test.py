@@ -8,14 +8,14 @@ Run from the repo root:
     py -3.11 scripts/cold_clone_test.py
 
 Steps:
-  [1] git clone C:/Users/user/world-feed-db -> <scratch>/wfd-cold-test-<ts>   [hard]
+  [1] git clone <repo> -> <scratch>/wfd-cold-test-<ts>                     [hard]
   [2] assert profiles/ACTIVE absent + profiles/clean/ present in the clone     [hard]
       (a fresh clone has no ACTIVE pointer, so it must default to 'clean')
   [3] `py -3.11 -m wfd status` and `py -3.11 -m wfd keys` in the clone with   [hard]
       WFD_PROFILE stripped -> expect rc=0, honest output, no traceback
       (outputs captured verbatim in this log)
   [4] run EVERY tests/test_*.py in the clone with py -3.11 -> PASS/FAIL table  [finding]
-      plus traceback tails for failures. data/ and profiles/moddy are
+      plus traceback tails for failures. data/ and private overlay profiles
       gitignored => ABSENT in a clone; any suite failing because of that is a
       recorded FINDING (nothing is fixed; the source repo is never touched).
   [5] boot `py -3.11 -m wfd viewer --port 8797` (8798/8799 if busy), poll      [hard]
@@ -25,7 +25,7 @@ Steps:
       then terminate ONLY that child process tree (py.exe launcher ->
       python.exe) via taskkill /T on its PID.
   [6] informational: count/list tracked files in the clone containing the
-      string 'Users\\user' (case-insensitive).
+      home path (case-insensitive, both slash styles).
   [7] final PASS/FAIL summary; exit non-zero if any HARD step failed.
 
 Cleanup: full success (no hard failure, no suite failure) -> the temp clone is
@@ -35,10 +35,10 @@ Exit code: 0 = all hard steps passed; 1 = at least one hard step failed.
 (Test-suite failures are recorded as FINDINGS per spec and do not flip the rc;
 they do, however, keep the clone so the evidence survives.)
 
-Owner rules honored: every subprocess spawns with CREATE_NO_WINDOW (never a
+Safety rules: every subprocess spawns with CREATE_NO_WINDOW (never a
 visible console); the source repo is only ever READ (git clone / rev-parse /
 grep); the viewer child is killed via taskkill /T on exactly the process tree
-this script started; the owner's viewer port 8773 is never touched (candidates
+this script started; the live viewer port 8773 is never touched (candidates
 are 8797/8798/8799 only). Stdlib only. This test reflects the HEAD that was
 cloned at run time — re-run it after any further release commits.
 """
@@ -46,23 +46,25 @@ from __future__ import annotations
 
 import glob
 import os
+import pathlib
 import re
 import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 import traceback
 import urllib.error
 import urllib.request
 from datetime import datetime
 
-SRC_REPO = "C:/Users/user/world-feed-db"
-SCRATCH = r"C:\Users\user\AppData\Local\hermes\profiles\deepseek\cache\scratch"
-PORTS = [8797, 8798, 8799]          # never 8773 (owner's live viewer)
+SRC_REPO = str(pathlib.Path(__file__).resolve().parent.parent)   # repo root (this file lives in scripts/)
+SCRATCH = os.environ.get("WFD_COLD_TEST_SCRATCH") or tempfile.gettempdir()
+PORTS = [8797, 8798, 8799]          # never 8773 (the default live-viewer port)
 PY = "py"
 PY_VER = "-3.11"
-NO_WINDOW = 0x08000000              # CREATE_NO_WINDOW — owner rule
+NO_WINDOW = 0x08000000              # CREATE_NO_WINDOW — no visible consoles
 CLONE_TIMEOUT_S = 300
 CLI_TIMEOUT_S = 120
 TEST_TIMEOUT_S = 240
@@ -498,12 +500,15 @@ def main() -> int:
             FINDINGS.append(f"viewer cold-boot: no HTTP response within timeout ({attempt_note})")
         record("viewer boot", True, ok, detail)
 
-    # ------------------------------------------------- [6] 'Users\\user' scan
+    # ------------------------------------------------------- [6] home-path scan
     if clone_ok:
+        home_token = pathlib.Path.home().name or ""
+        pat_bs = "Users" + chr(92) + home_token          # e.g. Users<bs>Name
+        pat_fs = "Users/" + home_token                    # e.g. Users/Name
         log("")
-        log("[6] informational: tracked files containing 'Users\\user' (case-insensitive)")
+        log("[6] informational: tracked files containing the current user's home path (either slash)")
         rc, out, err, _ = run_cmd(["git", "-C", fwd(clone_dir), "grep", "-l", "-i", "-F",
-                                   "--", "Users\\user"], timeout=60)
+                                   "--", pat_bs], timeout=60)
         files = [l.strip() for l in out.splitlines() if l.strip()]
         log(f"    matches: {len(files)} tracked file(s)")
         for f in files[:15]:
@@ -513,12 +518,12 @@ def main() -> int:
         if rc not in (0, 1):
             log(f"    note: git grep rc={rc}; stderr={err.strip()[:200]}")
         rc2, out2, _, _ = run_cmd(["git", "-C", fwd(clone_dir), "grep", "-l", "-i", "-F",
-                                   "--", "Users/user"], timeout=60)
+                                   "--", pat_fs], timeout=60)
         fw = [l.strip() for l in out2.splitlines() if l.strip()]
-        log(f"    (extra info) forward-slash variant 'Users/user': {len(fw)} tracked file(s)")
-        if files:
-            FINDINGS.append(f"{len(files)} tracked file(s) contain 'Users\\user' "
-                            f"(owner-path leak; e.g. {', '.join(files[:5])})")
+        log(f"    (extra info) forward-slash variant: {len(fw)} tracked file(s)")
+        if files or fw:
+            FINDINGS.append(f"{len(files)} tracked file(s) contain the home path "
+                            f"({pat_bs!r}); {len(fw)} with the forward-slash variant")
 
     # ----------------------------------------------------------- [7] summary
     log("")

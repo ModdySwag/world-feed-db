@@ -26,4 +26,4 @@ Session extras (visited, not open now):
 - https://github.com/JettChenT/scan-for-webcams
 - https://asciinema.org/a/494164  [Scan For Webcams demo]
 - Searches: "github live public webcam feed", "github live cam feed"
-- Related prior art (local): zero-hud reference/world/WV1-live-video-sources.md (2026-10-03)
+- Related prior art (local): the WV1 dossier (WV1-live-video-sources.md, 2026-10-03)

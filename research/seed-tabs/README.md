@@ -1,6 +1,6 @@
 # seed-tabs — Brave tab corpus (2026-10-05)
 
-The seed material for World Feed DB: everything Moddy had open/visited in Brave during the 20:43–20:50 ACST cam-research session, fetched and saved.
+The seed material for World Feed DB: the pages captured in Brave during the 20:43–20:50 ACST cam-research session, fetched and saved.
 
 ## Contents
 

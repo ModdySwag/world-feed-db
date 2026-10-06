@@ -1,6 +1,6 @@
 # S4 — VERIFICATION / LIVENESS / SELF-HEALING / SCALE technology for a 100k+ public-feed database
 
-Research wave for the world-feed-db program (owner: Moddy; Windows 11 host). Scope: how to *prove* a public live feed is working, how to keep a huge catalog self-healing, how to store and update it at 100k–1M sources. Complements `zero-hud/reference/world/WV1-live-video-sources.md` (M1/M2/M6 ingestion already verified there — not repeated here).
+Research wave for the world-feed-db program (a Windows 11 host). Scope: how to *prove* a public live feed is working, how to keep a huge catalog self-healing, how to store and update it at 100k–1M sources. Complements `zero-hud/reference/world/WV1-live-video-sources.md` (M1/M2/M6 ingestion already verified there — not repeated here).
 
 - **Research date:** 2026-10-05 (ACST, UTC+10:30). Host toolchain at test time: **ffmpeg/ffprobe n9.0.1-11-ge47273f4d9-20260831** (Windows, gcc 15.2), **yt-dlp 2026.08.19**, **gh 2.99.0**, Python 3.11 (`py -3.11`), go2rtc v1.9.14 (from WV1).
 - **Markers:** `TESTED` = command run on this machine today with observed result shown. `CITED` = read from the upstream repo/docs at the given commit/date (not re-run here). `PROPOSED` = design, not yet implemented anywhere here. `(verify)` = found but not confirmed.
@@ -142,7 +142,7 @@ Research wave for the world-feed-db program (owner: Moddy; Windows 11 host). Sco
 
 ### 15 · Self-heal design for world-feed-db — state machine + pools + re-discovery + serve-stale
 
-- Precedents assembled from §11–§14 + MediaMTX always-available (https://mediamtx.org/docs/features/always-available) + local `zero-hud/server/world_feed.py` (serve-stale + honest states, already implemented).
+- Precedents assembled from §11–§14 + MediaMTX always-available (https://mediamtx.org/docs/features/always-available) + the local WV1 sidecar (`server/world_feed.py`) (serve-stale + honest states, already implemented).
 - KEY FACTS (PROPOSED design, with the cited precedent for each part):
   - **Health state machine per source:** `unknown → verifying → live → stale → suspect(frozen) → dead → retrying → dead(quarantined)`; transitions driven by §1 (decode), §2 (playlist freshness), §4/§5 (motion); every state carries `last_ok`, `last_err`, `age`; **serve-stale** everywhere (MediaMTX always-available; world_feed serve-stale; livetrafficcam's "shows when the feed last answered"). Never fabricate: `stale` and `dead` are terminal non-failure states in the UI sense (like ZM/Frigate offline roles).
   - **Backoff & restart budget:** exponential with cap (local AIS ingest already uses 5→60 s; ZM/Frigate patterns above) — e.g. `5, 15, 60, 300, 1800 s` then quarantine to a slow lane (re-check hourly). Restart budget per source: **N=5 failures / 60 min window → quarantine** (Frigate's 5/60 s logic, stretched for remote sources).

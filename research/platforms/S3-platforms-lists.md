@@ -3,7 +3,7 @@
 **Wave:** S3 (platforms / community hubs / datasets / test-fixtures) · **Date:** 2026-10-05 (ACST) · **Host:** Windows 11, MSYS bash · **Tools used:** ffprobe/ffmpeg **n9.0.1** (`hermes\tools\ffmpeg-9.0.1-win32-x64\bin`), yt-dlp **2026.08.19**, gh CLI (authenticated), curl, py -3.11.
 **Scope:** platforms + mechanisms that ENUMERATE, VERIFY and TEST public live video — YouTube live ecosystem, iptv-org, community hubs, academic datasets, test fixtures, and the key comparator system trafficvision.live.
 **Policy line (hard):** public-by-design sources only. No probing/scanning of private or exposed cameras. Insecam is DOCUMENTED ONLY (mechanics/scale), never fetched, never scraped. Test streams are fine (built for testing).
-**Cross-references:** WV1 dossier (`C:\Users\user\zero-hud\reference\world\WV1-live-video-sources.md`, 2026-10-03) — YouTube resolve mechanics + verified cam shortlist; NOT re-verified here (only the platform layer is extended). Seed tabs (`C:\Users\user\world-feed-db\research\seed-tabs\`) — repos/topics/issue data already collected; reused, not redone.
+**Cross-references:** WV1 dossier (`WV1-live-video-sources.md`, 2026-10-03) — YouTube resolve mechanics + verified cam shortlist; NOT re-verified here (only the platform layer is extended). Seed tabs (`C:\Users\user\world-feed-db\research\seed-tabs\`) — repos/topics/issue data already collected; reused, not redone.
 **Markers:** `VERIFIED TODAY` = fetched/tested 2026-10-05 with observed result · `REPORTED` = found in research, not fetched · `DEAD` = tried and failed today.
 
 ## TODAY'S HEADLINES (what matters for the build)

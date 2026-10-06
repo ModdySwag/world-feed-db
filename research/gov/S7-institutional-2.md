@@ -1,6 +1,6 @@
 # S7 · INSTITUTIONAL / NATURE / ANIMAL / SHIP sources — batch-2 evidence file
 
-**Collected:** 2026-10-05 ~21:28–21:45 ACST (11:00–11:15 UTC), from Moddy's Win11 host (MSYS bash, curl, ffprobe/ffmpeg 9.0.1, yt-dlp, py -3).
+**Collected:** 2026-10-05 ~21:28–21:45 ACST (11:00–11:15 UTC), from a Windows 11 host (MSYS bash, curl, ffprobe/ffmpeg 9.0.1, yt-dlp, py -3).
 **Method:** (1) read batch-2 seed captures (`research/seed-tabs-2/html/*.html`); (2) live-fetch every cam page/player (polite: curl GET only, identifying UA, 1 s spacing); (3) player-endpoint extraction from inline JS/iframe configs; (4) liveness proofs per `world-feed-db-ops` doctrine (ffprobe video track + ffmpeg decode rc=0 for HLS; yt-dlp `is_live` gate for YouTube; byte/Last-Modified checks for image tier).
 **Policy line:** public-by-design sources only (institutional/operator cams). No device probing. ≤3 attempts per target pattern. Total ~90 polite requests.
 **Notation:** counts carry `(source, date)`; `(verify)` = not live-checked. All "VERIFIED TODAY" rows = exact fetch results dated 2026-10-05.
@@ -66,7 +66,7 @@
 - VERIFIED TODAY (yt-dlp `is_live` gate): otter `abbR-Ttd-cA` **is_live=True**; kelp `w3LjpFhySTg` is_live=True; shark `tEtg5Kg3voQ` is_live=True (all "Live … Cam | Monterey Bay Aquarium", 21:31 ACST).
 - VERDICT: **ADOPT** — build: YouTube adapter keyed by per-cam id table; liveness gate `--match-filter is_live`; fall back to "after hours" id as a labelled non-live state.
 
-### 6 · North Bondi SLSC webcam (AU — Moddy's home-surf class) — direct ipcamlive HLS
+### 6 · North Bondi SLSC webcam (AU — beach surf cam) — direct ipcamlive HLS
 - Link: https://northbondisurfclub.com/webcam/ — **2 webcams** ("a free service, proudly provided by North Bondi SLSC for our community").
 - **Stream target: ipcamlive, keyless direct HLS.** Two iframes → two aliases; resolved from each player's inline config:
   - Cam 1: alias `687a39cf71c58` → streamid `230eh5igyehypvtnc` @ `s35.ipcamlive.com`

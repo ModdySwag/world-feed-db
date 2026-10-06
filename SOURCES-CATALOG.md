@@ -6,7 +6,7 @@ Reading rules: every count carries a source; "per L-E-S index" = counts from `re
 
 ---
 
-## 0 · Already VERIFIED working (from zero-hud WV1 dossier, 2026-10-03 — frames decoded locally)
+## 0 · Already VERIFIED working (from the WV1 dossier, 2026-10-03 — frames decoded locally)
 
 | Source | Endpoint (as verified) | Result |
 |---|---|---|
@@ -19,8 +19,8 @@ Reading rules: every count carries a source; "per L-E-S index" = counts from `re
 | Levanto coastal HLS | `https://5e0add8153fcd.streamlock.net:1936/vedetta/levanto.stream/playlist.m3u8` | 41,759 B (provenance caution) |
 | Image tier | USGS HVO `volcanoes.usgs.gov/observatories/hvo/cams/<ID>/images/M.jpg` · SDO `sdo.gsfc.nasa.gov/assets/img/latest/latest_512_0193.jpg` (+0131) · Keck `www2.keck.hawaii.edu/realtime/webcam/k2Mast.jpg` / `kcam_1.jpg` · JCMT `eao.hawaii.edu/weather/images/jcmt.jpg` · IFA `hp.ifa.hawaii.edu/cams/dormb-ptz.jpg` · TfL `s3-eu-west-1.amazonaws.com/jamcams.tfl.gov.uk/<id>.jpg` | all 6.8K–349K B, refresh 1–15 min |
 
-Full method detail + exact commands: `C:\Users\user\zero-hud\reference\world\WV1-live-video-sources.md`.
-Currently wired into zero-hud's sidecar (`server/world_feed.py`, :8772): 5 channels (caltrans, iss, katmai, railfan, aquarium) with lazy ffmpeg pipelines + honest health.
+Full method detail + exact commands: the WV1 dossier (`WV1-live-video-sources.md`).
+Currently wired into the WV1 sidecar (`server/world_feed.py`, :8772): 5 channels (caltrans, iss, katmai, railfan, aquarium) with lazy ffmpeg pipelines + honest health.
 Dead ends from that pass: NASA TV akamaized m3u8 (empty segments), Purdue MJPEG (decommissioned). → Don't re-try.
 
 ---
@@ -126,10 +126,10 @@ Key artifacts: `research/seed-tabs/github-topics/traffic-cameras--stars.json` (3
 - **trafficvision.live** — closest peer system (S3-dissected) [V]: 155k+ cams / 700+ official sources / 130+ countries claimed; live video + refreshing images + YouTube on one map; route builder; AI overlays; CamGuessr "stream-tested before each round". Data surface: **853 per-source `*-cameras.json`** at `data.trafficvision.live/camera-data/` (sampled oktraffic = 683 cams, HLS `videoUrl` + `imageUrl` + make/model per cam); `changelog.json` (199 entries); `/api/catalog/manifest` = session-gated (401). robots.txt `Disallow: /camera-data/` + ToS bans automated access → **reference/benchmark only; do not bulk-pull**; use the 853 source-names to re-derive from the original agencies; consider a permission contact (→Q11). Captures: `seed-tabs/reddit/trafficvision-live-site.md`, `research/platforms/S3-platforms-lists.md` entry 1.
 - **Argus** (GoSlowPoke168) — scrapers → SQLite → layered JSON exports (`cameras.core.json` / `.labels.json` / `.detail/`), MapLibre+Deck.GL, HLS w/ JPEG cache-bust fallback, CORS/ipcamlive local proxy. 229k+ claim; `public/cameras.geojson` = 100 MB.
 - **camforge** (SoCloseSociety) — self-hosted map+relay+local AI vision; connectors `caltrans.ts / five11.ts / vegvesen.ts / windy.ts / youtube.ts`; `lib/policy.ts` bright-line module; PostGIS; Next.js 15. MIT.
-- **God's Eye View** (local, C:\pinokio\api\gods-eye-view.git) — georeferenced CCTV schema; proxy+cache+serve-stale; attribution system; MIT code w/ per-source data licenses.
+- **God's Eye View** (local reference app) — georeferenced CCTV schema; proxy+cache+serve-stale; attribution system; MIT code w/ per-source data licenses.
 - **Live-Environment-Streams** — status/url_type/source_url_requires fields = a ready-made quality model; ffprobe-based production verification.
 - **OpenTrafficCamMap** — crowdsourced schema (per-state-per-county rows; encoding/format enums incl. IMAGE_STREAM, M3U8, UNIQUE_TEXASDOT).
-- **zero-hud world_feed.py** (local) — lazy-pipeline channel proxy w/ honest health states (live/stale/error/idle).
+- **world_feed.py sidecar** (local) — lazy-pipeline channel proxy w/ honest health states (live/stale/error/idle).
 
 ---
 

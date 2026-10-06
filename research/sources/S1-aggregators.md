@@ -216,6 +216,6 @@ Scope: commercial/community webcam aggregator networks worldwide — the "non-go
 
 ## Evidence artifacts (all this wave)
 
-- `C:\Users\user\world-feed-db\research\sources\S1-aggregators.md` (this file)
+- `research/sources/S1-aggregators.md` (this file)
 - Scratch (session): `skyline_counts.json` (per-country table), `s1_crawl_results.json` (EarthCam world + WebcamTaxi + WorldCams), `earthcam_us.json` (45 states), `ec-pl.json` (EarthCam playlist sample), `exp-init.json` (explore.org directory), `rs-list.json` (Roundshot 561), `etv-places.json` (earthTV places), `skyline_crawl.py` / `s1_crawl.py` / `ec_us.py` (re-runnable crawlers), `skyline_crawl.log` / `s1_crawl.log` / `ec_us.log`.
-- Prior context used (not duplicated): `zero-hud\reference\world\WV1-live-video-sources.md` (2026-10-03), `world-feed-db\research\seed-tabs\data\LES-sources.json`.
+- Prior context used (not duplicated): the WV1 dossier (2026-10-03), `research/seed-tabs/data/LES-sources.json`.

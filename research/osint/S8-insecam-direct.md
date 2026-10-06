@@ -1,6 +1,6 @@
 # S8 · insecam.org — direct recon + new datasets + community mining
 
-**Date:** 2026-10-05 (all fetches this session) · **Host:** Moddy's Windows box (MSYS bash, curl 8.x/schannel, python 3) · **Scope:** reconnaissance only — no device contact, no probe of any listed camera. Every insecam request = a directory page (homepage / country / bynew / FAQ / robots / sitemap). No `/en/view/` page was opened; no thumbnail (device URL) was fetched.
+**Date:** 2026-10-05 (all fetches this session) · **Host:** a Windows 11 box (MSYS bash, curl 8.x/schannel, python 3) · **Scope:** reconnaissance only — no device contact, no probe of any listed camera. Every insecam request = a directory page (homepage / country / bynew / FAQ / robots / sitemap). No `/en/view/` page was opened; no thumbnail (device URL) was fetched.
 
 **Prior art (not redone):** S5 §A.19 (directory mechanics), §A.20 (7 known datasets: jrw 17,399; OpenEyes 7,170; virtualpeephole 2,806; rackcams 1,089; giasuddin 210; roulette 50; feedtv 12). Counts below are NEW unless labelled. OpenEyes was re-downloaded only as a SHA reference.
 

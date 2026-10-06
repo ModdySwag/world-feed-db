@@ -4,6 +4,8 @@ profiles/moddy/
 profiles/ACTIVE
 # Local key files inside any profile — never committed (only .env.example ships)
 profiles/*/.env
+# Session handoff docs (local working files; never published)
+CONTINUATION-*.md
 # Working data: registry DB + ingest outputs (never committed)
 data/
 # Raw third-party dataset downloads (unlicensed; re-downloadable via documented URLs)

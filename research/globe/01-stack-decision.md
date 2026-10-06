@@ -286,7 +286,7 @@ Level9 `Reference_Labels` layer (verified 200 at all corners).
 
 Reproduce:
 ```bash
-cd C:/Users/user/world-feed-db/research/globe/proof
+cd <repo>/research/globe/proof
 py -3.11 -m http.server 8799 --bind 127.0.0.1   # then open http://127.0.0.1:8799/globe-test.html
 ```
 
