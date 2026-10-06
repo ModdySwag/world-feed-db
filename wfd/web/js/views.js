@@ -76,7 +76,8 @@ function updateHearts(root, cid) {
 
 function playableCam(cam) {
   return !!cam && !!cam.url && !isMetadataOnly(cam)
-    && ['youtube', 'hls', 'mjpeg', 'jpeg'].includes(String(cam.protocol || '').toLowerCase());
+    && (['youtube', 'hls', 'mjpeg', 'jpeg'].includes(String(cam.protocol || '').toLowerCase())
+      || (String(cam.protocol || '').toLowerCase() === 'iframe' && (cam.resolvable || cam.live_url)));
 }
 
 /* ── card builders (wall + search) ───────────────────────────────────── */
@@ -225,7 +226,7 @@ function hoverLive(card, media, cam) {
   if (!store.settings.live_previews) return;
   if (isMetadataOnly(cam)) return;
   const proto = String(cam.protocol || '').toLowerCase();
-  if (proto !== 'hls' && proto !== 'mjpeg') return;
+  if (proto !== 'hls' && proto !== 'mjpeg' && !(proto === 'iframe' && (cam.resolvable || cam.live_url))) return;
   let timer = null;
   let preview = null;
   card.addEventListener('mouseenter', () => {
@@ -1422,11 +1423,12 @@ export const HELP_SECTIONS = [
           <tr><td>HLS</td><td>hls.js (vendored) or native HLS video; muted</td><td>honest fallback: feed offline or blocked (CORS) — <b>Retry</b>, or open the source</td></tr>
           <tr><td>MJPEG</td><td>native <code>&lt;img&gt;</code> (it is an animated image)</td><td>fallback panel with retry / open original</td></tr>
           <tr><td>JPEG still</td><td>refreshed on a timer while visible (Settings → still refresh, default 30&nbsp;s); manual ⟳ refresh action</td><td>keeps the last good frame and says so; a first-load failure is shown plainly</td></tr>
-          <tr><td>iframe / other</td><td>not embedded — <b>Open original</b> only (no embed guessing)</td><td>—</td></tr>
+          <tr><td>iframe / other</td><td>resolved sources play via the local HLS relay; others are not embedded — <b>Open original</b> only</td><td>—</td></tr>
         </tbody>
       </table>
       <p>Everything plays <b>muted</b>; open a card in the player modal or expand a stage slot. The viewer never invents a preview:
-      if a feed cannot start you get an explanation and the source link.</p>`,
+      if a feed cannot start you get an explanation and the source link. Some iframe sources (e.g. skylinewebcams) are
+      resolved server-side and relayed as HLS through the local proxy, so they play like any other HLS feed.</p>`,
   },
   {
     id: 'favourites',

@@ -5,7 +5,7 @@
  *   hls     : placeholder poster -> hls.js (or native HLS) video; fatal -> honest fallback panel
  *   mjpeg   : placeholder poster -> native <img src> (it is an animated image); error -> fallback
  *   jpeg    : <img> still + refresh timer (settings.still_refresh_s, default 30s), "updated HH:MM:SS"
- *   iframe  : placeholder + [Open original] only — no embed guessing
+ *   iframe  : placeholder + [Open original] only — no embed guessing; server-resolved rows relay as HLS
  *   unknown : placeholder + [Open original] when a url exists, else a no-url note
  *
  * Laws enforced here:
@@ -16,7 +16,7 @@
  *   - LiveBudget caps concurrent live tiles (settings.max_live_tiles); when the cap is
  *     exceeded the oldest non-modal player is paused ("pause oldest").
  *
- * Exports: extractYouTubeId, formatLabel, posterEl, createPlayer, startLivePreview, LiveBudget.
+ * Exports: extractYouTubeId, formatLabel, posterEl, relayUrl, createPlayer, startLivePreview, LiveBudget.
  */
 import { playSound } from './sound.js';
 import { store } from './app.js';
@@ -81,15 +81,38 @@ export function isMetadataOnly(camera) {
     || camera.provenance === 'exposure_aggregator');
 }
 
+/** Ready-to-play relay URL for rows the local server can resolve to a live stream. */
+export function relayUrl(cam) {
+  if (!cam) return null;
+  return cam.live_url || (String(cam.protocol || '').toLowerCase() === 'iframe' && cam.resolvable
+    ? '/api/live/' + cam.camera_id + '/index.m3u8'
+    : null);
+}
+
+/** The source a player should load: the server relay when resolved, else the row url. */
+function streamUrlFor(cam) {
+  return relayUrl(cam) || (cam && cam.url);
+}
+
 /** Poster descriptor for cards + player idle state. */
 export function posterInfo(camera) {
   if (!camera) return { kind: 'ph' };
   if (camera.protocol === 'youtube') {
     const id = extractYouTubeId(camera.url);
     if (id) return { kind: 'yt', url: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, ytId: id };
+    // channel-live rows have no id in the url until the server resolves one
+    if (camera.poster_url) return { kind: 'still', url: camera.poster_url };
     return { kind: 'ph' };
   }
   if (camera.protocol === 'jpeg' && camera.url) return { kind: 'still', url: camera.url };
+  // server-cached poster (og:image of a resolvable source), filled in progressively
+  if (camera.poster_url) return { kind: 'still', url: camera.poster_url };
+  const proto = String(camera.protocol || '').toLowerCase();
+  if ((proto === 'iframe' || proto === 'unknown') && camera.url && !isMetadataOnly(camera)) {
+    // '/api/poster/<id>' is lazily resolved and cached server-side; a 404 falls
+    // back to the placeholder via the poster image error handler
+    return { kind: 'still', url: '/api/poster/' + camera.camera_id };
+  }
   return { kind: 'ph' };
 }
 
@@ -367,6 +390,7 @@ export function createPlayer(camera, opts = {}) {
     if (!cam.url) return false;
     const proto = String(cam.protocol || '').toLowerCase();
     if (proto === 'jpeg') return false;             // stills have no play action
+    if (relayUrl(cam)) return true;                  // iframe rows resolved server-side play through the relay
     if (proto === 'iframe' || proto === 'unknown' || proto === '') return false;
     return true;                                     // youtube | hls | mjpeg
   }
@@ -382,6 +406,7 @@ export function createPlayer(camera, opts = {}) {
     if (proto === 'hls') return startHls();
     if (proto === 'mjpeg') return startMjpeg();
     if (proto === 'jpeg') { startStill(); return; }
+    if (proto === 'iframe' && relayUrl(cam)) return startHls();   // server-resolved relay
     return; // iframe/unknown — panel already explains
   }
 
@@ -391,12 +416,13 @@ export function createPlayer(camera, opts = {}) {
     capPaused = !!opts2.cap;
     if (state !== 'playing') { if (capPaused) capPanel(); return; }
     const proto = String(cam.protocol || '').toLowerCase();
+    const relay = !!relayUrl(cam);            // server-relayed iframe rows behave like hls
     if (proto === 'youtube') {
       stopBudget();
       if (frameEl) { if (frameEl.parentNode) frameEl.parentNode.removeChild(frameEl); frameEl = null; }
       setState('idle');
       if (capPaused) capPanel();
-    } else if (proto === 'hls') {
+    } else if (proto === 'hls' || relay) {
       stopBudget();
       if (vid) { try { vid.pause(); } catch (err) { /* noop */ } }
       setState('paused');
@@ -414,7 +440,7 @@ export function createPlayer(camera, opts = {}) {
     clearPanelsForResume();
     want = true;
     const proto = String(cam.protocol || '').toLowerCase();
-    if (proto === 'hls' && vid && state === 'paused') {
+    if ((proto === 'hls' || relayUrl(cam)) && vid && state === 'paused') {
       registerLive(context === 'modal' ? 'modal' : 'stage');
       const p = vid.play();
       if (p && p.catch) p.catch(() => {});
@@ -471,7 +497,7 @@ export function createPlayer(camera, opts = {}) {
     setState('loading');
     want = true;
     registerLive(context === 'modal' ? 'modal' : 'stage');
-    const url = cam.url;
+    const url = streamUrlFor(cam);            // relay url for server-resolved iframe rows
     vid = document.createElement('video');
     vid.className = 'pl-video';
     vid.muted = true;
@@ -631,10 +657,11 @@ export function createPlayer(camera, opts = {}) {
     if (destroyed || !cam) return;
     const lose = hidden;
     const proto = String(cam.protocol || '').toLowerCase();
+    const relay = !!relayUrl(cam);            // server-relayed iframe rows behave like hls
     if (lose) {
-      if ((proto === 'youtube' || proto === 'hls' || proto === 'mjpeg') && state === 'playing') {
+      if ((proto === 'youtube' || proto === 'hls' || proto === 'mjpeg' || relay) && state === 'playing') {
         autoPaused = true;
-        if (proto === 'hls') {
+        if (proto === 'hls' || relay) {
           stopBudget();
           if (vid) { try { vid.pause(); } catch (err) { /* noop */ } }
           setState('paused');
@@ -759,7 +786,7 @@ export function createPlayer(camera, opts = {}) {
     if (isMetadataOnly(cam)) { blockedPanel(); setState('blocked'); buildActions(); return; }
     if (!cam.url && String(cam.protocol).toLowerCase() !== 'iframe') { noUrlPanel(); setState('nourl'); buildActions(); return; }
     if (String(cam.protocol).toLowerCase() === 'jpeg') { buildActions(); if (opts.autoplay) startStill(); return; }
-    if (String(cam.protocol).toLowerCase() === 'iframe' || String(cam.protocol).toLowerCase() === 'unknown') {
+    if ((String(cam.protocol).toLowerCase() === 'iframe' || String(cam.protocol).toLowerCase() === 'unknown') && !relayUrl(cam)) {
       if (cam.url) noPlayPanel(); else noUrlPanel();
       setState(cam.url ? 'noplay' : 'nourl');
       buildActions();
@@ -823,7 +850,8 @@ export function startLivePreview(camera, hostEl, onEnd) {
   const stopper = { stop() {} };
   if (!camera || isMetadataOnly(camera)) return stopper;
   const proto = String(camera.protocol || '').toLowerCase();
-  if (proto !== 'hls' && proto !== 'mjpeg') return stopper;
+  const relay = !!relayUrl(camera);        // server-relayed iframe rows preview like hls
+  if (proto !== 'hls' && proto !== 'mjpeg' && !(proto === 'iframe' && relay)) return stopper;
   if (!camera.url) return stopper;
 
   const wrap = document.createElement('div');
@@ -846,7 +874,7 @@ export function startLivePreview(camera, hostEl, onEnd) {
 
   function fail() { stop(); }
 
-  if (proto === 'hls') {
+  if (proto === 'hls' || (proto === 'iframe' && relay)) {
     vid = document.createElement('video');
     vid.muted = true;
     vid.defaultMuted = true;
@@ -862,9 +890,9 @@ export function startLivePreview(camera, hostEl, onEnd) {
         if (data && data.fatal && !settled) { settled = true; fail(); }
       });
       hlsObj.attachMedia(vid);
-      hlsObj.loadSource(camera.url);
+      hlsObj.loadSource(streamUrlFor(camera));
     } else if (vid.canPlayType('application/vnd.apple.mpegurl')) {
-      vid.src = camera.url;
+      vid.src = streamUrlFor(camera);
     } else { fail(); return stopper; }
     const p = vid.play();
     if (p && p.catch) p.catch(() => {});

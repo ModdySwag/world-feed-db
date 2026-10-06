@@ -1311,6 +1311,12 @@ export function closeDrawer() {
   d.setAttribute('aria-hidden', 'true');
 }
 
+/* the drawer's X button in index.html is not part of the .overlay [data-close] set */
+function wireDrawer() {
+  const btn = $('#drawer-close');
+  if (btn) btn.addEventListener('click', () => closeDrawer());
+}
+
 function isMetaOnly(row) {
   return !!row && (row.display_policy === 'metadata_only' || row.provenance === 'exposure_aggregator');
 }
@@ -1349,6 +1355,9 @@ function renderDrawer(row) {
   if (!meta && row.url) {
     h += `<div class="urlblock"><div class="fld-l">stream url</div><code class="url">${esc(row.url)}</code></div>`;
   }
+  if (!meta && (row.resolvable || row.live_url)) {
+    h += '<div class="linkline">live relay: this source is resolved server-side and played through the local proxy</div>';
+  }
   if (row.meta && typeof row.meta === 'object') {
     const keys = Object.keys(row.meta);
     if (keys.length) {
@@ -1363,7 +1372,9 @@ function renderDrawer(row) {
   $('#drawer-body').innerHTML = h;
 
   const actions = $('#drawer-body .drawer-actions');
-  const playable = !meta && !!row.url && ['youtube', 'hls', 'mjpeg', 'jpeg'].includes(String(row.protocol).toLowerCase());
+  const proto = String(row.protocol || '').toLowerCase();
+  const playable = !meta && !!row.url && (['youtube', 'hls', 'mjpeg', 'jpeg'].includes(proto)
+    || (proto === 'iframe' && (row.resolvable || row.live_url)));
   if (playable) {
     const b = el('button', 'btn primary', ICONS.play + ' Play');
     b.addEventListener('click', () => openPlayerModal(row));
@@ -1769,6 +1780,7 @@ async function boot() {
   wireSidebar();
   wireWarn();
   wireOverlayClose();
+  wireDrawer();
   wireKeyboard();
   soundGestureHook();
   setApiState(null);
